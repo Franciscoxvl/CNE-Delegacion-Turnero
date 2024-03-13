@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <link
+          rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          crossorigin="anonymous"
+        />
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+
+        <link rel="stylesheet" href="../static/styles.css">
+
+    
+        <title>Appointment Visualizer</title>
+      </head>
+<body>
+
+    <div class="navbar navbar-expand-lg navbar-custom">
+        <img class="img-v" src="../static/images/CNE-logo.png" alt="logoCNE">
+        <p class="navbar-text">CNE-DELEGACION PROVINCIAL DE PICHINCHA</p>
+        <img class="img-v" src="../static/images/CNE-logo.png" alt="logoCNE">
+    </div>
+    <div class="principal-content-v">
+
+        <div class="video-clock">
+
+            <video class="video-v-m" autoplay controls preload="auto">
+                 <source src="{{ url_for('static', filename='video/landscapes.mp4') }}" type="video/mp4">
+                    Tu navegador no soporta el elemento de video.
+            </video>
+
+            <div class="clock">
+                <div>
+                    <span id="hours">01</span>
+                    <span>Hour</span>
+                </div>
+
+                <div>
+                    <span id="minutes">23</span>
+                    <span>Minutes</span>
+                </div>
+
+                <div>
+                    <span id="seconds">45</span>
+                    <span>Seconds</span>
+                </div>
+
+                <div>
+                    <span id="ampm">AM</span>
+                </div>
+
+            </div>
+        </div>
+        <div class="table-turns">
+
+            <div class="header-table">
+                <p>TURNO</p>
+                <p>MÓDULO</p>
+            </div>
+
+            <div class="solo-turnos">
+               
+
+            </div>
+            
+        </div>
+    </div>
+
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="../static/index.js"></script>
+</body>
+</html>

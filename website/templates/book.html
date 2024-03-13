@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+          rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          crossorigin="anonymous"
+        />
+
+        <link rel="stylesheet" href="../static/styles.css">
+    
+        <title>Book an appointment</title>
+
+        <link rel="icon" href="../static/favicon.ico" type="image/x-icon">
+      </head>
+<body>
+  <div class="container-own">
+    <div id="main-container" class="container-fluid p-0 cont-div-2">
+      <!-- Lado Izquierdo - Azul -->
+      <div id="izquierda" class="col-md-6 cont-content">
+          <div class="img-content">
+              <img src="../static/images/CNE-logo.png" alt="logo_CNE" class="image-format">
+          </div>
+
+          <div class="text-content">
+              <p>CONSEJO NACIONAL ELECTORAL</p>
+              <p>DELEGACION ELECTORAL PROVINCIAL DE</p>
+              <p>PICHINCHA</p>
+          </div>                
+      </div>
+      
+      <div id="derecha" class="col-md-6 cont-content">
+          <button onclick="show_message('cambios_domicilio')" type="button" class="btn-app">
+            <p id="cedulacion">CAMBIO DE DOMICILIO</p>
+          </button>
+
+          <button onclick="show_message('justificaciones')" type="button" class="btn-app">
+            <p id="multas">JUSTIFICACIONES</p>
+          </button>
+
+          <button onclick="show_message('certificados_votacion')" type="button" class="btn-app">
+            <p id="certificados">DUPLICADOS PAPELETA DE VOTACION</p>
+          </button>
+
+          <button onclick="show_message('desafiliaciones')" type="button" class="btn-app">
+            <p id="certificados">DESAFILIACIONES</p>
+          </button>
+
+          <button onclick="show_message('online')" type="button" class="btn-app">
+            <p id="certificados">SERVICIOS EN LINEA</p>
+          </button>
+
+          <p id="resultado" style="font-size: 7rem; color: black; background-color: white; padding: 2rem;"></p>
+
+      </div>
+    </div>
+
+    <div id="requirements" class="requirements"></div>
+
+  </div>
+
+    
+
+      <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="../static/api.js"></script>
+    
+</body>
+</html>

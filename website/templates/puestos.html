@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block title %}Puestos{% endblock %} {% block content
+    %}
+    <div>
+        <p style="font-weight: bold;" id="mensaje_servidor">Cargando....</p>
+    </div>
+    <br>
+    <button onclick="liberarPuesto(1)" class="btn btn-primary">Liberar puesto 1</button>
+    <button onclick="liberarPuesto(2)" class="btn btn-primary">Liberar puesto 2</button>
+    <button onclick="liberarPuesto(3)" class="btn btn-primary">Liberar puesto 3</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="static/puestos.js"></script>
+
+
+    {% endblock %}
