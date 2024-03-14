@@ -4,6 +4,7 @@ const generar_turno = async (tipo, servicio) => {
         const resultado = await obtener_turno(servicio);
         console.log(resultado);
         document.getElementById('resultado').innerHTML = resultado
+        turno_assignado_mensaje();
     } catch (error) {
         console.error('Error en generar_turno:', error);
     }
@@ -133,10 +134,31 @@ const volver_inicio = () =>{
         main_container.style.opacity = "1";
 
     }, 1000);
-    
-    
-    
+};
 
+const turno_assignado_mensaje = (turno) => {
+    let div_requirements = document.getElementById("requirements");
+    div_requirements.style.opacity = "0";
+
+    setTimeout(()=>{
+        fetch("../static/messages/turno_asignado.html")
+        .then(response => response.text())
+        .then(html => {
+            // Actualiza el contenido del div con el contenido importado
+            div_requirements.innerHTML = html;
+        }).then(()=>{
+
+            let div_requirements = document.getElementById("requirements");
+            div_requirements.style.opacity = "1";
+
+            setTimeout(()=>{
+                volver_inicio();
+            }, 6000)
+            
+        })
+        .catch(error => console.error('Error al cargar el contenido:', error));       
+    }, 1000);
+    
 };
 
 
