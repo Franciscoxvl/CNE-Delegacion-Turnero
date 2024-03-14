@@ -413,4 +413,11 @@ html {
     margin-top: 5rem;
   }
 
+  #resultado{
+    width: 20%;
+    margin-inline: auto;
+    text-align: center;
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+  }
 
