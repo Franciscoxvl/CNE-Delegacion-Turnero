@@ -10,7 +10,6 @@ scheduler = APScheduler()
 
 
 def create_app():
-    from .API.api_route import consultar_turno
 
     app = Flask(__name__)
     CORS(app, origins='*')
