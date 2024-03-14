@@ -1,3 +1,4 @@
 *.mp4
-*jpg
-*png
+*.jpg
+*.png
+__pycache__
