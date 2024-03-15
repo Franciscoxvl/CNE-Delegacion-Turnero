@@ -1,0 +1,61 @@
+var passwordInput = document.getElementById("password");
+var userInput = document.getElementById("user");
+var error_message = document.getElementById("password-container");
+var user_error_message = document.getElementById("user-credential");
+var nuevoParrafo = document.createElement('p');
+
+nuevoParrafo.style.color = 'red';
+nuevoParrafo.style.fontSize = '90%';
+nuevoParrafo.style.display = 'none'; // Ocultar el párrafo de error inicialmente
+
+
+userInput.addEventListener("input", function() {
+    var usuario = userInput.value;
+
+    // Expresión regular para validar la contraseña
+    var patron = /^[a-zA-Z0-9]+$/;
+
+    if (patron.test(usuario) ) {
+        nuevoParrafo.style.display = 'none'; 
+        var container_recfpass = document.getElementById('password-container');
+        container_recfpass.style.marginTop = '0';
+    } else if(usuario.length == 0){
+        nuevoParrafo.style.display = 'none'; 
+        var container_recfpass = document.getElementById('password-container');
+        container_recfpass.style.marginTop = '0';
+    } else {
+        nuevoParrafo.textContent = "No se aceptan caracteres especiales en el nombre de usuario!";
+        user_error_message.insertAdjacentElement('afterend',nuevoParrafo);
+        nuevoParrafo.style.display = 'block'; // Mostrar el párrafo de error si la contraseña es inválida
+        var container_recfpass = document.getElementById('password-container');
+        container_recfpass.style.marginTop = '-1rem';
+    }
+});
+var passwordInput = document.getElementById("password");
+var userInput = document.getElementById("user");
+var error_message = document.getElementById("password-container");
+var user_error_message = document.getElementById("user-credential");
+var nuevoParrafo = document.createElement('p');
+
+passwordInput.addEventListener("input", function() {
+    var contraseña = passwordInput.value;
+
+    // Expresión regular para validar la contraseña
+    var patron = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>\/?~-]).{8,}$/;
+
+    if (patron.test(contraseña) ) {
+        nuevoParrafo.style.display = 'none'; // Ocultar el párrafo de error si la contraseña es válida o está vacía
+        var container_recfpass = document.getElementById('recuerdame-fpass-container');
+        container_recfpass.style.marginTop = '2rem';
+    } else if (contraseña.length == 0) {
+        nuevoParrafo.style.display = 'none'; // Ocultar el párrafo de error si la contraseña es válida o está vacía
+        var container_recfpass = document.getElementById('recuerdame-fpass-container');
+        container_recfpass.style.marginTop = '2rem';
+    }else{
+        nuevoParrafo.textContent = "Se requiere al menos 8 caracteres, una mayúscula, un número y un caracter especial.";
+        error_message.insertAdjacentElement('afterend',nuevoParrafo);
+        nuevoParrafo.style.display = 'block'; // Mostrar el párrafo de error si la contraseña es inválida
+        var container_recfpass = document.getElementById('recuerdame-fpass-container');
+        container_recfpass.style.marginTop = '0';
+    }
+});

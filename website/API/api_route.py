@@ -60,6 +60,10 @@ def asignar_turno(id):
 def principal():
     return "<h1> HOLA MUNDO </h1>"
 
+@api_bp.route('/ejemplo')
+def ejemplo():
+    return "<h1> HOLA MUNDO COMO EJEMPLO</h1>"
+
 
 @api_bp.route('/generar_turno_espera', methods=['GET'])
 def generar_turno_espera():
