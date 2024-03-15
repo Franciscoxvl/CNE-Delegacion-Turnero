@@ -1,7 +1,14 @@
-from flask import Blueprint, render_template
-from flask import flash, redirect, render_template, request, url_for
+from flask import Blueprint, render_template, flash, redirect, render_template, request, url_for
+from flask_login import login_user, logout_user
+from website.models import Usuario
+from website import login_manager
 
 auth = Blueprint('auth', __name__)
+
+@login_manager.user_loader
+def load_user(id):
+    return Usuario.query.filter_by(id = id).first()
+
 
 @auth.route('/login')
 def login():
@@ -9,7 +16,8 @@ def login():
 
 @auth.route('/logout')
 def logout():
-    return "<p>LOGOUT PAGE</p>"
+    logout_user()
+    return redirect(url_for('auth.login'))
 
 @auth.route('/sing-up')
 def sign_up():
@@ -33,6 +41,7 @@ def validacion_usuario():
             return redirect(url_for('auth.login'))
         
         elif user.check_password(password):
+            login_user(user)
             return redirect(url_for('user.profile'))
         
         else:

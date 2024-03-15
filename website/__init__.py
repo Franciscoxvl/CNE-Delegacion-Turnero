@@ -3,8 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO
 from flask_apscheduler import APScheduler
 from flask_cors import CORS
+from flask_login import LoginManager
 
 db = SQLAlchemy()
+login_manager = LoginManager()
 socketio = SocketIO()
 scheduler = APScheduler()
 
@@ -19,6 +21,7 @@ def create_app():
     app.config['DEBUG'] = True
     app.config['ENV'] = 'development'
 
+    login_manager.init_app(app)
     db.init_app(app)  # Inicializa SQLAlchemy con la aplicación
     socketio.init_app(app)
 
