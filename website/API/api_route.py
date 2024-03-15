@@ -3,8 +3,6 @@ from . import api_bp
 from website import socketio
 from datetime import datetime
 
-
-
 def cantidad_turnos(id_servicio):
     from website.models import Turnos, Espera
     cantidad_turnos_asignados = Turnos.query.filter_by(id_servicio=id_servicio).count()

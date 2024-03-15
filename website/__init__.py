@@ -23,9 +23,11 @@ def create_app():
     from .views import views
     from .auth import auth
     from .API.api_route import api_bp
+    from .API.auth_control import api_auth
 
-    app.register_blueprint(api_bp, url_prefix='/api')
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(api_auth, url_prefix='/api')
 
     return app, socketio

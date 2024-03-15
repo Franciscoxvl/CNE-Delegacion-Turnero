@@ -1,4 +1,3 @@
-
 import threading
 from website import create_app, socketio
 from website.API.api_route import consultar_turno
