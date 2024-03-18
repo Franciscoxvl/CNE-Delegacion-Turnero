@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+
+{% block side_bar_list %}
+
+<!-- Nav Item - Dashboard -->
+<li class="nav-item active">
+    <a class="nav-link" href="{{url_for('user.profile')}}">
+        <i class="fas fa-fw fa-tachometer-alt"></i>
+        <span>Resumen</span></a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider">
+
+<!-- Heading -->
+<div class="sidebar-heading">
+    General
+</div>
+
+<!-- Nav Item - Pages Collapse Menu -->
+<li class="nav-item">
+    <a class="nav-link" href="charts.html">
+        <i class="fas fa-fw fa-user"></i>
+        <span>Perfil</span>
+    </a>
+</li>
+
+<!-- Nav Item - Utilities Collapse Menu -->
+<li class="nav-item">
+    <a class="nav-link" href="charts.html">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Asignacion de turnos</span>
+    </a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider d-none d-md-block">
+
+<!-- Sidebar Toggler (Sidebar) -->
+<div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+</div>
+
+
+</ul>
+<!-- End of Sidebar -->
+
+            
+{% endblock %}
+
+<!-- Begin Page Content -->
+{% block main_content %}
+
+{% endblock %}
