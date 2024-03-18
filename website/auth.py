@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, flash, redirect, render_template, request, url_for
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, login_required, current_user
 from website.models import Usuario
 from website import login_manager
 
@@ -12,9 +12,14 @@ def load_user(id):
 
 @auth.route('/login')
 def login():
-    return render_template("login.html")
+    if current_user.is_authenticated:
+        return redirect(url_for('user.profile'))
+    
+    else:
+        return render_template("login.html")
 
 @auth.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
@@ -32,7 +37,6 @@ def validacion_usuario():
         username = request.form['username']
         password = request.form['password']
         recuerdame = True if 'recuerdame' in request.form else False
-        print("Probando debugger")
 
         user = Usuario.query.filter_by(username=username).first()
         
@@ -41,12 +45,23 @@ def validacion_usuario():
             return redirect(url_for('auth.login'))
         
         elif user.check_password(password):
-            login_user(user)
-            return redirect(url_for('user.profile'))
-        
+            if recuerdame:
+                login_user(user, remember=recuerdame)
+                return redirect(url_for('user.profile'))
+            else:
+                login_user(user)
+                return redirect(url_for('user.profile'))
         else:
             flash("La contraseña ingresada no es correcta!")
             return redirect(url_for('auth.login'))
+    
+    
+def status_401(error):
+    return redirect(url_for('auth.login'))
+    
+def status_404(error):
+    return "<h1> Página no encontrada </h1>" , 404
+
 
 
 

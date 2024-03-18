@@ -2,6 +2,7 @@ import threading
 from website import create_app, socketio
 from website.API.api_route import consultar_turno
 from threading import Timer
+from website.auth import status_401, status_404
 
 app, socketio = create_app()
 stop_event = threading.Event()
@@ -17,5 +18,7 @@ def stop_consultar_turno():
 
 if __name__ == '__main__':
     run_consultar_turno()
+    app.register_error_handler(401, status_401)
+    app.register_error_handler(404, status_404)
     socketio.run(app, host='10.0.17.68', port=5000, debug=True, use_reloader=False)
     stop_consultar_turno()  # Llamada para detener el hilo al apagar el servidor
