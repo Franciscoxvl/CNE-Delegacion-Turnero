@@ -89,6 +89,18 @@ def turnos_dia():
 
     return datos
 
+def turnos_puestos():
+
+    datos = [0, 0 ,0]
+
+    T_puestos = Turnos.query.filter(Turnos.fecha == datetime.now().date())
+
+    for i in T_puestos:
+        if i.estado_turno == 'Completado':
+            datos[ i.id_puesto - 1 ] += 1           
+        
+    return datos
+
 def liberar_turno(id):
 
     var = False
@@ -134,9 +146,13 @@ def generar_turno_espera():
         error = str(e)
         return error, 500
 
-@api_bp.route('/datos_graficos')
+@api_bp.route('/datos_diarios')
 def datos_graficos():
     return jsonify(turnos_dia())
+
+@api_bp.route('/datos_puestos')
+def datos_puestos():
+    return jsonify(turnos_puestos())
     
 @socketio.on('connect')
 def handle_connect():
