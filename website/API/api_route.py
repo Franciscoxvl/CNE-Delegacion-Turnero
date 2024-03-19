@@ -20,9 +20,6 @@ def cantidad_turnos(id_servicio):
 def asignar_turno(id):
     
     print("Asignando turno al puesto: ", id)
-    puesto = Puestos.query.get(id)
-    puesto.estado = "Libre"
-    db.session.commit()
 
     if Espera.query.count() == 0:
         print("La tabla esta vacia, no hay turnos pendientes")
@@ -56,6 +53,19 @@ def asignar_turno(id):
 
         print(nuevo_turno.codigo_turno + str(numero_turno))
 
+def consultar_turno(app):
+    from website.models import Espera
+
+    with app.app_context():
+        try:
+            turnos = Espera.query.count()
+            if turnos == 0:
+                return "No hay turnos pendientes"
+            else:
+                return "Hay turnos pendientes"
+        except Exception as e:
+            print(f"Error al consultar turnos: {str(e)}")
+
 def turnos_dia():
 
     datos = []
@@ -79,7 +89,19 @@ def turnos_dia():
 
     return datos
 
-#-------------------------RUTAS-------------------------------#
+def liberar_turno(id):
+
+    var = False
+    turnos = Turnos.query.filter_by(id_puesto = id).all()
+
+    if turnos:
+        for turno in turnos:
+            if turno.estado_turno == "Asignado":
+                turno.estado_turno = 'Completado'
+                db.session.commit() 
+    
+
+#---------------------------------------------RUTAS---------------------------------------------------#
     
 @api_bp.route('/')
 def principal():
@@ -114,7 +136,6 @@ def generar_turno_espera():
 
 @api_bp.route('/datos_graficos')
 def datos_graficos():
-
     return jsonify(turnos_dia())
     
 @socketio.on('connect')
@@ -124,21 +145,11 @@ def handle_connect():
 @socketio.on('liberar_puesto')
 def handle_liberar_puesto(data):
     # Lógica para liberar el puesto y asignar un nuevo turno
+    liberar_turno(data['puestoId'])
     asignar_turno(data['puestoId'])
 
 
-def consultar_turno(app):
-    from website.models import Espera
 
-    with app.app_context():
-        try:
-            turnos = Espera.query.count()
-            if turnos == 0:
-                return "No hay turnos pendientes"
-            else:
-                return "Hay turnos pendientes"
-        except Exception as e:
-            print(f"Error al consultar turnos: {str(e)}")
 
     
 

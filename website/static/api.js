@@ -151,7 +151,7 @@ const turno_assignado_mensaje = (turno) => {
 
             setTimeout(()=>{
                 volver_inicio();
-            }, 4000, turno)
+            }, 3000, turno)
             
         })
         .catch(error => console.error('Error al cargar el contenido:', error));       

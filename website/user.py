@@ -25,5 +25,4 @@ def profile():
 
     usuario = consultar_nombre(current_user.id)
 
-    print(current_user.is_authenticated)
     return render_template("admin.html", usuario = usuario, cd = cd, jfs = jfs, dcv = dcv, dfs = dfs)
