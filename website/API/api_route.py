@@ -1,10 +1,11 @@
 from flask import jsonify, request
 from . import api_bp
 from website import socketio
-from datetime import datetime
+from datetime import datetime, timedelta
+from website.models import Turnos, Espera, db, Puestos, Servicios
 
 def cantidad_turnos(id_servicio):
-    from website.models import Turnos, Espera
+    
     cantidad_turnos_asignados = Turnos.query.filter_by(id_servicio=id_servicio).count()
     cantidad_turnos_espera = Espera.query.filter_by(id_servicio=id_servicio).count()
     cantidad_turnos = cantidad_turnos_asignados + cantidad_turnos_espera
@@ -17,7 +18,7 @@ def cantidad_turnos(id_servicio):
     return cantidad_turnos
 
 def asignar_turno(id):
-    from website.models import Turnos, Espera, db, Puestos, Servicios
+    
     print("Asignando turno al puesto: ", id)
     puesto = Puestos.query.get(id)
     puesto.estado = "Libre"
@@ -54,7 +55,31 @@ def asignar_turno(id):
         db.session.commit()
 
         print(nuevo_turno.codigo_turno + str(numero_turno))
-    
+
+def turnos_dia():
+
+    datos = []
+
+    for i in range(0, 5):
+        fecha_actual = datetime.now().date()
+
+        dia_semana_actual = fecha_actual.weekday()
+
+        # Calcular la fecha de inicio de la semana actual
+        fecha_inicio_semana = fecha_actual - timedelta(days=dia_semana_actual)
+
+        # Calcular la fecha de fin de la semana actual
+        fecha_fin_semana = fecha_inicio_semana + timedelta(days=6)
+
+        dia_a_filtrar = i  # 1 representa el martes
+        dia_especifico = fecha_inicio_semana + timedelta(days=dia_a_filtrar)
+
+        # Filtrar los datos para la semana actual
+        datos.append(Turnos.query.filter(Turnos.fecha == dia_especifico).count())
+
+    return datos
+
+#-------------------------RUTAS-------------------------------#
     
 @api_bp.route('/')
 def principal():
@@ -67,7 +92,6 @@ def ejemplo():
 
 @api_bp.route('/generar_turno_espera', methods=['GET'])
 def generar_turno_espera():
-    from website.models import Servicios, Espera, db
 
     try:
         id_servicio = request.args.get('servicio')
@@ -87,6 +111,11 @@ def generar_turno_espera():
     except Exception as e:
         error = str(e)
         return error, 500
+
+@api_bp.route('/datos_graficos')
+def datos_graficos():
+
+    return jsonify(turnos_dia())
     
 @socketio.on('connect')
 def handle_connect():
