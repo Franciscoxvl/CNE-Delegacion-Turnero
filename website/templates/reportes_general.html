@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Admin{% endblock %}
+{% block scripts %} 
+
+
+<!-- Page level plugins -->
+<script src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.1/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Page level custom scripts -->
+<script src="../../static/vendor/demo/datatables-demo.js"></script>
+{% endblock %}
 
 {% block side_bar_list %}
 
@@ -36,19 +46,10 @@
 
 <!-- Nav Item - Utilities Collapse Menu -->
 <li class="nav-item">
-    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-        aria-expanded="true" aria-controls="collapseUtilities">
+    <a class="nav-link" href="{{url_for('user.reportes_g')}}" >
         <i class="fas fa-fw fa-table"></i>
         <span>Generacion de reportes</span>
     </a>
-    <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-        data-parent="#accordionSidebar">
-        <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Tipo</h6>
-            <a class="collapse-item" href="{{url_for('user.reportes_g')}}">General</a>
-            <a class="collapse-item" href="utilities-border.html">Personalizado</a>
-        </div>
-    </div>
 </li>
 
 <!-- Divider -->
@@ -74,12 +75,8 @@
 <div class="text-center d-none d-md-inline">
     <button class="rounded-circle border-0" id="sidebarToggle"></button>
 </div>
-
-
 </ul>
 <!-- End of Sidebar -->
-
-            
 {% endblock %}
 
 <!-- Begin Page Content -->
@@ -95,23 +92,29 @@
             <h6 class="m-0 font-weight-bold text-primary">Turnos</h6>
         </div>
 
-        <form>
-            <div class="form-group">
-              <label for="fechaInicio">Fecha de inicio:</label>
-              <input type="date" id="fechaInicio" name="fechaInicio" class="form-control">
+        <form class="d-flex align-items-center mt-5 ml-4 mb-0">
+            <div class="mr-4 form-group">
+              <label class="h6 text-secondary" for="fechaInicio">Fecha desde:</label>
+              <input class="border-secondary-subtle text-gray-500" type="date" id="fechaInicio" name="fechaInicio" class="form-control">
             </div>
+            <div class="form-group mr-4">
+              <label class="h6 text-secondary" for="fechaFin">Hasta:</label>
+              <input class="border-secondary-subtle text-gray-500" type="date" id="fechaFin" name="fechaFin" class="form-control">
+            </div>
+
             <div class="form-group">
-              <label for="fechaFin">Fecha de fin:</label>
-              <input type="date" id="fechaFin" name="fechaFin" class="form-control">
+                <button type="button" id="botonFiltrar" class="btn btn-primary rounded-circle">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
         </form>
-        <button type="button" id="botonFiltrar" class="btn btn-primary">Filtrar</button>
+        
           
-        <div class="card-body">
+        <div class="card-body text-secondary">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
-                        <tr>
+                        <tr class="bg-gradient-primary">
                             <th>ID</th>
                             <th>Servicio</th>
                             <th>Puesto</th>
@@ -121,7 +124,7 @@
                         </tr>
                     </thead>
                     <tfoot>
-                        <tr>
+                        <tr class="bg-gradient-primary">
                             <th>ID</th>
                             <th>Servicio</th>
                             <th>Puesto</th>
@@ -152,11 +155,3 @@
 
 {% endblock %}
 
-{% block scripts %} 
-<!-- Page level plugins -->
-<script src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.1/js/dataTables.bootstrap4.min.js"></script>
-
-<!-- Page level custom scripts -->
-<script src="../../static/vendor/demo/datatables-demo.js"></script>
-{% endblock %}

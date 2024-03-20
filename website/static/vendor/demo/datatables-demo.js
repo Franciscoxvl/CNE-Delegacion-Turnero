@@ -1,9 +1,11 @@
 $(document).ready(function() {
+
   var dataTable = $('#dataTable').DataTable({
     columnDefs: [
       { type: 'date', targets: 4 } // Especificar el índice de la columna de fecha
     ],
     language: {
+      lengthMenu: 'Turnos por pagina _MENU_  '.replace('_MENU_', '_MENU_ &nbsp;'),
       url: '//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json' // Traducción al español
     },
     paging: true,
@@ -11,7 +13,7 @@ $(document).ready(function() {
     ordering: true,
     info: true,
     lengthMenu: [10, 25, 50, 100],
-    processing: true,
+    processing: false,
     select: true
   });
 
@@ -39,9 +41,9 @@ $(document).ready(function() {
     filterByDateRange();
   });
 
-  // Eliminar evento draw (opcional, no es necesario para filtrar)
-  // dataTable.on('draw', function() {
-  //   filteredData = dataTable.rows({ search: 'applied' }).data().toArray();
-  //   console.log(filteredData);
-  // });
+   //Eliminar evento draw (opcional, no es necesario para filtrar)
+   dataTable.on('draw', function() {
+     filteredData = dataTable.rows({ search: 'applied' }).data().toArray();
+     console.log(filteredData);
+   });
 });

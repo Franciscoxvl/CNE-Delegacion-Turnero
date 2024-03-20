@@ -147,7 +147,7 @@ def generar_turno_espera():
         return error, 500
 
 @api_bp.route('/datos_diarios')
-def datos_graficos():
+def datos_diarios():
     return jsonify(turnos_dia())
 
 @api_bp.route('/datos_puestos')

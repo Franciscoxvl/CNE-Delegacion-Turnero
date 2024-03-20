@@ -144,14 +144,21 @@ const turno_assignado_mensaje = (turno) => {
             // Actualiza el contenido del div con el contenido importado
             div_requirements.innerHTML = html;
             div_requirements.style.width = "auto";
-            document.getElementById('resultado').innerHTML = turno;
+            let p_resultado = document.getElementById('resultado');
+            p_resultado.innerHTML = turno;
+
+            // Calcula el ancho del texto en el párrafo
+            let textWidth = p_resultado.offsetWidth;
+
+            // Establece el ancho del fondo blanco basado en el ancho del texto
+            p_resultado.style.width = textWidth*1.5 + 'px'; // Establece el ancho del párrafo
 
         }).then(()=>{
             div_requirements.style.opacity = "1";
 
             setTimeout(()=>{
                 volver_inicio();
-            }, 3000, turno)
+            }, 2700, turno)
             
         })
         .catch(error => console.error('Error al cargar el contenido:', error));       
