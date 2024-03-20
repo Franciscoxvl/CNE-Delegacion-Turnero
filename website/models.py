@@ -10,6 +10,7 @@ class Servicios(db.Model):
 
 class Puestos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    descripcion = db.Column(db.String(50), unique=True, nullable=False)
     estado = db.Column(db.String(20), nullable=False)
 
 class Turnos(db.Model):

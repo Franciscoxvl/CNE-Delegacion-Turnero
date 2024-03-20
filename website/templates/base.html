@@ -20,6 +20,9 @@
     <!-- Custom styles for this template-->
     <link href="../../static/vendor/sb-admin-2.css" rel="stylesheet">
 
+    <!-- Custom styles for this page -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+
 </head>
 
 
@@ -142,6 +145,7 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="../../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
@@ -149,15 +153,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages--> 
-    <script src="../../static/vendor/sb-admin-2.min.js"></script>   
-
-    <!-- Page level plugins --> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.0/chart.min.js"></script>
-    <!--<script src="../../static/vendor/chart.js/Chart.min.js"></script>-->
-
-    <!-- Page level custom scripts -->
-    <script src="../../static/vendor/demo/chart-area-demo.js"></script>
-    <script src="../../static/vendor/demo/chart-pie-demo.js"></script>
+    <script src="../../static/vendor/sb-admin-2.min.js"></script> 
+    
+    {% block scripts %} {% endblock %}
 
 </body>
 

@@ -45,7 +45,7 @@
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Tipo</h6>
-            <a class="collapse-item" href="utilities-color.html">General</a>
+            <a class="collapse-item" href="{{url_for('user.reportes_g')}}">General</a>
             <a class="collapse-item" href="utilities-border.html">Personalizado</a>
         </div>
     </div>
@@ -181,7 +181,7 @@
                 <!-- Card Header - Dropdown -->
                 <div
                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Resumen turnos</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Turnos</h6>
                     
                 </div>
                 <!-- Card Body -->
@@ -228,4 +228,14 @@
 
 </div>
 <!-- End of Main Content -->
+{% endblock %}
+
+{% block scripts %} 
+<!-- Page level plugins --> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.0/chart.min.js"></script>
+<!--<script src="../../static/vendor/chart.js/Chart.min.js"></script>-->
+
+<!-- Page level custom scripts -->
+<script src="../../static/vendor/demo/chart-area-demo.js"></script>
+<script src="../../static/vendor/demo/chart-pie-demo.js"></script>
 {% endblock %}

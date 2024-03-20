@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+
+{% block side_bar_list %}
+
+<!-- Nav Item - Dashboard -->
+<li class="nav-item active">
+    <a class="nav-link" href="{{url_for('user.profile')}}">
+        <i class="fas fa-fw fa-tachometer-alt"></i>
+        <span>Resumen</span></a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider">
+
+<!-- Heading -->
+<div class="sidebar-heading">
+    Administracion
+</div>
+
+<!-- Nav Item - Pages Collapse Menu -->
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+        aria-expanded="true" aria-controls="collapseTwo">
+        <i class="fas fa-fw fa-cog"></i>
+        <span>Manejo de usuarios</span>
+    </a>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Contenido</h6>
+            <a class="collapse-item" href="buttons.html">Crear usuario</a>
+            <a class="collapse-item" href="cards.html">Administrar usuarios</a>
+        </div>
+    </div>
+</li>
+
+<!-- Nav Item - Utilities Collapse Menu -->
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+        aria-expanded="true" aria-controls="collapseUtilities">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Generacion de reportes</span>
+    </a>
+    <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+        data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Tipo</h6>
+            <a class="collapse-item" href="{{url_for('user.reportes_g')}}">General</a>
+            <a class="collapse-item" href="utilities-border.html">Personalizado</a>
+        </div>
+    </div>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider">
+
+<!-- Heading -->
+<div class="sidebar-heading">
+    General
+</div>
+
+<!-- Nav Item - Pages Collapse Menu -->
+
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('user.profile_information')}}">
+        <i class="fas fa-fw fa-user"></i>
+        <span>Perfil</span></a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider d-none d-md-block">
+
+<!-- Sidebar Toggler (Sidebar) -->
+<div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+</div>
+
+
+</ul>
+<!-- End of Sidebar -->
+
+            
+{% endblock %}
+
+<!-- Begin Page Content -->
+{% block main_content %}
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-4 mt-3 text-gray-800 text-center">Reportes Generales</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Turnos</h6>
+        </div>
+
+        <form>
+            <div class="form-group">
+              <label for="fechaInicio">Fecha de inicio:</label>
+              <input type="date" id="fechaInicio" name="fechaInicio" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="fechaFin">Fecha de fin:</label>
+              <input type="date" id="fechaFin" name="fechaFin" class="form-control">
+            </div>
+        </form>
+        <button type="button" id="botonFiltrar" class="btn btn-primary">Filtrar</button>
+          
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Servicio</th>
+                            <th>Puesto</th>
+                            <th>Numero turno</th>
+                            <th>Fecha</th>
+                            <th>Estado turno</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Servicio</th>
+                            <th>Puesto</th>
+                            <th>Numero turno</th>
+                            <th>Fecha</th>
+                            <th>Estado turno</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for turno in turnos %}
+                        <tr>
+                            <td>{{turno.id}}</td>
+                            <td>{{turno.servicio.descripcion}}</td>
+                            <td>{{turno.puesto.descripcion}}</td>
+                            <td>{{turno.numero_turno}}</td>
+                            <td>{{turno.fecha}}</td>
+                            <td>{{turno.estado_turno}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+{% endblock %}
+
+{% block scripts %} 
+<!-- Page level plugins --> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.1/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/datetime/1.5.2/js/dataTables.dateTime.min.js"></script>
+
+
+
+<!-- Page level custom scripts -->
+<script src="../../static/vendor/demo/datatables-demo.js"></script>
+{% endblock %}
