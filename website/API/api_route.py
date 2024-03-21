@@ -1,4 +1,9 @@
-from flask import jsonify, request
+from flask import jsonify, request, send_file
+from docxtpl import DocxTemplate
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from docx.shared import Inches
 from . import api_bp
 from website import socketio
 from datetime import datetime, timedelta
@@ -111,8 +116,104 @@ def liberar_turno(id):
             if turno.estado_turno == "Asignado":
                 turno.estado_turno = 'Completado'
                 db.session.commit() 
-    
 
+def generacion_reporte():
+    # Obtener los datos del formulario
+    fecha_actual = datetime.now()
+    fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')   
+
+    # Cargar la plantilla de Word
+    doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte.docx')
+
+    # Renderizar la plantilla con los datos del formulario
+    turnos = Turnos.query.all()
+    total_turnos = Turnos.query.count()
+    total_turnos_cd = 0
+    total_turnos_jfs = 0
+    total_turnos_dcv = 0
+    total_turnos_dfs = 0
+    total_turnos_v1 = 0
+    total_turnos_v2 = 0
+    total_turnos_v3 = 0
+
+    for turno in turnos:
+        if turno.id_servicio == 1:
+            total_turnos_cd += 1
+        elif turno.id_servicio == 2:
+            total_turnos_jfs += 1
+        elif turno.id_servicio == 3:
+            total_turnos_dcv += 1
+        else:
+            total_turnos_dfs += 1
+    
+    for turno in turnos:
+        if turno.id_puesto == 1:
+            total_turnos_v1 += 1
+        elif turno.id_puesto == 2:
+            total_turnos_v2 += 1
+        else:
+            total_turnos_v3 += 1 
+
+    context = {
+        'fecha': fecha,
+        'total_turnos': total_turnos,
+        'total_turnos_cd' : total_turnos_cd,
+        'total_turnos_jfs' : total_turnos_jfs,
+        'total_turnos_dcv' : total_turnos_dcv,
+        'total_turnos_dfs' : total_turnos_dfs,
+        'total_turnos_v1' : total_turnos_v1,
+        'total_turnos_v2' : total_turnos_v2,
+        'total_turnos_v3' : total_turnos_v3
+    }
+
+    servicios = ['Cambios domicilio', 'Justificaciones', 'Duplicados CV', 'Desafiliaciones']
+    servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_dcv, total_turnos_dfs]
+    colores = ['#136CB2', '#17D3E3', '#1DEEC8', '#35EE94']
+    # Crear un gráfico utilizando matplotlib
+    plt.bar(servicios, servicios_valores, color=colores)
+    plt.xlabel('Servicios', fontweight='bold')
+    plt.ylabel('Cantidad Turnos', fontweight='bold')
+    plt.title('Turnos por servicio', fontweight='bold')
+
+    # Personalizar el estilo de las barras
+    plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
+    plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
+    plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
+    plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
+    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
+
+    # Guardar el gráfico como una imagen
+    plt.savefig('grafico_servicios.png')
+    plt.clf()
+    plt.close()
+
+
+    puestos = ['Ventanilla 1', 'Ventanilla 2', 'Ventanilla 3']
+    puestos_valores = [total_turnos_v1, total_turnos_v2, total_turnos_v3]
+    colores_puestos = ['#F1F139', '#108AF0', '#F53131']
+    # Crear un gráfico utilizando matplotlib
+    plt.bar(puestos, puestos_valores, color=colores_puestos)
+    plt.xlabel('Servicios', fontweight='bold')
+    plt.ylabel('Cantidad Turnos', fontweight='bold')
+    plt.title('Turnos por servicio', fontweight='bold')
+
+    # Personalizar el estilo de las barras
+    plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
+    plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
+    plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
+    plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
+    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
+
+    # # Guardar el gráfico como una imagen
+    plt.savefig('grafico_puestos.png')
+
+    # Insercion de graficos al documento
+    doc.render(context)
+    doc.add_picture('grafico_servicios.png', width=Inches(6))
+    doc.add_picture('grafico_puestos.png', width=Inches(6))
+
+    # Guardar el nuevo documento generado
+    doc.save('output.docx')
 #---------------------------------------------RUTAS---------------------------------------------------#
     
 @api_bp.route('/')
@@ -153,6 +254,11 @@ def datos_diarios():
 @api_bp.route('/datos_puestos')
 def datos_puestos():
     return jsonify(turnos_puestos())
+
+@api_bp.route('/generar_reporte')
+def generar_reporte():
+    generacion_reporte()
+    return send_file('../output.docx', as_attachment=True)
     
 @socketio.on('connect')
 def handle_connect():

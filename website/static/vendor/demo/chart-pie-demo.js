@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             // Configurar el gráfico utilizando los datos
             var ctx = document.getElementById("myPieChart").getContext('2d');
+            console.log(data)
             var myPieChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
