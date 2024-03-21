@@ -206,6 +206,8 @@ def generacion_reporte():
 
     # # Guardar el gráfico como una imagen
     plt.savefig('grafico_puestos.png')
+    plt.clf()
+    plt.close()
 
     # Insercion de graficos al documento
     doc.render(context)
