@@ -13,7 +13,10 @@ def load_user(id):
 @auth.route('/login')
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('user.profile'))
+        if current_user.rol == "admin":
+            return redirect(url_for('user.summary'))
+        else:
+            return redirect(url_for('user.profile'))
     
     else:
         return render_template("login.html")
@@ -46,11 +49,25 @@ def validacion_usuario():
         
         elif user.check_password(password):
             if recuerdame:
-                login_user(user, remember=recuerdame)
-                return redirect(url_for('user.profile'))
+                if user.rol == "recepcion":
+                    login_user(user, remember=recuerdame)
+                    return redirect(url_for('views.book'))
+                elif user.rol == "admin":
+                    login_user(user, remember=recuerdame)
+                    return redirect(url_for('user.summary'))
+                else:
+                    login_user(user, remember=recuerdame)
+                    return redirect(url_for('user.profile', rol = user.rol))
             else:
-                login_user(user)
-                return redirect(url_for('user.profile'))
+                if user.rol == "recepcion":
+                    login_user(user)
+                    return redirect(url_for('views.book'))
+                elif user.rol == "admin":
+                    login_user(user, remember=recuerdame)
+                    return redirect(url_for('user.summary'))
+                else:
+                    login_user(user)
+                    return redirect(url_for('user.profile', rol = user.rol))
         else:
             flash("La contraseña ingresada no es correcta!")
             return redirect(url_for('auth.login'))

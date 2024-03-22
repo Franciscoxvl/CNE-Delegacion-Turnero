@@ -46,10 +46,11 @@ class Espera(db.Model):
 class Usuario(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
     nombre = db.Column(db.String(50), nullable=False)
     apellido = db.Column(db.String(50), nullable=False)
     rol = db.Column(db.String(20), nullable=False)
+    puesto = db.Column(db.String(20), nullable=False)
 
 
     def set_password(self, password):

@@ -1,0 +1,184 @@
+{% extends "base_admin.html" %}
+{% block title %}Administracion de usuarios{% endblock %}
+{% block scripts %} 
+
+
+<!-- Page level plugins -->
+<script src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.1/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
+<script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+<script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip-utils.js"></script>
+
+<!-- Page level custom scripts -->
+<script src="../../static/user_management.js"></script>
+{% endblock %}
+
+{% block side_bar_list %}
+
+<!-- Nav Item - Dashboard -->
+<li class="nav-item active">
+    <a class="nav-link" href="{{url_for('user.summary')}}">
+        <i class="fas fa-fw fa-tachometer-alt"></i>
+        <span>Resumen</span></a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider">
+
+<!-- Heading -->
+<div class="sidebar-heading">
+    Administracion
+</div>
+
+<!-- Nav Item - Pages Collapse Menu -->
+<li class="nav-item">
+    <a class="nav-link" href="{{url_for('user.user_management')}}" >
+        <i class="fas fa-fw fa-cog"></i>
+        <span>Administracion de usuarios</span>
+    </a>
+</li>
+
+<!-- Nav Item - Utilities Collapse Menu -->
+<li class="nav-item">
+    <a class="nav-link" href="{{url_for('user.reportes_g')}}" >
+        <i class="fas fa-fw fa-table"></i>
+        <span>Generacion de reportes</span>
+    </a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider">
+
+<!-- Heading -->
+<div class="sidebar-heading">
+    General
+</div>
+
+<!-- Nav Item - Pages Collapse Menu -->
+
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('user.profile_information')}}">
+        <i class="fas fa-fw fa-user"></i>
+        <span>Perfil</span></a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider d-none d-md-block">
+</ul>
+<!-- End of Sidebar -->
+{% endblock %}
+
+<!-- Begin Page Content -->
+{% block main_content %}
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-4 mt-3 text-gray-800 text-center">Administración de Usuarios</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Usuarios</h6>
+        </div>        
+          
+        <div class="card-body text-secondary">
+
+            {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == "success" %}
+                    <div class="text-center alert alert-success alert-dismissible" role="alert">
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>                  
+                    </div>
+                    {% else %}
+                    <div class="text-center alert alert-danger alert-dismissible" role="alert">
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>                  
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <a href="{{ url_for('user.user_create')}}" class="mb-3 col-2 btn btn-primary btn-user btn-block">
+                <i class="mr-2 fas fa-fw fa-plus"></i>
+                <span>Nuevo usuario</span>
+            </a>
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="bg-gradient-light">
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr class="bg-gradient-light">
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Accion</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr>
+                            <td>{{usuario.id}}</td>
+                            <td>{{usuario.nombre}}</td>
+                            <td>{{usuario.apellido}}</td>
+                            <td>{{usuario.username}}</td>
+                            <td>{{usuario.rol}}</td>
+                            <td class="d-flex justify-content-center">
+                                <a href="{{ url_for('user.user_alter')}}" style="width: 20%; height: auto;" id="modificar_boton" class="btn btn-success rounded-circle mr-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+    
+                                <a href="#" style="width: 20%; height: auto;" id="eliminar-usuario-{{ usuario.id }}" class="btn btn-danger rounded-circle" data-toggle="modal" data-target="#EliminateModal" data-user-id="{{ usuario.id }}">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="EliminateModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Eliminar Usuario</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Esta seguro que desea eliminar el usuario de forma permanente?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a id="eliminarUsuarioBtn" class="btn btn-primary" href="#">Eliminar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- /.container-fluid -->
+
+{% endblock %}
+

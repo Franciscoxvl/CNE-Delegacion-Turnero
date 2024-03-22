@@ -49,9 +49,9 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{url_for('user.profile')}}">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{url_for('auth.login')}}">
                 <div class="sidebar-brand-text mx-2">
-                    <img style="max-width: 55%;" src="../../static/images/CNE-logo.png" alt="">
+                    <img style="max-width: 50%;" src="../../static/images/CNE-logo.png" alt="">
                 </div>
             </a>
 
@@ -95,7 +95,7 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="{{ url_for('user.profile_information')}}">
+                                <a class="dropdown-item" href="{{url_for('user.profile')}}">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Perfil
                                 </a>
