@@ -1,4 +1,4 @@
-from flask import jsonify, request, send_file
+from flask import jsonify, request, send_file, flash, render_template, url_for, redirect
 from docxtpl import DocxTemplate
 import matplotlib
 matplotlib.use('Agg')
@@ -7,7 +7,7 @@ from docx.shared import Inches
 from . import api_bp
 from website import socketio
 from datetime import datetime, timedelta
-from website.models import Turnos, Espera, db, Puestos, Servicios
+from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario
 
 def cantidad_turnos(id_servicio):
     
@@ -261,6 +261,35 @@ def datos_puestos():
 def generar_reporte():
     generacion_reporte()
     return send_file('../output.docx', as_attachment=True)
+
+@api_bp.route('/crear_usuario', methods=['POST'])
+def crear_usuario():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        nombre = request.form['nombre']
+        apellido = request.form['apellido']
+        rol = request.form['rol']
+        puesto = request.form['puesto']
+
+        usuario_existente = Usuario.query.filter_by(username=username).first()
+        if usuario_existente:
+                flash("El nombre de Usuario ya existe")
+                return redirect(url_for('user.user_create'))
+        else:
+                nuevo_usuario = Usuario(username = username, nombre = nombre, apellido = apellido, rol = rol, puesto= puesto)
+
+                nuevo_usuario.set_password(password)
+
+                db.session.add(nuevo_usuario)
+                db.session.commit()
+
+                flash("El Usuario fue creado correctamente", 'success')
+                return redirect(url_for('user.user_management'))    
+            
+    
+
+
     
 @socketio.on('connect')
 def handle_connect():

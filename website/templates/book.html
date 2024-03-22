@@ -34,7 +34,13 @@
               <p>CONSEJO NACIONAL ELECTORAL</p>
               <p>DELEGACION ELECTORAL PROVINCIAL DE</p>
               <p>PICHINCHA</p>
-          </div>                
+          </div> 
+
+          <p style="color: white; padding-inline: 1rem; border-radius: 2rem; background-color: rgb(33, 87, 122); font-weight: bold; font-size: 400%;">Bienvenida/o {{ current_user.nombre + " " + current_user.apellido }}</p>
+          
+          <button onclick="salir()" type="button" style="max-width: 25%; height: 10%;" class="btn-app">
+            <p style="font-size: 400%;" id="">Cerrar Sesion</p>
+          </button>
       </div>
       
       <div id="derecha" class="col-md-6 cont-content">

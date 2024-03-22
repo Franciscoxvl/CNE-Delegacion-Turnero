@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, render_template, jsonify, flash, redirect, url_for
+from flask import Blueprint, render_template, render_template, jsonify, flash, redirect, url_for, request
 from flask_login import  login_required, current_user
 from website.models import Turnos, Usuario, db
 from datetime import datetime
@@ -51,8 +51,10 @@ def profile():
     if current_user.rol == "admin":
         return render_template("profile_information.html", nombre = current_user.nombre, apellido = current_user.apellido, rol = current_user.rol, username = current_user.username)
     
-    else :
+    elif current_user.rol == "ventanilla" :
         return render_template("profile_information_user.html", nombre = current_user.nombre, apellido = current_user.apellido, rol = current_user.rol, username = current_user.username)
+    else: 
+        return render_template("book.html")
 
 
 @user.route('/profile_information')

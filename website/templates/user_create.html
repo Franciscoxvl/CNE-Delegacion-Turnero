@@ -16,6 +16,29 @@
         <div class="mt-4 col-md-12">
             <div class="card shadow h-100 py-2 mb-4">
                 <div class="card-body">
+
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == "success" %}
+                            <div class="text-center alert alert-success alert-dismissible" role="alert">
+                                <strong>{{ message }}</strong>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>                  
+                            </div>
+                            {% else %}
+                            <div class="text-center alert alert-danger alert-dismissible" role="alert">
+                                <strong>{{ message }}</strong>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>                  
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
                     <div class="row no-gutters d-flex justify-content-center flex-column align-items-center">
                         <h1 style="font-size: 2rem;" class="text-secondary mb-4">Formulario de registro</h1>
                         <div class="col-5 mb-2">
@@ -23,24 +46,24 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <form class="user" action="">
+                                            <form class="user" action="http://10.0.17.68:5000/api/crear_usuario" id="user-create-form" method="POST">
                                                 <div class="form-group row">
                                                     <div class="col-12 mb-3">
-                                                        <input type="text" class="form-control form-control-user" id="exampleFirstName"
-                                                            placeholder="Nombre">
+                                                        <input type="text" class="form-control form-control-user" id="nombre"
+                                                            placeholder="Nombre" name="nombre">
                                                     </div>
                                                     <div class="col-12">
-                                                        <input type="text" class="form-control form-control-user" id="exampleLastName"
-                                                            placeholder="Apellido">
+                                                        <input type="text" class="form-control form-control-user" id="apellido"
+                                                            placeholder="Apellido" name="apellido">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <input type="text" class="form-control form-control-user" id="new_user"
-                                                        placeholder="Usuario">
+                                                    <input type="text" class="form-control form-control-user" id="username"
+                                                        placeholder="Usuario" name="username">
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <select style="color: gray; font-size: 0.9rem; height: 3rem; border-radius: 5rem;" class="form-control custom-select" id="new_user">
+                                                    <select style="color: gray; font-size: 0.9rem; height: 3rem; border-radius: 5rem;" class="form-control custom-select" id="rol" name="rol">
                                                         
                                                         <option value="" disabled selected hidden>Seleccione un rol</option>
                                                         <option value="admin">Admin</option>
@@ -48,21 +71,28 @@
                                                         <option value="ventanilla">Ventanilla</option>
                                                     </select>
                                                 </div>
-                                                
-                                                <div class="form-group row">
-                                                    <div class="col-12 mb-3">
-                                                        <input type="password" class="form-control form-control-user"
-                                                            id="exampleInputPassword" placeholder="Password">
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <input type="password" class="form-control form-control-user"
-                                                            id="exampleRepeatPassword" placeholder="Repetir Password">
-                                                    </div>
+
+                                                <div class="form-group">
+                                                    <select style="color: gray; font-size: 0.9rem; height: 3rem; border-radius: 5rem;" class="form-control custom-select" id="puesto" name="puesto">
+                                                        
+                                                        <option value="" disabled selected hidden>Seleccione un puesto</option>
+                                                        <option value="administracion">Administración</option>
+                                                        <option value="recepcion">Recepción</option>
+                                                        <option value="ventanilla1">Ventanilla 1</option>
+                                                        <option value="ventanilla2">Ventanilla 2</option>
+                                                        <option value="ventanilla3">Ventanilla 3</option>
+                                                    </select>
                                                 </div>
+                                                
+                                                <div class="form-group">
+                                                    <input type="password" class="form-control form-control-user"
+                                                            id="password" placeholder="Password" name="password">
+                                                </div>
+
                                                 <hr>
-                                                <a href="#" style="font-weight: bold;" class="btn btn-primary btn-user btn-block">
+                                                <button style="font-weight: bold;" class="btn btn-primary btn-user btn-block" type="submit">
                                                     Crear Usuario
-                                                </a>
+                                                </button>
                                                 
                                             </form>
                                     </div>
@@ -87,5 +117,6 @@
 
 </div>
 <!-- End of Main Content -->
+<script src="../static/user_create.js"></script>
 {% endblock %}
 

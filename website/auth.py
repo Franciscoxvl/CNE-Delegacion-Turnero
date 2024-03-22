@@ -43,13 +43,13 @@ def validacion_usuario():
 
         user = Usuario.query.filter_by(username=username).first()
         
-        if not user:
+        if username != user.username:
             flash("Usuario no encontrado!")
             return redirect(url_for('auth.login'))
-        
+                
         elif user.check_password(password):
             if recuerdame:
-                if user.rol == "recepcion":
+                if user.rol == "recepcionista":
                     login_user(user, remember=recuerdame)
                     return redirect(url_for('views.book'))
                 elif user.rol == "admin":
@@ -59,7 +59,7 @@ def validacion_usuario():
                     login_user(user, remember=recuerdame)
                     return redirect(url_for('user.profile', rol = user.rol))
             else:
-                if user.rol == "recepcion":
+                if user.rol == "recepcionista":
                     login_user(user)
                     return redirect(url_for('views.book'))
                 elif user.rol == "admin":
