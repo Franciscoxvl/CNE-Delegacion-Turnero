@@ -77,9 +77,10 @@ def user_create():
 def user_management():
     return render_template("user_management.html", usuarios = consultar_usuarios())
 
-@user.route('/user_alter')
+@user.route('/user_alter/<id_user>')
 @login_required
-def user_alter():
+def user_alter(id_user):
+    print(id_user)
     return render_template("user_alter.html")
 
 @user.route('/user_remove/<int:id_user>', methods=['DELETE'])

@@ -57,7 +57,7 @@ def validacion_usuario():
                     return redirect(url_for('user.summary'))
                 else:
                     login_user(user, remember=recuerdame)
-                    return redirect(url_for('user.profile', rol = user.rol))
+                    return redirect(url_for('user.profile'))
             else:
                 if user.rol == "recepcionista":
                     login_user(user)
@@ -67,7 +67,7 @@ def validacion_usuario():
                     return redirect(url_for('user.summary'))
                 else:
                     login_user(user)
-                    return redirect(url_for('user.profile', rol = user.rol))
+                    return redirect(url_for('user.profile'))
         else:
             flash("La contraseña ingresada no es correcta!")
             return redirect(url_for('auth.login'))

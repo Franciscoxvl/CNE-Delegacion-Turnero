@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
 from flask_login import  login_required, current_user
 
 views = Blueprint('views', __name__)
@@ -7,7 +7,10 @@ views = Blueprint('views', __name__)
 @views.route('/')
 @login_required
 def book():
-    return render_template("book.html")
+    if current_user.rol == "recepcion":
+        return render_template("book.html")
+    else:
+        return redirect(url_for('auth.login'))
 
 @views.route('/visualizer')
 def visualizer():
