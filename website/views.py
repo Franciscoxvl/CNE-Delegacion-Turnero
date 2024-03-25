@@ -17,10 +17,6 @@ def visualizer():
 
     return render_template("visualizer.html")
 
-@views.route('/puestos')
-def puestos():
-
-    return render_template("puestos.html")
 
 @views.route('/favicon.ico')
 def favicon():

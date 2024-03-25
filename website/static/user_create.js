@@ -21,3 +21,35 @@ createButton.addEventListener('submit', (event) =>{
         alert("Todos los campos deben estar llenos")   
     }
 });
+
+const puestos = {
+    "Admin": ['Administracion'],
+    "Recepcion": ['Recepcion'],
+    "Ventanilla": ['Ventanilla1', 'Ventanilla2', 'Ventanilla3']
+};
+
+const opciones_puesto = () =>{
+    var rol = document.getElementById("rol");
+    var puesto = document.getElementById("puesto");
+    puesto.innerHTML = '';
+
+    var opciones = puestos[rol.value] || [];
+
+    const placeholder_select = document.createElement('option');
+    placeholder_select.textContent = "Seleccione un puesto";
+    placeholder_select.value = " ";
+    placeholder_select.hidden = true;
+    placeholder_select.selected = true;
+    placeholder_select.disabled = true;
+    puesto.appendChild(placeholder_select);    
+
+    opciones.forEach(opcion => {
+        const option = document.createElement('option');
+        option.textContent = opcion;
+        option.value = opcion;
+        puesto.appendChild(option);
+    });
+
+};
+
+rol.addEventListener('change', opciones_puesto);

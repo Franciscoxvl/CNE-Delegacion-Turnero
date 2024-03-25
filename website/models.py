@@ -37,11 +37,21 @@ class Turnos(db.Model):
 
 class Espera(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    id_turno = db.Column(db.String(10), nullable=False) 
     id_servicio = db.Column(db.Integer, db.ForeignKey('servicios.id'), nullable=False)
     fecha_solicitud = db.Column(db.Date, nullable=False)
     codigo_turno = db.Column(db.String(15), nullable=False)
 
     servicio = db.relationship('Servicios', backref='espera')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'id_turno': self.id_turno,
+            'servicio': self.servicio.descripcion,
+            'fecha_solicitud': self.fecha_solicitud.isoformat(),
+            'codigo_turno': self.codigo_turno  
+        }
 
 class Usuario(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,3 +68,7 @@ class Usuario(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def cambiar_password(self, nuevo_password):
+        self.set_password(nuevo_password)
+        db.session.commit()

@@ -42,27 +42,28 @@ def validacion_usuario():
         recuerdame = True if 'recuerdame' in request.form else False
 
         user = Usuario.query.filter_by(username=username).first()
+        print(user == None)
         
-        if username != user.username:
+        if user == None or username != user.username:
             flash("Usuario no encontrado!")
             return redirect(url_for('auth.login'))
                 
         elif user.check_password(password):
             if recuerdame:
-                if user.rol == "recepcionista":
+                if user.rol == "Recepcion":
                     login_user(user, remember=recuerdame)
                     return redirect(url_for('views.book'))
-                elif user.rol == "admin":
+                elif user.rol == "Admin":
                     login_user(user, remember=recuerdame)
                     return redirect(url_for('user.summary'))
                 else:
                     login_user(user, remember=recuerdame)
                     return redirect(url_for('user.profile'))
             else:
-                if user.rol == "recepcionista":
+                if user.rol == "Recepcion":
                     login_user(user)
                     return redirect(url_for('views.book'))
-                elif user.rol == "admin":
+                elif user.rol == "Admin":
                     login_user(user, remember=recuerdame)
                     return redirect(url_for('user.summary'))
                 else:

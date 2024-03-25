@@ -1,22 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}User{% endblock %}
 
-    <div>
-        <p style="font-weight: bold;" id="mensaje_servidor">Cargando....</p>
+{% block side_bar_list %}
+
+
+<!-- Heading -->
+<div class="sidebar-heading mt-2">
+    General
+</div>
+
+<!-- Nav Item - Pages Collapse Menu -->
+<li class="nav-item">
+    <a class="nav-link" href="{{url_for('user.profile')}}">
+        <i class="fas fa-fw fa-user"></i>
+        <span>Perfil</span>
+    </a>
+</li>
+
+<!-- Nav Item - Utilities Collapse Menu -->
+<li class="nav-item">
+    <a class="nav-link" href="{{url_for('user.asig_turnos', puesto = current_user.puesto)}}">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Asignacion de turnos</span>
+    </a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider d-none d-md-block">
+
+</ul>
+<!-- End of Sidebar -->
+
+            
+{% endblock %}
+
+<!-- Begin Page Content -->
+{% block main_content %}
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-flex flex-column align-items-center justify-content-between mb-4">
+        <h1 style="margin-inline: auto;" class="h3 mb-0 text-gray-800">Asignacion de turnos</h1>
+        <hr>
+        <h2 style="margin-inline: auto;" class="h4 mb-0 text-gray-800">{{ current_user.puesto }}</h1>
     </div>
-    <br>
-    <button onclick="liberarPuesto(1)" class="btn btn-primary">Liberar puesto 1</button>
-    <button onclick="liberarPuesto(2)" class="btn btn-primary">Liberar puesto 2</button>
-    <button onclick="liberarPuesto(3)" class="btn btn-primary">Liberar puesto 3</button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script src="static/puestos.js"></script>
-    
-</body>
-</html>
+    <div class="row">
+
+        <div class="col-5 mb-4 m-auto">
+            <div class="card shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-lg font-weight-bold text-primary text-uppercase mb-1 text-center">
+                                Turno Actual</div>
+
+                            <div id="turno_actual" style="font-size: 2rem;" class="text-secondary text-uppercase mb-5 mt-5 text-center">
+                                NA</div>
+
+                        </div>
+                    </div>
+                </div>
+
+                {% if puesto == "Ventanilla1" %}
+                <br>
+                <button style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(1)" class="btn btn-primary">Liberar turno</button>
+                {% elif puesto == "Ventanilla2" %}
+                <br>
+                <button style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(2)" class="btn btn-primary">Liberar turno</button>
+                {% else %}
+                <br>
+                <button style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(3)" class="btn btn-primary">Liberar turno</button>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- Content Column -->
+        <div class="col-12 mb-4">
+
+            <div class="card-body text-secondary">
+                <div class="table-responsive">
+                    <h1 class="h2 text-primary">Turnos en espera</h1>
+                    <table style="text-align: center;" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead style="color: white;">
+                            <tr class="bg-gradient-primary">
+                                <th style="text-align: center;">Codigo</th>
+                                <th style="text-align: center;">Servicio</th>
+                                <th style="text-align: center;">Fecha</th>
+                            </tr>
+                        </thead>
+                        <tfoot style="color: white;">
+                            <tr class="bg-gradient-primary">
+                                <th style="text-align: center;">Codigo</th>
+                                <th style="text-align: center;">Servicio</th>
+                                <th style="text-align: center;">Fecha</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+           
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+            {% if puesto == "Ventanilla1" %}
+            <script src="../static/puestos.js"></script>
+            {% elif puesto == "Ventanilla2" %}
+            <script src="../static/puestos_2.js"></script>
+            {% else %}
+            <script src="../static/puestos_3.js"></script>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+</div>
+<!-- End of Main Content -->
+{% endblock %}

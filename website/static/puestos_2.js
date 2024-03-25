@@ -19,8 +19,7 @@ socket.on('turno_espera', () => {
 });
 
 socket.on('turno_asignado', (data) => {
-    
-    if (data.puesto == 1){
+    if (data.puesto == 2){
         var codigo = data.codigo;
         var numero_turno = data.numero_turno;
         var turno = codigo + numero_turno;
@@ -28,7 +27,6 @@ socket.on('turno_asignado', (data) => {
         var turno_puesto = document.getElementById("turno_actual");
         turno_puesto.textContent = turno;
     }
-    
 });
 
 

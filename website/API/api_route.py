@@ -8,6 +8,7 @@ from . import api_bp
 from website import socketio
 from datetime import datetime, timedelta
 from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario
+from website.user import consultar_tabla
 
 def cantidad_turnos(id_servicio):
     
@@ -115,7 +116,7 @@ def liberar_turno(id):
         for turno in turnos:
             if turno.estado_turno == "Asignado":
                 turno.estado_turno = 'Completado'
-                db.session.commit() 
+                db.session.commit()
 
 def generacion_reporte():
     # Obtener los datos del formulario
@@ -216,6 +217,11 @@ def generacion_reporte():
 
     # Guardar el nuevo documento generado
     doc.save('output.docx')
+
+
+def siguiente_id_disponible():
+    max_id = db.session.query(db.func.max(Usuario.id)).scalar()
+    return max_id + 1 if max_id is not None else 1
 #---------------------------------------------RUTAS---------------------------------------------------#
     
 @api_bp.route('/')
@@ -239,7 +245,7 @@ def generar_turno_espera():
         fecha_hora_actual = ahora.strftime("%Y-%m-%d %H:%M:%S")
 
         numero_turno = cantidad_turnos(id_servicio)
-        nuevo_turno_espera = Espera(id_servicio=id_servicio, fecha_solicitud=fecha_hora_actual, codigo_turno=codigo)
+        nuevo_turno_espera = Espera(id_turno = numero_turno, id_servicio=id_servicio, fecha_solicitud=fecha_hora_actual, codigo_turno=codigo)
         db.session.add(nuevo_turno_espera)
         db.session.commit()
 
@@ -265,6 +271,7 @@ def generar_reporte():
 @api_bp.route('/crear_usuario', methods=['POST'])
 def crear_usuario():
     if request.method == 'POST':
+        nuevo_id = siguiente_id_disponible() 
         username = request.form['username']
         password = request.form['password']
         nombre = request.form['nombre']
@@ -277,7 +284,7 @@ def crear_usuario():
                 flash("El nombre de Usuario ya existe")
                 return redirect(url_for('user.user_create'))
         else:
-                nuevo_usuario = Usuario(username = username, nombre = nombre, apellido = apellido, rol = rol, puesto= puesto)
+                nuevo_usuario = Usuario(id = nuevo_id, username = username, nombre = nombre, apellido = apellido, rol = rol, puesto= puesto)
 
                 nuevo_usuario.set_password(password)
 
@@ -285,11 +292,50 @@ def crear_usuario():
                 db.session.commit()
 
                 flash("El Usuario fue creado correctamente", 'success')
-                return redirect(url_for('user.user_management'))    
+                return redirect(url_for('user.user_management'))
+
+@api_bp.route('/modificar_usuario', methods=['POST'])
+def modificar_usuario():
+    if request.method == 'POST':
+        id = request.form['id']
+        username = request.form['username']
+        nombre = request.form['nombre']
+        apellido = request.form['apellido']
+        rol = request.form['rol']
+        puesto = request.form['puesto']
+
+        usuario_modificar = Usuario.query.filter_by(id = id).first()
+
+        usuario_modificar.nombre = nombre
+        usuario_modificar.apellido = apellido
+        usuario_modificar.username = username
+        usuario_modificar.rol = rol
+        usuario_modificar.puesto = puesto
+        db.session.commit()
+        flash("El Usuario fue modificado correctamente", 'success')
+        return redirect(url_for('user.user_management'))
+
+@api_bp.route('/resetear_usuario', methods=['POST'])
+def resetear_usuario():
+    if request.method == 'POST':
+        id = request.form['id']
+        password = request.form['password']
+
+        usuario_modificar = Usuario.query.filter_by(id = id).first()
+        usuario_modificar.cambiar_password(password)
+
+        flash("La contraseña fue reseteada correctamente", 'success')
+        return redirect(url_for('user.user_management'))
+
+@api_bp.route('/actualizar_tabla')
+def actualizar_tabla():
+    turnos = consultar_tabla(2)
+    turnos_serial = []
+    for turno in turnos:
+        turnos_serial.append(turno.to_dict())
+
+    return jsonify(turnos_serial)
             
-    
-
-
     
 @socketio.on('connect')
 def handle_connect():

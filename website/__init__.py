@@ -16,7 +16,7 @@ def create_app():
     app = Flask(__name__)
     CORS(app, origins='*')
     app.config['SECRET_KEY'] = 'FValdez181222'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:123456789@localhost/turnos'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:123456789@localhost/turnos?charset=utf8mb4&collation=utf8mb4_bin'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['DEBUG'] = True
     app.config['ENV'] = 'development'
