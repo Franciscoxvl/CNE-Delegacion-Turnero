@@ -34,7 +34,7 @@ def asignar_turno(id):
         nuevo_turno = Espera.query.first()
         id_servicio = nuevo_turno.id_servicio
         id_puesto = id
-        numero_turno = Turnos.query.filter_by(id_servicio=id_servicio).count() + 1
+        numero_turno = nuevo_turno.id_turno
         fecha = nuevo_turno.fecha_solicitud
         estado_turno = 'Asignado'
 
@@ -55,6 +55,11 @@ def asignar_turno(id):
 
         #Eliminar de la tabla espera
         db.session.delete(nuevo_turno)
+        db.session.commit()
+
+        turnos_restantes = Espera.query.order_by(Espera.id).all()
+        for i, turno in enumerate(turnos_restantes, start=1):
+            turno.id = i
         db.session.commit()
 
         print(nuevo_turno.codigo_turno + str(numero_turno))
@@ -238,6 +243,9 @@ def generar_turno_espera():
 
     try:
         id_servicio = request.args.get('servicio')
+        preferencial = request.args.get('preferencial')
+        print(preferencial)
+
         servicio = Servicios.query.all()
 
         codigo  = servicio[int(id_servicio) - 1].codigo
@@ -245,14 +253,31 @@ def generar_turno_espera():
         fecha_hora_actual = ahora.strftime("%Y-%m-%d %H:%M:%S")
 
         numero_turno = cantidad_turnos(id_servicio)
-        nuevo_turno_espera = Espera(id_turno = numero_turno, id_servicio=id_servicio, fecha_solicitud=fecha_hora_actual, codigo_turno=codigo)
-        db.session.add(nuevo_turno_espera)
-        db.session.commit()
+
+        if preferencial == "true":
+            print("Entrando preferencial")
+            turnos_espera = Espera.query.order_by(Espera.id.desc()).first()
+
+            registros_actualizar = Espera.query.order_by(Espera.id.desc()).all()
+            # Actualiza los índices de los registros restantes
+            for registro in registros_actualizar:
+                registro.id += 1
+                db.session.commit()
+            
+            nuevo_turno_espera = Espera(id = 1, id_turno = numero_turno, id_servicio=id_servicio, fecha_solicitud=fecha_hora_actual, codigo_turno=codigo)
+            db.session.add(nuevo_turno_espera)
+            db.session.commit()
+        
+        else:
+            nuevo_turno_espera = Espera(id_turno = numero_turno, id_servicio=id_servicio, fecha_solicitud=fecha_hora_actual, codigo_turno=codigo)
+            db.session.add(nuevo_turno_espera)
+            db.session.commit()
 
         return codigo + str(numero_turno)
     
     except Exception as e:
         error = str(e)
+        print(error)
         return error, 500
 
 @api_bp.route('/datos_diarios')

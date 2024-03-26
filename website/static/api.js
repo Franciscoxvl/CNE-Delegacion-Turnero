@@ -10,16 +10,22 @@ const generar_turno = async (tipo, servicio) => {
 };
 
 const obtener_turno = async (servicio) => {
+    const checkedbox = document.getElementById("preferencial");
+    const preferencial = checkedbox.checked ? true : false;
+
     const url = new URL('http://10.0.17.68:5000/api/generar_turno_espera');
     url.searchParams.append('servicio', servicio);
+    url.searchParams.append('preferencial', preferencial);
 
     try {
         const response = await fetch(url);
         if (!response.ok) {
+            console.log(response)
             throw new Error('Error en la solicitud');
         }
 
         const data = await response.text();
+        checkedbox.checked = false;
         return data;
 
     } catch (error) {
