@@ -9,6 +9,7 @@ from website import socketio
 from datetime import datetime, timedelta
 from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario
 from website.user import consultar_tabla
+from sqlalchemy import text
 
 def cantidad_turnos(id_servicio):
     
@@ -25,8 +26,6 @@ def cantidad_turnos(id_servicio):
 
 def asignar_turno(id):
     
-    print("Asignando turno al puesto: ", id)
-
     if Espera.query.count() == 0:
         print("La tabla esta vacia, no hay turnos pendientes")
     else:
@@ -61,8 +60,6 @@ def asignar_turno(id):
         for i, turno in enumerate(turnos_restantes, start=1):
             turno.id = i
         db.session.commit()
-
-        print(nuevo_turno.codigo_turno + str(numero_turno))
 
 def consultar_turno(app):
     from website.models import Espera
@@ -123,54 +120,100 @@ def liberar_turno(id):
                 turno.estado_turno = 'Completado'
                 db.session.commit()
 
-def generacion_reporte():
+def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     # Obtener los datos del formulario
     fecha_actual = datetime.now()
     fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')   
 
     # Cargar la plantilla de Word
-    doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte.docx')
+    if fecha_inicio == 0 or fecha_fin == 0: 
+        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte.docx')
 
-    # Renderizar la plantilla con los datos del formulario
-    turnos = Turnos.query.all()
-    total_turnos = Turnos.query.count()
-    total_turnos_cd = 0
-    total_turnos_jfs = 0
-    total_turnos_dcv = 0
-    total_turnos_dfs = 0
-    total_turnos_v1 = 0
-    total_turnos_v2 = 0
-    total_turnos_v3 = 0
+        # Renderizar la plantilla con los datos del formulario
+        turnos = Turnos.query.all()
+        total_turnos = Turnos.query.count()
+        total_turnos_cd = 0
+        total_turnos_jfs = 0
+        total_turnos_dcv = 0
+        total_turnos_dfs = 0
+        total_turnos_v1 = 0
+        total_turnos_v2 = 0
+        total_turnos_v3 = 0
 
-    for turno in turnos:
-        if turno.id_servicio == 1:
-            total_turnos_cd += 1
-        elif turno.id_servicio == 2:
-            total_turnos_jfs += 1
-        elif turno.id_servicio == 3:
-            total_turnos_dcv += 1
-        else:
-            total_turnos_dfs += 1
-    
-    for turno in turnos:
-        if turno.id_puesto == 1:
-            total_turnos_v1 += 1
-        elif turno.id_puesto == 2:
-            total_turnos_v2 += 1
-        else:
-            total_turnos_v3 += 1 
+        for turno in turnos:
+            if turno.id_servicio == 1:
+                total_turnos_cd += 1
+            elif turno.id_servicio == 2:
+                total_turnos_jfs += 1
+            elif turno.id_servicio == 3:
+                total_turnos_dcv += 1
+            else:
+                total_turnos_dfs += 1
+        
+        for turno in turnos:
+            if turno.id_puesto == 1:
+                total_turnos_v1 += 1
+            elif turno.id_puesto == 2:
+                total_turnos_v2 += 1
+            else:
+                total_turnos_v3 += 1 
 
-    context = {
-        'fecha': fecha,
-        'total_turnos': total_turnos,
-        'total_turnos_cd' : total_turnos_cd,
-        'total_turnos_jfs' : total_turnos_jfs,
-        'total_turnos_dcv' : total_turnos_dcv,
-        'total_turnos_dfs' : total_turnos_dfs,
-        'total_turnos_v1' : total_turnos_v1,
-        'total_turnos_v2' : total_turnos_v2,
-        'total_turnos_v3' : total_turnos_v3
-    }
+        context = {
+            'fecha': fecha,
+            'total_turnos': total_turnos,
+            'total_turnos_cd' : total_turnos_cd,
+            'total_turnos_jfs' : total_turnos_jfs,
+            'total_turnos_dcv' : total_turnos_dcv,
+            'total_turnos_dfs' : total_turnos_dfs,
+            'total_turnos_v1' : total_turnos_v1,
+            'total_turnos_v2' : total_turnos_v2,
+            'total_turnos_v3' : total_turnos_v3
+        }
+    else:
+        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte_personalizado.docx')
+        # Renderizar la plantilla con los datos del formulario
+        turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).all()
+        total_turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).count()
+        total_turnos_cd = 0
+        total_turnos_jfs = 0
+        total_turnos_dcv = 0
+        total_turnos_dfs = 0
+        total_turnos_v1 = 0
+        total_turnos_v2 = 0
+        total_turnos_v3 = 0
+
+        for turno in turnos:
+            if turno.id_servicio == 1:
+                total_turnos_cd += 1
+            elif turno.id_servicio == 2:
+                total_turnos_jfs += 1
+            elif turno.id_servicio == 3:
+                total_turnos_dcv += 1
+            else:
+                total_turnos_dfs += 1
+        
+        for turno in turnos:
+            if turno.id_puesto == 1:
+                total_turnos_v1 += 1
+            elif turno.id_puesto == 2:
+                total_turnos_v2 += 1
+            else:
+                total_turnos_v3 += 1 
+
+        context = {
+            'fecha': fecha,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin,
+            'total_turnos': total_turnos,
+            'total_turnos_cd' : total_turnos_cd,
+            'total_turnos_jfs' : total_turnos_jfs,
+            'total_turnos_dcv' : total_turnos_dcv,
+            'total_turnos_dfs' : total_turnos_dfs,
+            'total_turnos_v1' : total_turnos_v1,
+            'total_turnos_v2' : total_turnos_v2,
+            'total_turnos_v3' : total_turnos_v3
+        }
+
 
     servicios = ['Cambios domicilio', 'Justificaciones', 'Duplicados CV', 'Desafiliaciones']
     servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_dcv, total_turnos_dfs]
@@ -244,7 +287,6 @@ def generar_turno_espera():
     try:
         id_servicio = request.args.get('servicio')
         preferencial = request.args.get('preferencial')
-        print(preferencial)
 
         servicio = Servicios.query.all()
 
@@ -254,9 +296,12 @@ def generar_turno_espera():
 
         numero_turno = cantidad_turnos(id_servicio)
 
+        if Espera.query.count() == 0:
+            query = text(f"ALTER TABLE {Espera.__tablename__} AUTO_INCREMENT = 1;")
+            db.session.execute(query)
+            db.session.commit()
+
         if preferencial == "true":
-            print("Entrando preferencial")
-            turnos_espera = Espera.query.order_by(Espera.id.desc()).first()
 
             registros_actualizar = Espera.query.order_by(Espera.id.desc()).all()
             # Actualiza los índices de los registros restantes
@@ -288,10 +333,26 @@ def datos_diarios():
 def datos_puestos():
     return jsonify(turnos_puestos())
 
-@api_bp.route('/generar_reporte')
+@api_bp.route('/generar_reporte', methods=['GET'])
 def generar_reporte():
-    generacion_reporte()
-    return send_file('../output.docx', as_attachment=True)
+    if request.method == 'GET':
+        try:
+            fecha_inicio = request.args.get('fecha_inicio')
+            fecha_fin = request.args.get('fecha_fin')
+
+            if len(fecha_inicio) == 0 or len(fecha_fin) == 0:
+                generacion_reporte()
+                return send_file('../output.docx', as_attachment=True)
+            else:
+                generacion_reporte(fecha_inicio, fecha_fin)
+                return send_file('../output.docx', as_attachment=True)
+
+        except Exception as e:
+            error = str(e)
+            print(error)
+            return error, 500
+
+    
 
 @api_bp.route('/crear_usuario', methods=['POST'])
 def crear_usuario():

@@ -31,11 +31,11 @@
         <form class="d-flex align-items-center mt-5 ml-4 mb-0">
             <div class="mr-4 form-group">
               <label class="h6 text-secondary" for="fechaInicio">Fecha desde:</label>
-              <input class="border-secondary-subtle text-gray-500" type="date" id="fechaInicio" name="fechaInicio" class="form-control">
+              <input class="border-secondary-subtle text-gray-700" type="date" id="fechaInicio" name="fechaInicio" class="form-control">
             </div>
             <div class="form-group mr-4">
               <label class="h6 text-secondary" for="fechaFin">Hasta:</label>
-              <input class="border-secondary-subtle text-gray-500" type="date" id="fechaFin" name="fechaFin" class="form-control">
+              <input class="border-secondary-subtle text-gray-700" type="date" id="fechaFin" name="fechaFin" class="form-control">
             </div>
 
             <div class="form-group">
@@ -44,14 +44,21 @@
                 </button>
             </div>
 
-            <div class="form-group ml-auto mr-4">
-                <button type="button" id="botonReportesG" class="btn btn-primary">
-                    <i class="fas fa-download"></i>
-                    Generar reporte general
-                </button>
+            <div class="form-group d-flex flex-column ml-auto">
+                <div class="ml-auto mr-4 mb-3">
+                    <button type="button" id="botonReportesG" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Generar reporte general
+                    </button>
+                </div>
+    
+                <div class="ml-auto mr-4">
+                    <button type="button" id="botonReportesP" class="btn btn-success d-block text-wrap">
+                        <i class="fas fa-download"></i>
+                        Generar reporte personalizado
+                    </button>
+                </div>
             </div>
-
-
         </form>
         
           
