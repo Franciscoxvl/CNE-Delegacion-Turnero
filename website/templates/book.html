@@ -25,7 +25,7 @@
   <div class="container-own">
     <div id="main-container" class="container-fluid p-0 cont-div-2">
       <!-- Lado Izquierdo - Azul -->
-      <div id="izquierda" class="col-md-6 cont-content">
+      <div id="izquierda" class="col-md-6 cont-content mb-3">
           <div class="img-content">
               <img src="../static/images/CNE-logo.png" alt="logo_CNE" class="image-format">
           </div>
@@ -36,33 +36,58 @@
               <p>PICHINCHA</p>
           </div> 
 
-          <p style="color: white; padding-inline: 1rem; border-radius: 2rem; background-color: rgb(33, 87, 122); font-weight: bold; font-size: 400%;">Bienvenida/o {{ current_user.nombre + " " + current_user.apellido }}</p>
+          <p style="color: white; padding-inline: 1rem; border-radius: 2rem; background-color: rgb(33, 87, 122); font-weight: bold; font-size: 300%;">Bienvenida/o {{ current_user.nombre + " " + current_user.apellido }}</p>
           
-          <button onclick="salir()" type="button" style="max-width: 25%; height: 10%;" class="btn-app">
-            <p style="font-size: 400%;" id="">Cerrar Sesion</p>
+          <button onclick="salir()" type="button" style="max-width: 40%; max-height: 10%;" class="btn-app">
+            <p style="font-size: 3rem;" id="">Cerrar Sesion</p>
           </button>
       </div>
       
-      <div id="derecha" class="col-md-6 cont-content">
-          <button onclick="show_message('cambios_domicilio')" type="button" class="btn-app">
-            <p id="cedulacion">CAMBIO DE DOMICILIO</p>
-          </button>
+      <div id="derecha" class="col-6 cont-content mt-2">
+        <div class="row">
+          <div class="col">
+            <button onclick="show_message('cambios_domicilio')" type="button" class="btn-app">
+              <p id="cedulacion">CAMBIO DE DOMICILIO</p>
+            </button>
+          </div>
 
-          <button onclick="show_message('justificaciones')" type="button" class="btn-app">
-            <p id="multas">JUSTIFICACIONES</p>
-          </button>
+          <div class="col">
+            <button onclick="show_message('justificaciones')" type="button" class="btn-app">
+              <p id="multas">JUSTIFICACIONES</p>
+            </button>
+          </div>
+        </div>
 
-          <button onclick="show_message('certificados_votacion')" type="button" class="btn-app">
-            <p id="certificados">DUPLICADOS PAPELETA DE VOTACION</p>
-          </button>
+        <div class="row">
+          <div class="col">
+            <button onclick="show_message('certificados_votacion')" type="button" class="btn-app">
+              <p id="certificados">DUPLICADOS PAPELETA DE VOTACION</p>
+            </button>
+          </div>
 
-          <button onclick="show_message('desafiliaciones')" type="button" class="btn-app">
-            <p id="certificados">DESAFILIACIONES</p>
-          </button>
+          <div class="col">
+            <button onclick="show_message('desafiliaciones')" type="button" class="btn-app">
+              <p id="certificados">DESAFILIACIONES</p>
+            </button>
+          </div>
+        </div>
 
-          <button onclick="show_message('online')" type="button" class="btn-app">
-            <p id="certificados">SERVICIOS EN LINEA</p>
-          </button>
+        <div class="row">
+          <div class="col">
+            <button onclick="show_message('online')" type="button" class="btn-app">
+              <p id="certificados">SERVICIOS EN LINEA</p>
+            </button>
+          </div>
+
+          <div class="col">
+            <div style="width: 25rem; height: 18rem; background-color:#a52121; border-radius: 1rem;" class="d-flex flex-column justify-content-center align-items-center">
+              <label class="mb-3 text-center" for="preferencial">
+                <p style="margin: 0 auto; font-size: 3rem; color: white;">MARQUE SI ES PREFERENCIAL</p></label>
+              <input id="preferencial" style="transform: scale(1.5);" name="preferencial" type="checkbox">
+            </div>
+          </div>
+          
+        </div>
 
       </div>
     </div>

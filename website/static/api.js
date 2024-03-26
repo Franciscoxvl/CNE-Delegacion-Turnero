@@ -43,11 +43,6 @@ const show_message = (kind_message) => {
             main_div.style.pointerEvents = "none";
         });
 
-        main_container.style.width ="0%";
-        main_container.style.margin = "0";
-        div_requirements.style.width = "90%";
-        div_requirements.style.height = "auto";
-
         switch (kind_message){
 
             case 'cambios_domicilio':
@@ -56,7 +51,19 @@ const show_message = (kind_message) => {
                 .then(response => response.text())
                 .then(html => {
                     // Actualiza el contenido del div con el contenido importado
+                    main_container.style.width ="0%";
+                    main_container.style.margin = "0";
+                    div_requirements.style.width = "90%";
+                    
+                    if(window.innerHeight < 768){
+                        div_requirements.style.height = "69%";
+                    }else{
+                        div_requirements.style.height = "55%";
+                    };
+
                     div_requirements.innerHTML = html;
+
+                    
                 })
                 .catch(error => console.error('Error al cargar el contenido:', error));
                 break;
@@ -67,7 +74,20 @@ const show_message = (kind_message) => {
                 .then(response => response.text())
                 .then(html => {
                     // Actualiza el contenido del div con el contenido importado
+                    
+                    main_container.style.width ="0%";
+                    main_container.style.margin = "0";
+                    div_requirements.style.width = "80%";
                     div_requirements.innerHTML = html;
+                    let boton = document.getElementById("contenedor-btn-mensajes")
+                    if(window.innerHeight < 768){
+                        div_requirements.style.height = "80%";
+                    }else{
+                        div_requirements.style.height = "75%";
+                    };
+                    
+                    boton.style.marginTop = "4rem";
+
                 })
                 .catch(error => console.error('Error al cargar el contenido:', error));
                 break;
@@ -78,6 +98,18 @@ const show_message = (kind_message) => {
                 .then(response => response.text())
                 .then(html => {
                     // Actualiza el contenido del div con el contenido importado
+                    main_container.style.width ="0%";
+                    main_container.style.margin = "0";
+                    div_requirements.style.width = "90%";
+                    div_requirements.style.height = "90%";
+                    if(window.innerHeight < 768){
+                        div_requirements.style.fontSize = "1.7rem";
+                    }else{
+                        div_requirements.style.fontSize = "2.3rem";
+                    };
+                    
+                    div_requirements.style.padding = "3rem";
+
                     div_requirements.innerHTML = html;
                 })
                 .catch(error => console.error('Error al cargar el contenido:', error));
@@ -89,7 +121,21 @@ const show_message = (kind_message) => {
                 .then(response => response.text())
                 .then(html => {
                     // Actualiza el contenido del div con el contenido importado
+
+                    main_container.style.width ="0%";
+                    main_container.style.margin = "0";
+                    div_requirements.style.width = "90%";
                     div_requirements.innerHTML = html;
+                    let boton = document.getElementById("contenedor-btn-mensajes")
+
+                    if(window.innerHeight < 768){
+                        div_requirements.style.height = "70%";
+                    }else{
+                        div_requirements.style.height = "58%";
+                   
+                    };
+                    
+                    
                 })
                 .catch(error => console.error('Error al cargar el contenido:', error));
                 break;
@@ -100,6 +146,22 @@ const show_message = (kind_message) => {
                 .then(response => response.text())
                 .then(html => {
                     // Actualiza el contenido del div con el contenido importado
+
+                    main_container.style.width ="0%";
+                    main_container.style.margin = "0";
+                    div_requirements.style.width = "90%";
+                    div_requirements.innerHTML = html;
+                    let boton = document.getElementById("contenedor-btn-mensajes")
+
+                    if(window.innerHeight < 768){
+                        div_requirements.style.height = "80%";
+                    }else{
+                        div_requirements.style.height = "58%";
+                   
+                    };
+                    
+                    boton.style.marginTop = "6rem";
+
                     div_requirements.innerHTML = html;
                 })
                 .catch(error => console.error('Error al cargar el contenido:', error));
@@ -126,7 +188,7 @@ const volver_inicio = () =>{
 
     setTimeout(()=>{
         div_requirements.style.width = "0%";
-        main_container.style.width ="auto";
+        main_container.style.width ="100%";
         main_container.style.margin = "0 auto";
         main_container.style.opacity = "1";
 
@@ -143,22 +205,30 @@ const turno_assignado_mensaje = (turno) => {
         .then(html => {
             // Actualiza el contenido del div con el contenido importado
             div_requirements.innerHTML = html;
-            div_requirements.style.width = "auto";
+            
             let p_resultado = document.getElementById('resultado');
             p_resultado.innerHTML = turno;
+
+            if(window.innerHeight < 768){
+                div_requirements.style.width = "40%";
+                div_requirements.style.height = "55%"
+            }else{
+                div_requirements.style.width = "50%";
+                div_requirements.style.height = "40%"
+            };
 
             // Calcula el ancho del texto en el párrafo
             let textWidth = p_resultado.offsetWidth;
 
             // Establece el ancho del fondo blanco basado en el ancho del texto
-            p_resultado.style.width = textWidth*1.5 + 'px'; // Establece el ancho del párrafo
+            p_resultado.style.width = textWidth*2.5 + 'px'; // Establece el ancho del párrafo
 
         }).then(()=>{
             div_requirements.style.opacity = "1";
 
             setTimeout(()=>{
                 volver_inicio();
-            }, 2700, turno)
+            }, 2500, turno)
             
         })
         .catch(error => console.error('Error al cargar el contenido:', error));       
