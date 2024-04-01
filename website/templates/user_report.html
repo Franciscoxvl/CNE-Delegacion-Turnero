@@ -1,0 +1,74 @@
+{% extends "base_admin.html" %}
+{% block title %}User_report{% endblock %}
+{% block scripts %} 
+
+<!-- Page level custom scripts -->
+<script src="../../static/user_report.js"></script>
+{% endblock %}
+
+<!-- Begin Page Content -->
+{% block main_content %}
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 style="margin-inline: auto;" class="h3 mb-0 text-gray-800">Generacion de reportes</h1>
+    </div>
+
+    <div class="row">
+
+        <!-- Content Column -->
+        <div class="col-lg-12 mb-4">
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-2">
+                    <h6 style="font-size: 1.5rem;" class="m-0 font-weight-bold text-info text-center">Reportes</h6>
+                </div>
+                
+                <form class="d-flex flex-column align-items-center mt-5 ml-4 mb-0">
+
+                    <input type="text" value="{{ user_rol }}" id="rol" name="rol" hidden>
+                    <input type="text" value="{{ id_user }}" id="id_user" name="rol" hidden>
+
+                    <div class="d-flex">
+                        <div class="mr-4 form-group">
+                            <label class="h6 text-secondary" for="fechaInicio">Fecha desde:</label>
+                            <input class="border-secondary-subtle text-gray-700" type="date" id="fechaInicio" name="fechaInicio" class="form-control">
+                          </div>
+                          <div class="form-group mr-4">
+                            <label class="h6 text-secondary" for="fechaFin">Hasta:</label>
+                            <input class="border-secondary-subtle text-gray-700" type="date" id="fechaFin" name="fechaFin" class="form-control">
+                          </div>
+
+                    </div>
+                    
+                    
+        
+                    <div class="form-group d-flex flex-column justify-content-center align-items-center">
+                        <div class="mr-4 mb-3">
+                            <button type="button" id="botonReportesG" class="btn btn-primary">
+                                <i class="fas fa-download"></i>
+                                Generar reporte general
+                            </button>
+                        </div>
+            
+                        <div class="mr-4">
+                            <button type="button" id="botonReportesP" class="btn btn-success d-block text-wrap">
+                                <i class="fas fa-download"></i>
+                                Generar reporte personalizado
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+</div>
+<!-- End of Main Content -->
+{% endblock %}

@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, render_template, jsonify, flash, redirect, url_for, request, after_this_request
 from flask_login import  login_required, current_user
 from website.models import Turnos, Usuario, db, Espera
+import matplotlib.pyplot as plt
 from datetime import datetime
+from docxtpl import DocxTemplate
+from docx.shared import Inches
 
 user = Blueprint('user', __name__)
 
@@ -51,7 +54,6 @@ def summary():
         return redirect(url_for('user.profile'))
     
 
-
 @user.route('/profile')
 @login_required
 def profile():
@@ -83,7 +85,6 @@ def reportes_g():
          
         return redirect(url_for('user.profile'))
 
-    
 
 @user.route('/user_create')
 @login_required
@@ -97,6 +98,7 @@ def user_create():
     
     else:
         return redirect(url_for('user.profile'))
+
 
 @user.route('/user_management')
 @login_required
@@ -187,6 +189,21 @@ def asig_turnos(puesto):
     
     elif current_user.rol == "Ventanilla":
         return render_template("puestos.html", puesto = puesto)
+    
+    else:
+        return redirect(url_for('user.profile'))
+
+@user.route('/user_report/<id_user>')
+@login_required
+def user_report(id_user):
+
+    user = Usuario.query.filter_by(id=id_user).first()
+    rol = user.puesto
+
+    if current_user.rol == "Admin":
+        return render_template("user_report.html", user_rol = rol)
+    elif current_user.rol == "Ventanilla" :
+        return redirect(url_for('user.profile'))
     
     else:
         return redirect(url_for('user.profile'))

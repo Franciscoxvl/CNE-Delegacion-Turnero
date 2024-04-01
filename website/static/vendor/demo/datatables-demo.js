@@ -10,7 +10,7 @@ $(document).ready(function() {
     ],
     language: {
       lengthMenu: 'Turnos por pagina _MENU_  '.replace('_MENU_', '_MENU_ &nbsp;'),
-      url: '//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json' 
+      url: 'static/vendor/Spanish.json' 
     },
     paging: true,
     searching: true,

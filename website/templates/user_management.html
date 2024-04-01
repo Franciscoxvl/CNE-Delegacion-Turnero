@@ -144,17 +144,23 @@
                             <td>{{usuario.rol}}</td>
                             <td style="margin-inline: auto;" class="d-flex justify-content-center">
 
-                                <a title="Modificar usuario" href="{{ url_for('user.user_alter', id_user = usuario.id)}}" style="width: 15%; height: auto;" id="modificar-usuario-{{ usuario.id }}" class="btn btn-success rounded-circle mr-1">
+                                <a title="Modificar usuario" href="{{ url_for('user.user_alter', id_user = usuario.id)}}" style="width: 13%; height: auto;" id="modificar-usuario-{{ usuario.id }}" class="btn btn-success rounded-circle mr-1">
                                     <i class="fas fa-edit"></i>
                                 </a>
     
-                                <a title="Eliminar usuario" href="#" style="width: 15%; height: auto;" id="eliminar-usuario-{{ usuario.id }}" class="btn btn-danger rounded-circle mr-1" data-toggle="modal" data-target="#EliminateModal" data-user-id="{{ usuario.id }}">
+                                <a title="Eliminar usuario" href="#" style="width: 13%; height: auto;" id="eliminar-usuario-{{ usuario.id }}" class="btn btn-danger rounded-circle mr-1" data-toggle="modal" data-target="#EliminateModal" data-user-id="{{ usuario.id }}">
                                     <i class="fas fa-times"></i>
                                 </a>
 
-                                <a title="Resetear usuario" href="{{ url_for('user.user_reset', id_user = usuario.id)}}" style="width: 15%; height: auto;" id="ModificarUsuarioBtn" class="btn btn-info rounded-circle mr-1">
+                                <a title="Resetear usuario" href="{{ url_for('user.user_reset', id_user = usuario.id)}}" style="width: 13%; height: auto;" id="ModificarUsuarioBtn" class="btn btn-info rounded-circle mr-1">
                                     <i class="fas fa-undo"></i>
                                 </a>
+
+                                {% if usuario.rol == "Ventanilla"  %}
+                                <a title="Generar reporte" href="{{ url_for('user.user_report', id_user = usuario.id)}}" style="width: 13%; height: auto;" id="ModificarUsuarioBtn" class="btn btn-warning rounded-circle mr-1">
+                                    <i style="color: white;" class="fas fa-chart-bar"></i>
+                                </a>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}

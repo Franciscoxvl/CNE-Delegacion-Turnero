@@ -4,7 +4,7 @@ $(document).ready(function() {
           { type: 'date', targets: 4 } // Especificar el índice de la columna de fecha
       ],
       language: {
-          url: '//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+          url: 'static/vendor/Spanish.json'
       },
       paging: true,
       searching: false,

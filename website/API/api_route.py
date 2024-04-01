@@ -13,8 +13,20 @@ from sqlalchemy import text
 
 def cantidad_turnos(id_servicio):
     
-    cantidad_turnos_asignados = Turnos.query.filter_by(id_servicio=id_servicio).count()
-    cantidad_turnos_espera = Espera.query.filter_by(id_servicio=id_servicio).count()
+    turnos_asignados = Turnos.query.filter_by(id_servicio=id_servicio).all()
+    turnos_espera = Espera.query.filter_by(id_servicio=id_servicio).all()
+    cantidad_turnos_asignados = 0
+    cantidad_turnos_espera = 0
+
+    for turno in turnos_asignados:
+        if turno.fecha == datetime.now().date():
+            cantidad_turnos_asignados += 1
+
+    for turno in turnos_espera:
+        if turno.fecha_solicitud == datetime.now().date():
+            cantidad_turnos_espera += 1
+
+
     cantidad_turnos = cantidad_turnos_asignados + cantidad_turnos_espera
 
     if cantidad_turnos == 0:
@@ -270,6 +282,107 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
 def siguiente_id_disponible():
     max_id = db.session.query(db.func.max(Usuario.id)).scalar()
     return max_id + 1 if max_id is not None else 1
+
+def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = ""):
+    # Obtener los datos del formulario
+    fecha_actual = datetime.now()
+    fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
+           
+    # Cargar la plantilla de Word
+    if fecha_inicio == 0 or fecha_fin == 0: 
+        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte _usuario.docx')
+        # Renderizar la plantilla con los datos del formulario
+        turnos = Turnos.query.all()
+        total_turnos = 0
+        total_turnos_cd = 0
+        total_turnos_jfs = 0
+        total_turnos_dcv = 0
+        total_turnos_dfs = 0
+
+        for turno in turnos:
+            if turno.puesto.descripcion == rol:
+                total_turnos += 1
+                if turno.id_servicio == 1:
+                    total_turnos_cd += 1
+                elif turno.id_servicio == 2:
+                    total_turnos_jfs += 1
+                elif turno.id_servicio == 3:
+                    total_turnos_dcv += 1
+                else:
+                    total_turnos_dfs += 1
+            
+        context = {
+            'puesto': rol,
+            'fecha': fecha,
+            'total_turnos': total_turnos,
+            'total_turnos_cd' : total_turnos_cd,
+            'total_turnos_jfs' : total_turnos_jfs,
+            'total_turnos_dcv' : total_turnos_dcv,
+            'total_turnos_dfs' : total_turnos_dfs
+        }
+        
+    else:
+        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte_usuario_personalizado.docx')
+        # Renderizar la plantilla con los datos del formulario
+        turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).all()
+        total_turnos = 0
+        total_turnos_cd = 0
+        total_turnos_jfs = 0
+        total_turnos_dcv = 0
+        total_turnos_dfs = 0
+
+        for turno in turnos:
+            if turno.puesto.descripcion == rol:
+                total_turnos += 1
+                if turno.id_servicio == 1:
+                    total_turnos_cd += 1
+                elif turno.id_servicio == 2:
+                    total_turnos_jfs += 1
+                elif turno.id_servicio == 3:
+                    total_turnos_dcv += 1
+                else:
+                    total_turnos_dfs += 1
+            
+        context = {
+            'puesto': rol,
+            'fecha': fecha,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin,
+            'total_turnos': total_turnos,
+            'total_turnos_cd' : total_turnos_cd,
+            'total_turnos_jfs' : total_turnos_jfs,
+            'total_turnos_dcv' : total_turnos_dcv,
+            'total_turnos_dfs' : total_turnos_dfs
+        }
+
+
+    servicios = ['Cambios domicilio', 'Justificaciones', 'Duplicados CV', 'Desafiliaciones']
+    servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_dcv, total_turnos_dfs]
+    colores = ['#136CB2', '#17D3E3', '#1DEEC8', '#35EE94']
+    # Crear un gráfico utilizando matplotlib
+    plt.bar(servicios, servicios_valores, color=colores)
+    plt.xlabel('Servicios', fontweight='bold')
+    plt.ylabel('Cantidad Turnos', fontweight='bold')
+    plt.title('Turnos por servicio', fontweight='bold')
+
+    # Personalizar el estilo de las barras
+    plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
+    plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
+    plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
+    plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
+    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
+
+    # Guardar el gráfico como una imagen
+    plt.savefig('grafico_servicios.png')
+    plt.clf()
+    plt.close()
+
+    # Insercion de graficos al documento
+    doc.render(context)
+    doc.add_picture('grafico_servicios.png', width=Inches(6))
+
+    # Guardar el nuevo documento generado
+    doc.save('output.docx')
 #---------------------------------------------RUTAS---------------------------------------------------#
     
 @api_bp.route('/')
@@ -351,8 +464,27 @@ def generar_reporte():
             error = str(e)
             print(error)
             return error, 500
+        
+@api_bp.route('/generar_reporte_usuario', methods=['GET'])
+def generar_reporte_usuario():
 
-    
+    if request.method == 'GET':
+        try:
+            fecha_inicio = request.args.get('fecha_inicio')
+            fecha_fin = request.args.get('fecha_fin')
+            rol = request.args.get('rol')
+
+            if len(fecha_inicio) == 0 or len(fecha_fin) == 0:
+                generacion_reporte_usuario(0, 0, rol)
+                return send_file('../output.docx', as_attachment=True)
+            else:
+                generacion_reporte_usuario(fecha_inicio, fecha_fin, rol)
+                return send_file('../output.docx', as_attachment=True)
+
+        except Exception as e:
+            error = str(e)
+            print(error)
+            return error, 500
 
 @api_bp.route('/crear_usuario', methods=['POST'])
 def crear_usuario():
