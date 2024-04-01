@@ -25,7 +25,7 @@ createButton.addEventListener('submit', (event) =>{
 const puestos = {
     "Admin": ['Administracion'],
     "Recepcion": ['Recepcion'],
-    "Ventanilla": ['Ventanilla1', 'Ventanilla2', 'Ventanilla3']
+    "Ventanilla": ['Ventanilla1', 'Ventanilla2', 'Ventanilla3', 'Ventanilla4', 'Ventanilla5']
 };
 
 const opciones_puesto = () =>{
