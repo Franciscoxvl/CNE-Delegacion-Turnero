@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satisfaccion</title>
+    <link rel="icon" href="../static/favicon.ico" type="image/x-icon">
+
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=PT+Sans:wght@400;700&family=Roboto:wght@500&family=Staatliches&display=swap');
+
+        html {
+            font-size: 62.5%;
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
+        body{
+            color: rgb(41, 39, 39);
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, rgb(14, 71, 177), rgb(36, 113, 234), rgb(66, 149, 245), rgb(123, 182, 255));
+            font-size: 2rem;
+        }
+
+        p{
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .boton-calificacion{
+            width: 15%;
+            height: 75%;
+            transition: transform 0.3s ease;
+        }
+
+        .boton-calificacion:hover{
+            cursor: pointer;
+            transform: scale(1.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div style="display: flex; justify-content: center; margin-top: 2rem;">
+
+        <img style="margin: 0; max-width: 9%; height: auto;" src="../static/images/CNE-logo.png" alt="logo_CNE">
+        
+        <h1 style="text-align: center; margin: 0; padding: 0;">CONSEJO NACIONAL ELECTORAL - DELEGACION ELECTORAL PROVINCIAL DE PICHINCHA</h1>
+
+        <img style="margin: 0; max-width: 9%; height: auto;" src="../static/images/CNE-logo.png" alt="logo_CNE">
+    
+    </div>
+
+    <div style="border-radius: 2rem; margin-inline: auto; margin-top: 3rem; max-width: 85%; height: 45rem; background-color:rgb(189, 214, 241); display: flex; justify-content: center; align-items: center; gap: 15rem;">
+
+        <button onclick="malo()" class="boton-calificacion" style="background: none; border: none;">
+            <img style="max-width: 100%; height: auto;" src="../static/images/triste.png" alt="malo.png">
+            <p>MALO</p>
+        </button>
+
+        <button onclick="regular()" class="boton-calificacion" style="background: none; border: none;">
+            <img style="max-width: 100%; height: auto;" src="../static/images/seria.png" alt="regular.png">
+            <p>REGULAR</p>
+        </button>
+
+        <button onclick="excelente()" class="boton-calificacion" style="background: none; border: none;">
+            <img style="max-width: 100%; height: auto;" src="../static/images/sonriente.png" alt="excelente.png">
+            <p>EXCELENTE</p>
+        </button>
+        
+    </div>
+
+    
+
+    <script>
+        const malo = () =>{
+            console.log("Mala atencion")
+        };
+
+        const regular = () =>{
+            console.log("Regular atencion")
+        };
+
+        const excelente = () =>{
+            console.log("Excelente atencion")
+        };
+    </script>
+    
+</body>
+</html>
