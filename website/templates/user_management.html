@@ -141,7 +141,12 @@
                             <td>{{usuario.nombre}}</td>
                             <td>{{usuario.apellido}}</td>
                             <td>{{usuario.username}}</td>
-                            <td>{{usuario.rol}}</td>
+                            {% if usuario.rol == "Ventanilla" %}
+                                <td>{{usuario.puesto}}</td>
+                            {% else %}
+                                <td>{{usuario.rol}}</td>
+                            {% endif %}    
+
                             <td style="margin-inline: auto;" class="d-flex justify-content-center">
 
                                 <a title="Modificar usuario" href="{{ url_for('user.user_alter', id_user = usuario.id)}}" style="width: 13%; height: auto;" id="modificar-usuario-{{ usuario.id }}" class="btn btn-success rounded-circle mr-1">

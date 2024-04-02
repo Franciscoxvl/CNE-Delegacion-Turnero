@@ -283,10 +283,13 @@ def siguiente_id_disponible():
     max_id = db.session.query(db.func.max(Usuario.id)).scalar()
     return max_id + 1 if max_id is not None else 1
 
-def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = ""):
+def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_user = 0):
     # Obtener los datos del formulario
     fecha_actual = datetime.now()
     fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
+    user = Usuario.query.filter_by(id = id_user).first()
+    nombre = user.nombre
+    apellido = user.apellido
            
     # Cargar la plantilla de Word
     if fecha_inicio == 0 or fecha_fin == 0: 
@@ -314,6 +317,8 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = ""):
         context = {
             'puesto': rol,
             'fecha': fecha,
+            'nombre': nombre,
+            'apellido': apellido,
             'total_turnos': total_turnos,
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
@@ -346,6 +351,8 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = ""):
         context = {
             'puesto': rol,
             'fecha': fecha,
+            'nombre': nombre,
+            'apellido': apellido,
             'fecha_inicio': fecha_inicio,
             'fecha_fin': fecha_fin,
             'total_turnos': total_turnos,
@@ -473,12 +480,13 @@ def generar_reporte_usuario():
             fecha_inicio = request.args.get('fecha_inicio')
             fecha_fin = request.args.get('fecha_fin')
             rol = request.args.get('rol')
+            id_user = request.args.get('id_user')
 
             if len(fecha_inicio) == 0 or len(fecha_fin) == 0:
-                generacion_reporte_usuario(0, 0, rol)
+                generacion_reporte_usuario(0, 0, rol, id_user)
                 return send_file('../output.docx', as_attachment=True)
             else:
-                generacion_reporte_usuario(fecha_inicio, fecha_fin, rol)
+                generacion_reporte_usuario(fecha_inicio, fecha_fin, rol, id_user)
                 return send_file('../output.docx', as_attachment=True)
 
         except Exception as e:
@@ -508,6 +516,11 @@ def crear_usuario():
 
                 db.session.add(nuevo_usuario)
                 db.session.commit()
+
+                if rol == "Ventanilla":
+                    puesto = Puestos.query.filter_by(descripcion = puesto).first()
+                    puesto.id_user = nuevo_id
+                    db.session.commit()
 
                 flash("El Usuario fue creado correctamente", 'success')
                 return redirect(url_for('user.user_management'))
@@ -545,14 +558,33 @@ def resetear_usuario():
         flash("La contraseña fue reseteada correctamente", 'success')
         return redirect(url_for('user.user_management'))
 
-@api_bp.route('/actualizar_tabla')
+@api_bp.route('/actualizar_tabla', methods=['GET'])
 def actualizar_tabla():
+    id_user = request.args.get('id_user')
     turnos = consultar_tabla(2)
     turnos_serial = []
+
     for turno in turnos:
         turnos_serial.append(turno.to_dict())
+    
+    respuesta = {
+        'turnos': turnos_serial,
+        'pendiente': False
+    }
 
-    return jsonify(turnos_serial)
+    puesto = Puestos.query.filter_by(id_user = id_user).first()
+    puesto_id = puesto.id
+
+    asignados = Turnos.query.filter_by(estado_turno = "Asignado").all()
+    
+    for asignado in asignados:
+        if str(asignado.puesto.id_user) == id_user:
+            respuesta = {
+                'turnos': turnos_serial,
+                'pendiente': True
+            }
+
+    return jsonify(respuesta)
             
     
 @socketio.on('connect')

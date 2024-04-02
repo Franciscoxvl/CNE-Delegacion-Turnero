@@ -12,6 +12,8 @@ class Puestos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(50), unique=True, nullable=False)
     estado = db.Column(db.String(20), nullable=False)
+    id_user = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    usuario = db.relationship('Usuario', backref='puestos')
 
 class Turnos(db.Model):
     id = db.Column(db.Integer, primary_key=True)

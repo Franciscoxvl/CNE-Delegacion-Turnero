@@ -201,7 +201,7 @@ def user_report(id_user):
     rol = user.puesto
 
     if current_user.rol == "Admin":
-        return render_template("user_report.html", user_rol = rol)
+        return render_template("user_report.html", user_rol = rol, id_user = id_user)
     elif current_user.rol == "Ventanilla" :
         return redirect(url_for('user.profile'))
     

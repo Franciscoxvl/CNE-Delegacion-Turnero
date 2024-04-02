@@ -10,7 +10,7 @@ $(document).ready(function() {
     var rol = $('#rol').val();
     var id_user = $('#id_user').val();
 
-    xhr.open('GET', 'http://10.0.17.68:5000/api/generar_reporte_usuario?fecha_inicio=&fecha_fin=&rol=' + rol, true);
+    xhr.open('GET', 'http://10.0.17.68:5000/api/generar_reporte_usuario?fecha_inicio=&fecha_fin=&rol=' + rol + '&id_user=' + id_user, true);
     xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
     xhr.onload = function() {
       if (xhr.status === 200) {
@@ -33,6 +33,7 @@ $(document).ready(function() {
     fecha_start = $('#fechaInicio').val();
     fecha_end = $('#fechaFin').val();
     var rol = $('#rol').val();
+    var id_user = $('#id_user').val();
 
     if (fecha_start == null || fecha_end.length == null || fecha_end.length == 0 || fecha_start == 0){
       
@@ -41,7 +42,7 @@ $(document).ready(function() {
     }
     
 
-    xhr.open('GET', 'http://10.0.17.68:5000/api/generar_reporte_usuario?fecha_inicio=' + fecha_start + '&fecha_fin=' + fecha_end + '&rol=' + rol, true);
+    xhr.open('GET', 'http://10.0.17.68:5000/api/generar_reporte_usuario?fecha_inicio=' + fecha_start + '&fecha_fin=' + fecha_end + '&rol=' + rol + '&id_user=' + id_user, true);
     xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
     xhr.onload = function() {
       if (xhr.status === 200) {

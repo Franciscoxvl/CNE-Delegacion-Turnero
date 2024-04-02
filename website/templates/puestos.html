@@ -56,7 +56,7 @@
                                 Turno Actual</div>
 
                             <div id="turno_actual" style="font-size: 2rem;" class="text-secondary text-uppercase mb-5 mt-5 text-center">
-                                NA</div>
+                                N/A</div>
 
                         </div>
                     </div>
@@ -64,18 +64,23 @@
 
                 {% if puesto == "Ventanilla1" %}
                 <br>
+                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
                 <button style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(1)" class="btn btn-primary">Liberar turno</button>
                 {% elif puesto == "Ventanilla2" %}
                 <br>
+                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
                 <button style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(2)" class="btn btn-primary">Liberar turno</button>
                 {% elif puesto == "Ventanilla3" %}
                 <br>
+                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
                 <button style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(3)" class="btn btn-primary">Liberar turno</button>
                 {% elif puesto == "Ventanilla4" %}
                 <br>
+                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
                 <button style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(4)" class="btn btn-primary">Liberar turno</button>
                 {% else %}
                 <br>
+                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
                 <button style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(5)" class="btn btn-primary">Liberar turno</button>
                 {% endif %}
 

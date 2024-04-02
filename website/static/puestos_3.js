@@ -57,14 +57,19 @@ const liberarPuesto = (puestoId) => {
 
 // Function to update the table with AJAX
 const actualizarTabla = () => {
+    const id_user = document.getElementById("id_user")
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://10.0.17.68:5000/api/actualizar_tabla'); // Replace with your API endpoint
+    xhr.open('GET', 'http://10.0.17.68:5000/api/actualizar_tabla' + '?id_user=' + encodeURIComponent(id_user.value)); // Replace with your API endpoint
         
     xhr.onload = function() {
     if (xhr.status === 200) {
         const nuevosTurnos = JSON.parse(xhr.responseText); // Assuming JSON response
-        actualizarTablaConNuevosDatos(nuevosTurnos);
-        console.log(nuevosTurnos)
+        actualizarTablaConNuevosDatos(nuevosTurnos.turnos);
+        if (nuevosTurnos.turnos.length == 0 && nuevosTurnos.pendiente == false){
+            localStorage.setItem('turno', "N/A");
+            var turno_puesto = document.getElementById("turno_actual");
+            turno_puesto.textContent = "N/A";            
+        };
     } else {
         console.error('Error al obtener los datos:', xhr.statusText);
     }
