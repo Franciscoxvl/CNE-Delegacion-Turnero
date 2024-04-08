@@ -40,6 +40,35 @@
             cursor: pointer;
             transform: scale(1.3);
         }
+
+        .container-own {
+            max-width: 100%;
+            height: 80vh;
+            margin-top: 0rem;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            }
+
+        .agradecimiento{
+            font-size: 2rem;
+            padding: 0;
+            margin: 0;
+            margin-top: 5rem;
+            border-radius: 5rem;
+            background-color: rgb(185, 185, 185);
+            max-width: 100%;
+            opacity: 0;
+            transition: opacity 1s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .agradecimiento p{
+            text-align: center;
+            margin: auto 0;
+        }
     </style>
 </head>
 <body>
@@ -54,46 +83,171 @@
     
     </div>
 
-    <div style="border-radius: 2rem; margin-inline: auto; margin-top: 3rem; max-width: 85%; height: 45rem; background-color:rgb(189, 214, 241); display: flex; justify-content: center; align-items: center; gap: 15rem;">
+    <div class="container-own">
+    
+        <div id="main-container" style="border-radius: 2rem; margin-inline: auto; margin-top: 7rem; max-width: 85%; height: 45rem; background-color:rgb(189, 214, 241); display: flex; justify-content: center; align-items: center; gap: 15rem; opacity: 1; transition: opacity 1s ease;">
 
-        <input id="user_id" type="text" value="{{ current_user.id }}" hidden>
+            <input id="ventanilla" type="text" value="{{ id_ventanilla }}" hidden>
+    
+            <button type="button" onclick="malo()" class="boton-calificacion" style="background: none; border: none;">
+                <img style="max-width: 100%; height: auto;" src="../static/images/triste.png" alt="malo.png">
+                <p>MALO</p>
+            </button>
+    
+            <button type="button" onclick="regular()" class="boton-calificacion" style="background: none; border: none;">
+                <img style="max-width: 100%; height: auto;" src="../static/images/seria.png" alt="regular.png">
+                <p>REGULAR</p>
+            </button>
+    
+            <button type="button" onclick="excelente()" class="boton-calificacion" style="background: none; border: none;">
+                <img style="max-width: 100%; height: auto;" src="../static/images/sonriente.png" alt="excelente.png">
+                <p>EXCELENTE</p>
+            </button>
+            
+        </div>
+    
+        <div id="mensaje" class="agradecimiento"></div>
 
-        <button onclick="malo()" class="boton-calificacion" style="background: none; border: none;">
-            <img style="max-width: 100%; height: auto;" src="../static/images/triste.png" alt="malo.png">
-            <p>MALO</p>
-        </button>
-
-        <button onclick="regular()" class="boton-calificacion" style="background: none; border: none;">
-            <img style="max-width: 100%; height: auto;" src="../static/images/seria.png" alt="regular.png">
-            <p>REGULAR</p>
-        </button>
-
-        <button onclick="excelente()" class="boton-calificacion" style="background: none; border: none;">
-            <img style="max-width: 100%; height: auto;" src="../static/images/sonriente.png" alt="excelente.png">
-            <p>EXCELENTE</p>
-        </button>
-        
     </div>
 
-    
-
     <script>
+        var botones = document.querySelectorAll("button");
+        var ventanilla = document.getElementById("ventanilla")
 
-        user_id == document.getElementById('user_id')
+        const malo = async() =>{
+            const url = new URL('http://10.0.17.68:5000/api/calificar_atencion');
+            url.searchParams.append('puesto', ventanilla.value);
+            url.searchParams.append('calificacion', "Malo");
 
-        const malo = () =>{
-            console.log(user_id.value)
-            console.log("Mala atencion")
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.log(response)
+                    throw new Error('Error en la solicitud');
+                }
+
+                const data = await response.text();
+                show_message()
+                return data;
+
+            } catch (error) {
+                console.error('Error al hacer la solicitud:', error);
+                throw error; // Propagar el error
+            }
+
         };
 
-        const regular = () =>{
-            console.log(user_id.value)
-            console.log("Regular atencion")
+        const regular = async() =>{
+            const url = new URL('http://10.0.17.68:5000/api/calificar_atencion');
+            url.searchParams.append('puesto', ventanilla.value);
+            url.searchParams.append('calificacion', "Regular");
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.log(response)
+                    throw new Error('Error en la solicitud');
+                }
+
+                const data = await response.text();
+                show_message()
+                return data;
+
+            } catch (error) {
+                console.error('Error al hacer la solicitud:', error);
+                throw error; // Propagar el error
+            }
+
         };
 
-        const excelente = () =>{
-            console.log(user_id.value)
-            console.log("Excelente atencion")
+        const excelente = async() =>{
+            const url = new URL('http://10.0.17.68:5000/api/calificar_atencion');
+            url.searchParams.append('puesto', ventanilla.value);
+            url.searchParams.append('calificacion', "Excelente");
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.log(response)
+                    throw new Error('Error en la solicitud');
+                }
+
+                const data = await response.text();
+                show_message()
+                return data;
+
+            } catch (error) {
+                console.error('Error al hacer la solicitud:', error);
+                throw error; // Propagar el error
+            }
+
+        };
+
+        const show_message = () => {
+
+        let main_container = document.getElementById("main-container");
+
+        let div_mensaje = document.getElementById("mensaje");
+        main_container.style.opacity = "0";
+        
+
+        setTimeout(()=>{
+
+            let main_child_div = main_container.querySelectorAll("div");
+
+            main_child_div.forEach((main_div)=>{
+                main_div.style.pointerEvents = "none";
+            });
+
+
+            fetch("../static/messages/agradecimiento_atencion.html")
+                    .then(response => response.text())
+                    .then(html => {
+                        // Actualiza el contenido del div con el contenido importado
+                        main_container.style.width ="0%";
+                        main_container.style.margin = "0";
+                        div_mensaje.style.width = "90%";
+                        
+                        if(window.innerHeight < 768){
+                            div_mensaje.style.height = "69%";
+                        }else{
+                            div_mensaje.style.height = "55%";
+                        };
+
+                        div_mensaje.innerHTML = html;
+
+                        
+                    })
+                    .catch(error => console.error('Error al cargar el contenido:', error));
+            div_mensaje.style.opacity = "1";
+
+            setTimeout(()=>{
+                volver_inicio();
+            }, 2500)
+        },1000);    
+        };
+
+        const volver_inicio = () =>{
+            let main_container = document.getElementById("main-container");
+            let div_mensaje = document.getElementById("mensaje");
+            
+            div_mensaje.style.opacity = "0";
+
+            let main_child_div = main_container.querySelectorAll("div");
+
+            main_child_div.forEach((main_div)=>{
+                main_div.style.pointerEvents = "auto";
+            });
+
+
+            setTimeout(()=>{
+                div_mensaje.style.width = "0%";
+                main_container.style.width ="100%";
+                main_container.style.margin = "0 auto";
+                main_container.style.marginTop = "5rem";
+                main_container.style.opacity = "1";
+
+            }, 1000);
         };
     </script>
     

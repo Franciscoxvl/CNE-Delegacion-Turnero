@@ -17,9 +17,9 @@ def visualizer():
 
     return render_template("visualizer.html")
 
-@views.route('satisfaccion')
-def satisfaccion():
-    return render_template("satisfaccion.html")
+@views.route('satisfaccion/<id_ventanilla>')
+def satisfaccion(id_ventanilla):
+    return render_template("satisfaccion.html", id_ventanilla = id_ventanilla)
 
 
 @views.route('/favicon.ico')

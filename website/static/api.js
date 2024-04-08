@@ -56,7 +56,7 @@ const show_message = (kind_message) => {
                 fetch("../static/messages/cambios_domicilio.html")
                 .then(response => response.text())
                 .then(html => {
-                    // Actualiza el contenido del div con el contenido importado
+
                     main_container.style.width ="0%";
                     main_container.style.margin = "0";
                     div_requirements.style.width = "90%";

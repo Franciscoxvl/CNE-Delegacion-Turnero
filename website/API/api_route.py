@@ -7,7 +7,7 @@ from docx.shared import Inches
 from . import api_bp
 from website import socketio
 from datetime import datetime, timedelta
-from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario
+from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario, Calificacion
 from website.user import consultar_tabla
 from sqlalchemy import text
 
@@ -390,6 +390,21 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
 
     # Guardar el nuevo documento generado
     doc.save('output.docx')
+
+def calificacion_atencion(puesto, calificacion):
+    
+    ahora = datetime.now()
+    fecha_hora_actual = ahora.strftime("%Y-%m-%d %H:%M:%S")
+
+    ventanilla = "Ventanilla"+str(puesto)
+
+    nueva_calificacion = Calificacion(ventanilla = ventanilla, calificacion = calificacion, fecha = fecha_hora_actual)
+
+    db.session.add(nueva_calificacion)
+    db.session.commit()
+    print("Calificado correctamente")
+    return 200
+
 #---------------------------------------------RUTAS---------------------------------------------------#
     
 @api_bp.route('/')
@@ -572,9 +587,6 @@ def actualizar_tabla():
         'pendiente': False
     }
 
-    puesto = Puestos.query.filter_by(id_user = id_user).first()
-    puesto_id = puesto.id
-
     asignados = Turnos.query.filter_by(estado_turno = "Asignado").all()
     
     for asignado in asignados:
@@ -585,7 +597,14 @@ def actualizar_tabla():
             }
 
     return jsonify(respuesta)
-            
+
+@api_bp.route('/calificar_atencion', methods=['GET'])
+def calificar_atencion():
+    puesto = request.args.get('puesto')
+    calificacion = request.args.get('calificacion')
+    resultado = calificacion_atencion(puesto, calificacion)
+    return jsonify(resultado)
+     
     
 @socketio.on('connect')
 def handle_connect():

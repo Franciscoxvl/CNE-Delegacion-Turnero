@@ -74,3 +74,10 @@ class Usuario(db.Model, UserMixin):
     def cambiar_password(self, nuevo_password):
         self.set_password(nuevo_password)
         db.session.commit()
+
+
+class Calificacion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ventanilla = db.Column(db.String(50), unique=True, nullable=False)
+    calificacion = db.Column(db.String(50), nullable=False)
+    fecha = db.Column(db.Date, nullable=False)
