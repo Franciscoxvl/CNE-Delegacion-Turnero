@@ -17,6 +17,10 @@ def visualizer():
 
     return render_template("visualizer.html")
 
+@views.route('satisfaccion')
+def satisfaccion():
+    return render_template("satisfaccion.html")
+
 
 @views.route('/favicon.ico')
 def favicon():

@@ -56,6 +56,8 @@
 
     <div style="border-radius: 2rem; margin-inline: auto; margin-top: 3rem; max-width: 85%; height: 45rem; background-color:rgb(189, 214, 241); display: flex; justify-content: center; align-items: center; gap: 15rem;">
 
+        <input id="user_id" type="text" value="{{ current_user.id }}" hidden>
+
         <button onclick="malo()" class="boton-calificacion" style="background: none; border: none;">
             <img style="max-width: 100%; height: auto;" src="../static/images/triste.png" alt="malo.png">
             <p>MALO</p>
@@ -76,15 +78,21 @@
     
 
     <script>
+
+        user_id == document.getElementById('user_id')
+
         const malo = () =>{
+            console.log(user_id.value)
             console.log("Mala atencion")
         };
 
         const regular = () =>{
+            console.log(user_id.value)
             console.log("Regular atencion")
         };
 
         const excelente = () =>{
+            console.log(user_id.value)
             console.log("Excelente atencion")
         };
     </script>
