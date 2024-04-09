@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, send_from_directory, url_for
 from flask_login import  login_required, current_user
 
 views = Blueprint('views', __name__)
@@ -21,9 +21,13 @@ def visualizer():
 def satisfaccion(id_ventanilla):
     return render_template("satisfaccion.html", id_ventanilla = id_ventanilla)
 
-@views.route('/probando')
-def probando():
-    return render_template("/viewer.html")
+@views.route('probando/<path:filename>')
+def serve_pdfjs(filename):
+    return send_from_directory('static/pdfjs/reportes', filename)
+
+@views.route('/probando/')
+def index():
+    return render_template('viewer.html')
 
 @views.route('/favicon.ico')
 def favicon():
