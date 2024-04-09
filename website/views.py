@@ -21,10 +21,12 @@ def visualizer():
 def satisfaccion(id_ventanilla):
     return render_template("satisfaccion.html", id_ventanilla = id_ventanilla)
 
+@views.route('/probando')
+def probando():
+    return render_template("/viewer.html")
 
 @views.route('/favicon.ico')
 def favicon():
-
     return "favicon"
 
 

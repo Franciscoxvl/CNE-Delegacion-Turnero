@@ -29,7 +29,7 @@ body{
 .imagen-background{
     width: 100%;
     height: 100%;
-    background-image: url("images/CNE-login.jpg");
+    background-image: url("../images/CNE-login.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;

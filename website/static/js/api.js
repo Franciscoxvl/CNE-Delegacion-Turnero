@@ -132,7 +132,6 @@ const show_message = (kind_message) => {
                     main_container.style.margin = "0";
                     div_requirements.style.width = "90%";
                     div_requirements.innerHTML = html;
-                    let boton = document.getElementById("contenedor-btn-mensajes")
 
                     if(window.innerHeight < 768){
                         div_requirements.style.height = "70%";

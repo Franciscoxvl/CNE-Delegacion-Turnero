@@ -151,6 +151,8 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
         total_turnos_v1 = 0
         total_turnos_v2 = 0
         total_turnos_v3 = 0
+        total_turnos_v4 = 0
+        total_turnos_v5 = 0
 
         for turno in turnos:
             if turno.id_servicio == 1:
@@ -167,8 +169,12 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
                 total_turnos_v1 += 1
             elif turno.id_puesto == 2:
                 total_turnos_v2 += 1
+            elif turno.id_puesto == 3: 
+                total_turnos_v3 += 1
+            elif turno.id_puesto == 4:
+                total_turnos_v4 += 1
             else:
-                total_turnos_v3 += 1 
+                total_turnos_v5 += 1   
 
         context = {
             'fecha': fecha,
@@ -179,7 +185,9 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
             'total_turnos_dfs' : total_turnos_dfs,
             'total_turnos_v1' : total_turnos_v1,
             'total_turnos_v2' : total_turnos_v2,
-            'total_turnos_v3' : total_turnos_v3
+            'total_turnos_v3' : total_turnos_v3,
+            'total_turnos_v4' : total_turnos_v4,
+            'total_turnos_v5' : total_turnos_v5
         }
     else:
         doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte_personalizado.docx')
@@ -193,6 +201,9 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
         total_turnos_v1 = 0
         total_turnos_v2 = 0
         total_turnos_v3 = 0
+        total_turnos_v4 = 0
+        total_turnos_v5 = 0
+        
 
         for turno in turnos:
             if turno.id_servicio == 1:
@@ -209,8 +220,12 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
                 total_turnos_v1 += 1
             elif turno.id_puesto == 2:
                 total_turnos_v2 += 1
+            elif turno.id_puesto == 3: 
+                total_turnos_v3 += 1
+            elif turno.id_puesto == 4:
+                total_turnos_v4 += 1
             else:
-                total_turnos_v3 += 1 
+                total_turnos_v5 += 1                 
 
         context = {
             'fecha': fecha,
@@ -223,7 +238,9 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
             'total_turnos_dfs' : total_turnos_dfs,
             'total_turnos_v1' : total_turnos_v1,
             'total_turnos_v2' : total_turnos_v2,
-            'total_turnos_v3' : total_turnos_v3
+            'total_turnos_v3' : total_turnos_v3,
+            'total_turnos_v4' : total_turnos_v4,
+            'total_turnos_v5' : total_turnos_v5
         }
 
 
@@ -249,8 +266,8 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     plt.close()
 
 
-    puestos = ['Ventanilla 1', 'Ventanilla 2', 'Ventanilla 3']
-    puestos_valores = [total_turnos_v1, total_turnos_v2, total_turnos_v3]
+    puestos = ['Ventanilla 1', 'Ventanilla 2', 'Ventanilla 3', 'Ventanilla 4', 'Ventanilla 5']
+    puestos_valores = [total_turnos_v1, total_turnos_v2, total_turnos_v3, total_turnos_v4, total_turnos_v5]
     colores_puestos = ['#F1F139', '#108AF0', '#F53131']
     # Crear un gráfico utilizando matplotlib
     plt.bar(puestos, puestos_valores, color=colores_puestos)
