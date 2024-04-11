@@ -6,6 +6,7 @@ $(document).ready(function() {
 
   // Add event listener to the generate report button
   $('#botonReportesG').click(function() {
+    console.log("probando")
     var xhr = new XMLHttpRequest();
     var rol = $('#rol').val();
     var id_user = $('#id_user').val();
@@ -14,19 +15,22 @@ $(document).ready(function() {
     xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
     xhr.onload = function() {
       if (xhr.status === 200) {
-        var blob = xhr.response;
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'reporte.docx';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        console.log(xhr.response)
+        var iframe = document.getElementById('pdfViewer'); // Reemplaza 'pdfViewer' con el ID de tu iframe
+
+        // Obtener la URL actual del iframe
+        var currentUrl = iframe.src;
+        // Forzar la recarga del iframe
+        iframe.src = ''; // Vaciar la URL
+        iframe.src = currentUrl; // Volver a cargar la misma URL
+        console.log(currentUrl)
       } else {
         alert('Error al generar el reporte.');
       }
     };
     xhr.send();
   });
+  
 
   $('#botonReportesP').click(function() {
     var xhr = new XMLHttpRequest();
@@ -46,13 +50,15 @@ $(document).ready(function() {
     xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
     xhr.onload = function() {
       if (xhr.status === 200) {
-        var blob = xhr.response;
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'reporte.docx';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        var iframe = document.getElementById('pdfViewer'); // Reemplaza 'pdfViewer' con el ID de tu iframe
+
+        // Obtener la URL actual del iframe
+        var currentUrl = iframe.src;
+
+        // Forzar la recarga del iframe
+        iframe.src = ''; // Vaciar la URL
+        iframe.src = currentUrl; // Volver a cargar la misma URL
+        console.log(xhr.response)
       } else {
         alert('Error al generar el reporte.');
       }

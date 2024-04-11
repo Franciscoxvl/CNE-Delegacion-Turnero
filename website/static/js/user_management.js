@@ -16,7 +16,6 @@ $(document).ready(function() {
   });
 
   var userIdToDelete; // Variable global para almacenar el ID del usuario a eliminar
-  var userIdToModificate; // Variable global para almacenar el ID del usuario a eliminar
 
   // Captura el clic en el enlace y guarda el ID del usuario
   $('[id^=eliminar-usuario]').on('click', function() {

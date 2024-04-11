@@ -1,3 +1,4 @@
+import os
 from flask import jsonify, request, send_file, flash, render_template, url_for, redirect
 from docxtpl import DocxTemplate
 import matplotlib
@@ -10,6 +11,8 @@ from datetime import datetime, timedelta
 from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario, Calificacion
 from website.user import consultar_tabla
 from sqlalchemy import text
+from docx2pdf import convert
+import pythoncom
 
 def cantidad_turnos(id_servicio):
     
@@ -97,9 +100,6 @@ def turnos_dia():
 
         # Calcular la fecha de inicio de la semana actual
         fecha_inicio_semana = fecha_actual - timedelta(days=dia_semana_actual)
-
-        # Calcular la fecha de fin de la semana actual
-        fecha_fin_semana = fecha_inicio_semana + timedelta(days=6)
 
         dia_a_filtrar = i  # 1 representa el martes
         dia_especifico = fecha_inicio_semana + timedelta(days=dia_a_filtrar)
@@ -293,7 +293,18 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     doc.add_picture('grafico_puestos.png', width=Inches(6))
 
     # Guardar el nuevo documento generado
-    doc.save('output.docx')
+    doc.save('C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.docx')
+
+    pythoncom.CoInitialize()
+    # Ruta al documento DOCX de entrada
+    docx_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.docx"
+
+    # Ruta de salida para el PDF convertido
+    pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.pdf"
+
+    # Convertir el documento DOCX a PDF
+    convert(docx_file, pdf_file)
+    return 200
 
 
 def siguiente_id_disponible():
@@ -406,7 +417,19 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
     doc.add_picture('grafico_servicios.png', width=Inches(6))
 
     # Guardar el nuevo documento generado
-    doc.save('output.docx')
+    doc.save('C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.docx')
+
+    pythoncom.CoInitialize()
+    # Ruta al documento DOCX de entrada
+    docx_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.docx"
+
+    # Ruta de salida para el PDF convertido
+    pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.pdf"
+
+    # Convertir el documento DOCX a PDF
+    convert(docx_file, pdf_file)
+    return 200
+
 
 def calificacion_atencion(puesto, calificacion):
     
@@ -493,11 +516,11 @@ def generar_reporte():
             fecha_fin = request.args.get('fecha_fin')
 
             if len(fecha_inicio) == 0 or len(fecha_fin) == 0:
-                generacion_reporte()
-                return send_file('../output.docx', as_attachment=True)
+                resultado = generacion_reporte()
+                return "Reporte Generado exitosamente!", resultado
             else:
-                generacion_reporte(fecha_inicio, fecha_fin)
-                return send_file('../output.docx', as_attachment=True)
+                resultado = generacion_reporte(fecha_inicio, fecha_fin)
+                return "Reporte Generado exitosamente!", resultado
 
         except Exception as e:
             error = str(e)
@@ -515,11 +538,12 @@ def generar_reporte_usuario():
             id_user = request.args.get('id_user')
 
             if len(fecha_inicio) == 0 or len(fecha_fin) == 0:
-                generacion_reporte_usuario(0, 0, rol, id_user)
-                return send_file('../output.docx', as_attachment=True)
+                resultado = generacion_reporte_usuario(0, 0, rol, id_user)
+                return "Reporte Generado exitosamente!", resultado
             else:
-                generacion_reporte_usuario(fecha_inicio, fecha_fin, rol, id_user)
-                return send_file('../output.docx', as_attachment=True)
+                resultado = generacion_reporte_usuario(fecha_inicio, fecha_fin, rol, id_user)
+                return "Reporte Generado exitosamente!", resultado
+            
 
         except Exception as e:
             error = str(e)

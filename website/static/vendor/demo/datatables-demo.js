@@ -29,13 +29,15 @@ $(document).ready(function() {
     xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
     xhr.onload = function() {
       if (xhr.status === 200) {
-        var blob = xhr.response;
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'reporte.docx';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        console.log(xhr.response)
+        var iframe = document.getElementById('pdfViewer'); // Reemplaza 'pdfViewer' con el ID de tu iframe
+
+        // Obtener la URL actual del iframe
+        var currentUrl = iframe.src;
+        // Forzar la recarga del iframe
+        iframe.src = ''; // Vaciar la URL
+        iframe.src = currentUrl; // Volver a cargar la misma URL
+
       } else {
         alert('Error al generar el reporte.');
       }
@@ -53,13 +55,14 @@ $(document).ready(function() {
     xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
     xhr.onload = function() {
       if (xhr.status === 200) {
-        var blob = xhr.response;
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'reporte.docx';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        console.log(xhr.response)
+        var iframe = document.getElementById('pdfViewer'); // Reemplaza 'pdfViewer' con el ID de tu iframe
+
+        // Obtener la URL actual del iframe
+        var currentUrl = iframe.src;
+        // Forzar la recarga del iframe
+        iframe.src = ''; // Vaciar la URL
+        iframe.src = currentUrl; // Volver a cargar la misma URL
       } else {
         alert('Error al generar el reporte.');
       }
