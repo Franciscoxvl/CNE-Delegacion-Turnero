@@ -310,7 +310,7 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
 
     puestos = ['Ventanilla 1', 'Ventanilla 2', 'Ventanilla 3', 'Ventanilla 4', 'Ventanilla 5']
     puestos_valores = [total_turnos_v1, total_turnos_v2, total_turnos_v3, total_turnos_v4, total_turnos_v5]
-    colores_puestos = ['#F1F139', '#108AF0', '#F53131']
+    colores_puestos = ['#F1F139', '#108AF0', '#F53131', '#108AF0', '#F1F139']
     # Crear un gráfico utilizando matplotlib
     plt.bar(puestos, puestos_valores, color=colores_puestos)
     plt.xlabel('Servicios', fontweight='bold')

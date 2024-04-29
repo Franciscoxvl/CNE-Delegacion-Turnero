@@ -29,7 +29,6 @@ socket.on('turno_asignado', (data) => {
     }
 });
 
-
 // Manejador de eventos para el evento 'disconnect'
 socket.on('disconnect', function() {
     console.log('Desconectado del servidor Socket.IO');
@@ -54,6 +53,14 @@ socket.on('reconnect', function(attemptNumber) {
 const liberarPuesto = (puestoId) => {
     socket.emit('liberar_puesto', { puestoId });
 }
+
+socket.on('espera_asignacion', () => {
+    var boton = document.getElementById("boton_liberar");
+    boton.disabled = true;
+    setTimeout(() => {
+        boton.disabled = false;
+    }, 1000);    
+});
 
 // Function to update the table with AJAX
 const actualizarTabla = () => {

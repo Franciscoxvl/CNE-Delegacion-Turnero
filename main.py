@@ -12,7 +12,7 @@ def run_consultar_turno():
             estado_turnos = consultar_turno(app)
             socketio.emit('turno_espera', estado_turnos)
         # Esperar 5 segundos antes de la próxima consulta
-        stop_event.wait(3)
+        stop_event.wait(2)
 
 def stop_consultar_turno():
     stop_event.set()

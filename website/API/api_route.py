@@ -87,25 +87,30 @@ def crear_usuario():
         rol = request.form['rol']
         puesto = request.form['puesto']
 
-        usuario_existente = Usuario.query.filter_by(username=username).first()
+        usuario_existente = Usuario.query.filter_by(username = username).first()
+        puesto_verificar = Puestos.query.filter_by(descripcion = puesto).first()
+
         if usuario_existente:
-                flash("El nombre de Usuario ya existe")
-                return redirect(url_for('user.user_create'))
+            flash("El nombre de Usuario ya existe")
+            return redirect(url_for('user.user_create'))
+        elif rol == "Ventanilla" and puesto_verificar.id_user != None:
+            flash("El puesto seleccionado ya tiene un usuario asignado")
+            return redirect(url_for('user.user_create'))            
         else:
-                nuevo_usuario = Usuario(id = nuevo_id, username = username, nombre = nombre, apellido = apellido, rol = rol, puesto= puesto)
+            nuevo_usuario = Usuario(id = nuevo_id, username = username, nombre = nombre, apellido = apellido, rol = rol, puesto= puesto)
 
-                nuevo_usuario.set_password(password)
+            nuevo_usuario.set_password(password)
 
-                db.session.add(nuevo_usuario)
+            db.session.add(nuevo_usuario)
+            db.session.commit()
+
+            if rol == "Ventanilla":
+                puesto = Puestos.query.filter_by(descripcion = puesto).first()
+                puesto.id_user = nuevo_id
                 db.session.commit()
 
-                if rol == "Ventanilla":
-                    puesto = Puestos.query.filter_by(descripcion = puesto).first()
-                    puesto.id_user = nuevo_id
-                    db.session.commit()
-
-                flash("El Usuario fue creado correctamente", 'success')
-                return redirect(url_for('user.user_management'))
+            flash("El Usuario fue creado correctamente", 'success')
+            return redirect(url_for('user.user_management'))
 
 @api_bp.route('/modificar_usuario', methods=['POST'])
 def modificar_usuario():
@@ -180,6 +185,7 @@ def handle_connect():
 @socketio.on('liberar_puesto')
 def handle_liberar_puesto(data):
     # Lógica para liberar el puesto y asignar un nuevo turno
+    socketio.emit('espera_asignacion',"Tiempo de espera")
     liberar_turno(data['puestoId'])
     asignar_turno(data['puestoId'])
 
