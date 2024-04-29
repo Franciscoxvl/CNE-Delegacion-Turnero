@@ -25,18 +25,21 @@ $(document).ready(function() {
   // Add event listener to the generate report button
   $('#botonReportesG').click(function() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://10.0.17.68:5000/api/generar_reporte?fecha_inicio=&fecha_fin=', true);
-    xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
+    var mensaje = document.getElementById("mensaje_cargando")
+    mensaje.style.display = "block";
+    xhr.open('GET', 'http://10.0.17.52:5000/api/generar_reporte?fecha_inicio=&fecha_fin=', true);
+    xhr.responseType = 'blob'; 
     xhr.onload = function() {
       if (xhr.status === 200) {
         console.log(xhr.response)
-        var iframe = document.getElementById('pdfViewer'); // Reemplaza 'pdfViewer' con el ID de tu iframe
+        var iframe = document.getElementById('pdfViewer'); 
 
         // Obtener la URL actual del iframe
         var currentUrl = iframe.src;
         // Forzar la recarga del iframe
         iframe.src = ''; // Vaciar la URL
         iframe.src = currentUrl; // Volver a cargar la misma URL
+        mensaje.style.display = "none";
 
       } else {
         alert('Error al generar el reporte.');
@@ -47,12 +50,14 @@ $(document).ready(function() {
 
   $('#botonReportesP').click(function() {
     var xhr = new XMLHttpRequest();
+    var mensaje = document.getElementById("mensaje_cargando")
     if (fecha_start == null || fecha_end.length == null || fecha_end.length == 0 || fecha_start == 0){
       alert("Debe ingresar un rango de fechas!")
       return;
     }
-    xhr.open('GET', 'http://10.0.17.68:5000/api/generar_reporte?fecha_inicio=' + fecha_start + '&fecha_fin=' + fecha_end, true);
-    xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
+    mensaje.style.display = "block";
+    xhr.open('GET', 'http://10.0.17.52:5000/api/generar_reporte?fecha_inicio=' + fecha_start + '&fecha_fin=' + fecha_end, true);
+    xhr.responseType = 'blob';
     xhr.onload = function() {
       if (xhr.status === 200) {
         console.log(xhr.response)
@@ -63,6 +68,7 @@ $(document).ready(function() {
         // Forzar la recarga del iframe
         iframe.src = ''; // Vaciar la URL
         iframe.src = currentUrl; // Volver a cargar la misma URL
+        mensaje.style.display = "none";
       } else {
         alert('Error al generar el reporte.');
       }

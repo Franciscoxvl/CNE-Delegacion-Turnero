@@ -26,7 +26,7 @@ $(document).ready(function() {
   $(document).on('click', '#eliminarUsuarioBtn', function() {
       // Aquí puedes hacer la llamada a tu API en Flask, pasando userIdToDelete como parámetro
       $.ajax({
-          url: 'http://10.0.17.68:5000/user_remove/' + userIdToDelete,
+          url: 'http://10.0.17.52:5000/user_remove/' + userIdToDelete,
           method: 'DELETE',
           success: function(response) {
               // Manejar la respuesta del servidor si es necesario

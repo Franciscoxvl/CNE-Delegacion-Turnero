@@ -13,7 +13,7 @@ const obtener_turno = async (servicio) => {
     const checkedbox = document.getElementById("preferencial");
     const preferencial = checkedbox.checked ? true : false;
 
-    const url = new URL('http://10.0.17.68:5000/api/generar_turno_espera');
+    const url = new URL('http://10.0.17.52:5000/api/generar_turno_espera');
     url.searchParams.append('servicio', servicio);
     url.searchParams.append('preferencial', preferencial);
 
@@ -243,7 +243,7 @@ const turno_assignado_mensaje = (turno) => {
 
 const salir = ()  => {
     // Redirecciona a la URL deseada
-    window.location.href = "http://10.0.17.68:5000/logout";
+    window.location.href = "http://10.0.17.52:5000/logout";
 };
 
 

@@ -1,4 +1,4 @@
-const socket = io.connect('http://10.0.17.68:5000');
+const socket = io.connect('http://10.0.17.52:5000');
 let contador = 0;
 
 function colocar_turno(turno, puesto) {

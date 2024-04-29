@@ -321,7 +321,7 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
            
     # Cargar la plantilla de Word
     if fecha_inicio == 0 or fecha_fin == 0: 
-        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte _usuario.docx')
+        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte_usuario.docx')
         # Renderizar la plantilla con los datos del formulario
         turnos = Turnos.query.all()
         total_turnos = 0
@@ -417,14 +417,14 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
     doc.add_picture('grafico_servicios.png', width=Inches(6))
 
     # Guardar el nuevo documento generado
-    doc.save('C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.docx')
+    doc.save('C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_personalizado.docx')
 
     pythoncom.CoInitialize()
     # Ruta al documento DOCX de entrada
-    docx_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.docx"
+    docx_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_personalizado.docx"
 
     # Ruta de salida para el PDF convertido
-    pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.pdf"
+    pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_personalizado.pdf"
 
     # Convertir el documento DOCX a PDF
     convert(docx_file, pdf_file)

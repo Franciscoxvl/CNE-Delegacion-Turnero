@@ -115,7 +115,7 @@
         var ventanilla = document.getElementById("ventanilla")
 
         const malo = async() =>{
-            const url = new URL('http://10.0.17.68:5000/api/calificar_atencion');
+            const url = new URL('http://10.0.17.52:5000/api/calificar_atencion');
             url.searchParams.append('puesto', ventanilla.value);
             url.searchParams.append('calificacion', "Malo");
 
@@ -138,7 +138,7 @@
         };
 
         const regular = async() =>{
-            const url = new URL('http://10.0.17.68:5000/api/calificar_atencion');
+            const url = new URL('http://10.0.17.52:5000/api/calificar_atencion');
             url.searchParams.append('puesto', ventanilla.value);
             url.searchParams.append('calificacion', "Regular");
 
@@ -161,7 +161,7 @@
         };
 
         const excelente = async() =>{
-            const url = new URL('http://10.0.17.68:5000/api/calificar_atencion');
+            const url = new URL('http://10.0.17.52:5000/api/calificar_atencion');
             url.searchParams.append('puesto', ventanilla.value);
             url.searchParams.append('calificacion', "Excelente");
 
@@ -200,7 +200,7 @@
             });
 
 
-            fetch("messages/agradecimiento_atencion.html")
+            fetch("../static/messages/agradecimiento_atencion.html")
                     .then(response => response.text())
                     .then(html => {
                         // Actualiza el contenido del div con el contenido importado

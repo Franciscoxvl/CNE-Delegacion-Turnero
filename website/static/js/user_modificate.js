@@ -4,7 +4,7 @@ $(document).ready(function() {
     const puestos = {
         "Admin": ['Administracion'],
         "Recepcion": ['Recepcion'],
-        "Ventanilla": ['Ventanilla1', 'Ventanilla2', 'Ventanilla3']
+        "Ventanilla": ['Ventanilla1', 'Ventanilla2', 'Ventanilla3', 'Ventanilla4', 'Ventanilla5']
     };
   
     // Función para obtener opciones de puesto y actualizar el select
@@ -40,7 +40,7 @@ $(document).ready(function() {
         console.log(userIdToModificate)
         // Aquí puedes hacer la llamada a tu API en Flask, pasando userIdToDelete como parámetro
         $.ajax({
-            url: 'http://10.0.17.68:5000/user_alter/' + userIdToModificate,
+            url: 'http://10.0.17.52:5000/user_alter/' + userIdToModificate,
             method: 'POST',
             success: function(response) {
                 // Manejar la respuesta del servidor si es necesario
