@@ -361,16 +361,22 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
     nombre = user.nombre
     apellido = user.apellido
            
-    # Cargar la plantilla de Word
+
     if fecha_inicio == 0 or fecha_fin == 0: 
         doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte_usuario.docx')
-        # Renderizar la plantilla con los datos del formulario
+
+        usuario = Puestos.query.filter_by(id_user = id_user).first()
+        puesto = usuario.descripcion
+        calificaciones = Calificacion.query.filter_by(ventanilla = puesto)
         turnos = Turnos.query.all()
         total_turnos = 0
         total_turnos_cd = 0
         total_turnos_jfs = 0
         total_turnos_dcv = 0
         total_turnos_dfs = 0
+        excelente = 0
+        regular = 0
+        malo = 0
 
         for turno in turnos:
             if turno.puesto.descripcion == rol:
@@ -383,7 +389,15 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
                     total_turnos_dcv += 1
                 else:
                     total_turnos_dfs += 1
-            
+        
+        for calificacion in calificaciones:
+            if calificacion.calificacion == "Malo":
+                malo += 1
+            elif calificacion.calificacion == "Regular":
+                regular += 1
+            else:
+                excelente += 1
+
         context = {
             'puesto': rol,
             'fecha': fecha,
@@ -393,18 +407,28 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
             'total_turnos_dcv' : total_turnos_dcv,
-            'total_turnos_dfs' : total_turnos_dfs
+            'total_turnos_dfs' : total_turnos_dfs,
+            'excelente': excelente,
+            'regular' : regular,
+            'malo' : malo
         }
         
     else:
         doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte_usuario_personalizado.docx')
-        # Renderizar la plantilla con los datos del formulario
+        
+        usuario = Puestos.query.filter_by(id_user = id_user).first()
+        puesto = usuario.descripcion
+        calificaciones_total = Calificacion.query.filter(Calificacion.fecha >= fecha_inicio, Calificacion.fecha <= fecha_fin).all()
         turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).all()
         total_turnos = 0
         total_turnos_cd = 0
         total_turnos_jfs = 0
         total_turnos_dcv = 0
         total_turnos_dfs = 0
+        calificaciones = []
+        excelente = 0
+        regular = 0
+        malo = 0
 
         for turno in turnos:
             if turno.puesto.descripcion == rol:
@@ -417,6 +441,19 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
                     total_turnos_dcv += 1
                 else:
                     total_turnos_dfs += 1
+
+        for calificacion in calificaciones_total:
+            if calificacion.ventanilla == puesto:
+                calificaciones.append(calificacion)
+        
+        for cal in calificaciones:
+            if cal.calificacion == "Malo":
+                malo += 1
+            elif cal.calificacion == "Regular":
+                regular += 1
+            else:
+                excelente += 1
+
             
         context = {
             'puesto': rol,
@@ -429,13 +466,16 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
             'total_turnos_dcv' : total_turnos_dcv,
-            'total_turnos_dfs' : total_turnos_dfs
+            'total_turnos_dfs' : total_turnos_dfs,
+            'excelente': excelente,
+            'regular' : regular,
+            'malo' : malo
         }
 
 
     servicios = ['Cambios domicilio', 'Justificaciones', 'Duplicados CV', 'Desafiliaciones']
     servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_dcv, total_turnos_dfs]
-    colores = ['#136CB2', '#17D3E3', '#1DEEC8', '#35EE94']
+    colores = ['#136CB2', '#0E8DAF', '#1DEEC8', '#35EE94']
     # Crear un gráfico utilizando matplotlib
     plt.bar(servicios, servicios_valores, color=colores)
     plt.xlabel('Servicios', fontweight='bold')
@@ -454,19 +494,43 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
     plt.clf()
     plt.close()
 
+
+    satisfaccion = ['Malo', 'Regular', 'Excelente']
+    satisfaccion_valores = [malo, regular, excelente]
+    colores = ['#FF0000', '#FEBB00', '#008000']
+    # Crear un gráfico utilizando matplotlib
+    plt.bar(satisfaccion, satisfaccion_valores, color=colores)
+    plt.xlabel('Satisfaccion', fontweight='bold')
+    plt.ylabel('Cantidad', fontweight='bold')
+    plt.title('Satisfaccion del cliente', fontweight='bold')
+
+    # Personalizar el estilo de las barras
+    plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
+    plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
+    plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
+    plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
+    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
+
+    # Guardar el gráfico como una imagen
+    plt.savefig('grafico_satisfaccion.png')
+    plt.clf()
+    plt.close()
+
+
     # Insercion de graficos al documento
     doc.render(context)
     doc.add_picture('grafico_servicios.png', width=Inches(6))
+    doc.add_picture('grafico_satisfaccion.png', width=Inches(6))
 
     # Guardar el nuevo documento generado
-    doc.save('C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_personalizado.docx')
+    doc.save('C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_user.docx')
 
     pythoncom.CoInitialize()
     # Ruta al documento DOCX de entrada
-    docx_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_personalizado.docx"
+    docx_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_user.docx"
 
     # Ruta de salida para el PDF convertido
-    pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_personalizado.pdf"
+    pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_user.pdf"
 
     # Convertir el documento DOCX a PDF
     convert(docx_file, pdf_file)
