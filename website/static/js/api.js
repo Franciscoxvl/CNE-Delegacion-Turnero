@@ -243,7 +243,7 @@ const turno_assignado_mensaje = (turno) => {
 
 const salir = ()  => {
     // Redirecciona a la URL deseada
-    window.location.href = "http://10.0.17.52:5000/logout";
+    window.location.href = "http://10.0.17.52/logout";
 };
 
 

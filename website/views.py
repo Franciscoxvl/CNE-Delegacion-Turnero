@@ -5,12 +5,14 @@ views = Blueprint('views', __name__)
 
 
 @views.route('/')
-@login_required
 def book():
-    if current_user.rol == "recepcion":
-        return render_template("book.html")
+    if current_user.is_authenticated:
+        if current_user.rol == "recepcion":
+            return render_template("book.html")
+        else:
+            return redirect(url_for('auth.login'))
     else:
-        return redirect(url_for('auth.login'))
+        return render_template("login.html")
 
 @views.route('/visualizer')
 def visualizer():

@@ -19,7 +19,7 @@ def login():
             return redirect(url_for('user.profile'))
     
     else:
-        return render_template("login.html")
+        return redirect(url_for('views.book'))
 
 @auth.route('/logout')
 @login_required

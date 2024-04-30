@@ -40,7 +40,7 @@ $(document).ready(function() {
         console.log(userIdToModificate)
         // Aquí puedes hacer la llamada a tu API en Flask, pasando userIdToDelete como parámetro
         $.ajax({
-            url: 'http://10.0.17.52:5000/user_alter/' + userIdToModificate,
+            url: 'http://10.0.17.52/user_alter/' + userIdToModificate,
             method: 'POST',
             success: function(response) {
                 // Manejar la respuesta del servidor si es necesario

@@ -6,11 +6,12 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pythoncom
 from flask import request
-from docx2pdf import convert
 from docx.shared import Inches
 from datetime import datetime, timedelta
 from sqlalchemy import text
 from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario, Calificacion
+import subprocess
+
 
 def cantidad_turnos(id_servicio):
     
@@ -344,9 +345,16 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     # Ruta de salida para el PDF convertido
     pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.pdf"
 
-    # Convertir el documento DOCX a PDF
-    convert(docx_file, pdf_file)
-    return 200
+    command = ["pandoc", docx_file, "-o", pdf_file]
+
+    try:
+        # Ejecutar el comando utilizando subprocess
+        subprocess.run(command, check=True)
+        # Enviar el archivo PDF al cliente
+        return 200
+    except subprocess.CalledProcessError as e:
+        return f"Error durante la conversión: {e}", 500
+    # return 200
 
 
 def siguiente_id_disponible():
@@ -533,7 +541,7 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
     pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_user.pdf"
 
     # Convertir el documento DOCX a PDF
-    convert(docx_file, pdf_file)
+    # convert(docx_file, pdf_file)
     return 200
 
 

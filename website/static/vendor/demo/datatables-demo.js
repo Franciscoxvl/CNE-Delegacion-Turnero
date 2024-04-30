@@ -27,7 +27,7 @@ $(document).ready(function() {
     var xhr = new XMLHttpRequest();
     var mensaje = document.getElementById("mensaje_cargando")
     mensaje.style.display = "block";
-    xhr.open('GET', 'http://10.0.17.52:5000/api/generar_reporte?fecha_inicio=&fecha_fin=', true);
+    xhr.open('GET', 'http://10.0.17.52/api/generar_reporte?fecha_inicio=&fecha_fin=', true);
     xhr.responseType = 'blob'; 
     xhr.onload = function() {
       if (xhr.status === 200) {
@@ -43,6 +43,7 @@ $(document).ready(function() {
 
       } else {
         alert('Error al generar el reporte.');
+        console.log(xhr.responseText)
       }
     };
     xhr.send();
@@ -56,7 +57,7 @@ $(document).ready(function() {
       return;
     }
     mensaje.style.display = "block";
-    xhr.open('GET', 'http://10.0.17.52:5000/api/generar_reporte?fecha_inicio=' + fecha_start + '&fecha_fin=' + fecha_end, true);
+    xhr.open('GET', 'http://10.0.17.52/api/generar_reporte?fecha_inicio=' + fecha_start + '&fecha_fin=' + fecha_end, true);
     xhr.responseType = 'blob';
     xhr.onload = function() {
       if (xhr.status === 200) {
@@ -71,6 +72,7 @@ $(document).ready(function() {
         mensaje.style.display = "none";
       } else {
         alert('Error al generar el reporte.');
+        console.log(xhr.responseText)
       }
     };
     xhr.send();
