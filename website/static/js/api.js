@@ -13,7 +13,7 @@ const obtener_turno = async (servicio) => {
     const checkedbox = document.getElementById("preferencial");
     const preferencial = checkedbox.checked ? true : false;
 
-    const url = new URL('http://10.0.17.52:5000/api/generar_turno_espera');
+    const url = new URL('http://10.0.17.165/api/generar_turno_espera');
     url.searchParams.append('servicio', servicio);
     url.searchParams.append('preferencial', preferencial);
 
@@ -133,7 +133,7 @@ const show_message = (kind_message) => {
                     div_requirements.style.width = "90%";
                     div_requirements.innerHTML = html;
 
-                    if(window.innerHeight < 768){
+                    if(window.innerHeightadmin < 768){
                         div_requirements.style.height = "70%";
                     }else{
                         div_requirements.style.height = "58%";
@@ -243,7 +243,7 @@ const turno_assignado_mensaje = (turno) => {
 
 const salir = ()  => {
     // Redirecciona a la URL deseada
-    window.location.href = "http://10.0.17.52/logout";
+    window.location.href = "http://10.0.17.165:5000/logout";
 };
 
 

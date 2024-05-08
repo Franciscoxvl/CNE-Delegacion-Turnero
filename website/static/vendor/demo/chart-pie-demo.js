@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Función para obtener los datos y dibujar el gráfico
     function obtenerDatosYDibujarGrafico() {
         // Iniciar solicitud fetch para obtener los datos
-        fetch('http://10.0.17.52/api/datos_puestos')
+        fetch('http://10.0.17.165/api/datos_puestos')
         .then(response => {
             // Verificar si la respuesta es exitosa
             if (!response.ok) {

@@ -15,18 +15,12 @@ $(document).ready(function() {
       lengthChange: false
   });
 
-  var userIdToDelete; // Variable global para almacenar el ID del usuario a eliminar
-
-  // Captura el clic en el enlace y guarda el ID del usuario
-  $('[id^=eliminar-usuario]').on('click', function() {
-      userIdToDelete = $(this).data('user-id');
-  });
-
+  var userIdToDelete; // Variable global para almacenar el ID:5000
   // Captura el clic en el botón dentro del modal y utiliza el ID del usuario
   $(document).on('click', '#eliminarUsuarioBtn', function() {
       // Aquí puedes hacer la llamada a tu API en Flask, pasando userIdToDelete como parámetro
       $.ajax({
-          url: 'http://10.0.17.52/user_remove/' + userIdToDelete,
+          url: 'http://10.0.17.165/user_remove/' + userIdToDelete,
           method: 'DELETE',
           success: function(response) {
               // Manejar la respuesta del servidor si es necesario

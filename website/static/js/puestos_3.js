@@ -6,7 +6,7 @@ if (valorGuardado){
     turno_puesto.textContent = valorGuardado;
 };
 // Configuración del objeto socket
-var socket = io.connect('http://10.0.17.52');  // Reemplaza con la URL de tu servidor Socket.IO
+var socket = io.connect('http://10.0.17.165');  // Reemplaza con la URL de tu servidor Socket.IO
 
 
 // Manejador de eventos para el evento 'connect'
@@ -67,7 +67,7 @@ socket.on('espera_asignacion', () => {
 const actualizarTabla = () => {
     const id_user = document.getElementById("id_user")
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://10.0.17.52/api/actualizar_tabla' + '?id_user=' + encodeURIComponent(id_user.value)); // Replace with your API endpoint
+    xhr.open('GET', 'http://10.0.17.165/api/actualizar_tabla' + '?id_user=' + encodeURIComponent(id_user.value)); // Replace with your API endpoint
         
     xhr.onload = function() {
     if (xhr.status === 200) {

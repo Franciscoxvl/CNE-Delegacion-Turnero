@@ -4,13 +4,13 @@ from docxtpl import DocxTemplate
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import pythoncom
 from flask import request
 from docx.shared import Inches
 from datetime import datetime, timedelta
 from sqlalchemy import text
 from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario, Calificacion
 import subprocess
+import pdfkit
 
 
 def cantidad_turnos(id_servicio):
@@ -113,9 +113,10 @@ def generar_tespera():
     try:
         id_servicio = request.args.get('servicio')
         preferencial = request.args.get('preferencial')
+        print(id_servicio)
 
         servicio = Servicios.query.all()
-
+        
         codigo  = servicio[int(id_servicio) - 1].codigo
         ahora = datetime.now()
         fecha_hora_actual = ahora.strftime("%Y-%m-%d %H:%M:%S")
@@ -182,7 +183,7 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
 
     # Cargar la plantilla de Word
     if fecha_inicio == 0 or fecha_fin == 0: 
-        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte.docx')
+        doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte.docx')
 
         # Renderizar la plantilla con los datos del formulario
         turnos = Turnos.query.all()
@@ -233,7 +234,7 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
             'total_turnos_v5' : total_turnos_v5
         }
     else:
-        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte_personalizado.docx')
+        doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_personalizado.docx')
         # Renderizar la plantilla con los datos del formulario
         turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).all()
         total_turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).count()
@@ -247,7 +248,6 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
         total_turnos_v4 = 0
         total_turnos_v5 = 0
         
-
         for turno in turnos:
             if turno.id_servicio == 1:
                 total_turnos_cd += 1
@@ -336,25 +336,27 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     doc.add_picture('grafico_puestos.png', width=Inches(6))
 
     # Guardar el nuevo documento generado
-    doc.save('C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.docx')
+    doc.save('/media/admindpp/INFO/apps/Turnero_CNE/website/static/output.docx')
 
-    pythoncom.CoInitialize()
     # Ruta al documento DOCX de entrada
-    docx_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.docx"
+    docx_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/output.docx"
 
     # Ruta de salida para el PDF convertido
-    pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output.pdf"
+    pdf_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/output.pdf"
 
-    command = ["pandoc", docx_file, "-o", pdf_file]
-
+    comando = ["unoconv", "-f", "pdf", "-o", pdf_file, docx_file]
+        
     try:
-        # Ejecutar el comando utilizando subprocess
-        subprocess.run(command, check=True)
-        # Enviar el archivo PDF al cliente
-        return 200
+        proceso = subprocess.run(comando, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if proceso.returncode == 0:
+            print("Documento convertido exitosamente a PDF.")
+            return 200
+        else:
+            print("Error al convertir el documento:", proceso.stderr.decode("utf-8"))
+            return 500
+    
     except subprocess.CalledProcessError as e:
         return f"Error durante la conversión: {e}", 500
-    # return 200
 
 
 def siguiente_id_disponible():
@@ -371,7 +373,7 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
            
 
     if fecha_inicio == 0 or fecha_fin == 0: 
-        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte_usuario.docx')
+        doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_usuario.docx')
 
         usuario = Puestos.query.filter_by(id_user = id_user).first()
         puesto = usuario.descripcion
@@ -422,7 +424,7 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
         }
         
     else:
-        doc = DocxTemplate('C:\\Users\\AdminDpp\\Desktop\\Reportes\\Modelo_reporte_usuario_personalizado.docx')
+        doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_usuario_personalizado.docx')
         
         usuario = Puestos.query.filter_by(id_user = id_user).first()
         puesto = usuario.descripcion
@@ -531,18 +533,27 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
     doc.add_picture('grafico_satisfaccion.png', width=Inches(6))
 
     # Guardar el nuevo documento generado
-    doc.save('C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_user.docx')
+    doc.save('/media/admindpp/INFO/apps/Turnero_CNE/website/static/output_user.docx')
 
-    pythoncom.CoInitialize()
     # Ruta al documento DOCX de entrada
-    docx_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_user.docx"
+    docx_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/output_user.docx"
 
     # Ruta de salida para el PDF convertido
-    pdf_file = "C:\\Users\\AdminDpp\\Desktop\\Proyectos\\Turnero_CNE\\website\\static\\output_user.pdf"
+    pdf_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/output_user.pdf"
 
-    # Convertir el documento DOCX a PDF
-    # convert(docx_file, pdf_file)
-    return 200
+    comando = ["unoconv", "-f", "pdf", "-o", pdf_file, docx_file]
+        
+    try:
+        proceso = subprocess.run(comando, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if proceso.returncode == 0:
+            print("Documento convertido exitosamente a PDF.")
+            return 200
+        else:
+            print("Error al convertir el documento:", proceso.stderr.decode("utf-8"))
+            return 500
+    
+    except subprocess.CalledProcessError as e:
+        return f"Error durante la conversión: {e}", 500
 
 
 def calificacion_atencion(puesto, calificacion):

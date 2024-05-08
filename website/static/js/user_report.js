@@ -13,7 +13,7 @@ $(document).ready(function() {
     var mensaje = document.getElementById("mensaje_cargando")
 
     mensaje.style.display = "block";
-    xhr.open('GET', 'http://10.0.17.52/api/generar_reporte_usuario?fecha_inicio=&fecha_fin=&rol=' + rol + '&id_user=' + id_user, true);
+    xhr.open('GET', 'http://10.0.17.165/api/generar_reporte_usuario?fecha_inicio=&fecha_fin=&rol=' + rol + '&id_user=' + id_user, true);
     xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
     xhr.onload = function() {
       if (xhr.status === 200) {
@@ -49,7 +49,7 @@ $(document).ready(function() {
     }
 
     mensaje.style.display = "block";
-    xhr.open('GET', 'http://10.0.17.52/api/generar_reporte_usuario?fecha_inicio=' + fecha_start + '&fecha_fin=' + fecha_end + '&rol=' + rol + '&id_user=' + id_user, true);
+    xhr.open('GET', 'http://10.0.17.165/api/generar_reporte_usuario?fecha_inicio=' + fecha_start + '&fecha_fin=' + fecha_end + '&rol=' + rol + '&id_user=' + id_user, true);
     xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
     xhr.onload = function() {
       if (xhr.status === 200) {

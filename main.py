@@ -25,6 +25,6 @@ if __name__ == '__main__':
     app.register_error_handler(404, status_404)
     
     try:
-        socketio.run(app, host='10.0.17.52', debug=True, use_reloader=False)
+        socketio.run(app, host='0.0.0.0', debug=True, use_reloader=False)
     finally:
         stop_consultar_turno()

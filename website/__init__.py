@@ -16,14 +16,14 @@ def create_app():
     app = Flask(__name__)
     CORS(app, origins='*')
     app.config['SECRET_KEY'] = 'FValdez181222'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:123456789@localhost/turnos?charset=utf8mb4&collation=utf8mb4_bin'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:AdminDpp17%@localhost:3306/turnos?charset=utf8mb4'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['DEBUG'] = True
     app.config['ENV'] = 'development'
 
     login_manager.init_app(app)
     db.init_app(app)  # Inicializa SQLAlchemy con la aplicación
-    socketio.init_app(app)
+    socketio.init_app(app, cors_allowed_origins="*")
 
     from .views import views
     from .auth import auth

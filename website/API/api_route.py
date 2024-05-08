@@ -138,12 +138,18 @@ def resetear_usuario():
     if request.method == 'POST':
         id = request.form['id']
         password = request.form['password']
+        repeat_password = request.form['repeat-password']
 
-        usuario_modificar = Usuario.query.filter_by(id = id).first()
-        usuario_modificar.cambiar_password(password)
+        if password != repeat_password:
+            flash("Las contraseñas no coinciden!", 'error')
+            return redirect(url_for('user.user_reset', id_user = id))
+        else:
 
-        flash("La contraseña fue reseteada correctamente", 'success')
-        return redirect(url_for('user.user_management'))
+            usuario_modificar = Usuario.query.filter_by(id = id).first()
+            usuario_modificar.cambiar_password(password)
+
+            flash("La contraseña fue reseteada correctamente", 'success')
+            return redirect(url_for('user.user_management'))
 
 @api_bp.route('/actualizar_tabla', methods=['GET'])
 def actualizar_tabla():
