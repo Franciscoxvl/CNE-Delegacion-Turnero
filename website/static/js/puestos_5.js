@@ -14,7 +14,7 @@ socket.on('connect', function() {
     console.log('Conexión establecida correctamente al servidor Socket.IO');
 });
 
-socket.on('turno_espera', () => {
+socket.on('turno_espera', (estado_turno) => {
     actualizarTabla();
 });
 

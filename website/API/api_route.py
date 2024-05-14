@@ -1,11 +1,8 @@
-import os
 from flask import jsonify, request, flash, url_for, redirect
 from . import api_bp
 from website import socketio
-from datetime import datetime
-from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario
+from website.models import Turnos, db, Puestos, Usuario
 from website.user import consultar_tabla
-from sqlalchemy import text
 from website.utils import *
 
 #---------------------------------------------RUTAS---------------------------------------------------#
@@ -43,10 +40,10 @@ def generar_reporte():
 
             if len(fecha_inicio) == 0 or len(fecha_fin) == 0:
                 resultado = generacion_reporte()
-                return "Reporte Generado exitosamente!", resultado
+                return "Reporte Generado exitosamente!"
             else:
                 resultado = generacion_reporte(fecha_inicio, fecha_fin)
-                return "Reporte Generado exitosamente!", resultado
+                return "Reporte Generado exitosamente!"
 
         except Exception as e:
             error = str(e)
@@ -65,12 +62,11 @@ def generar_reporte_usuario():
 
             if len(fecha_inicio) == 0 or len(fecha_fin) == 0:
                 resultado = generacion_reporte_usuario(0, 0, rol, id_user)
-                return "Reporte Generado exitosamente!", resultado
+                return "Reporte Generado exitosamente 200!"
             else:
                 resultado = generacion_reporte_usuario(fecha_inicio, fecha_fin, rol, id_user)
-                return "Reporte Generado exitosamente!", resultado
+                return "Reporte Generado exitosamente 300!"
             
-
         except Exception as e:
             error = str(e)
             print(error)

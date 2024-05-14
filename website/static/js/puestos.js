@@ -4,22 +4,27 @@ let valorGuardado = localStorage.getItem('turno');
 if (valorGuardado){
     var turno_puesto = document.getElementById("turno_actual");
     turno_puesto.textContent = valorGuardado;
-};
-// Configuración del objeto socket
-var socket = io.connect('http://10.0.17.165');  // Reemplaza con la URL de tu servidor Socket.IO
+}
 
+// Configuración del objeto socket
+var socket = io('http://10.0.17.165');  // Reemplaza con la URL de tu servidor Socket.IO
 
 // Manejador de eventos para el evento 'connect'
 socket.on('connect', function() {
     console.log('Conexión establecida correctamente al servidor Socket.IO');
 });
 
-socket.on('turno_espera', () => {
+// Función para liberar un puesto
+const liberarPuesto = (puestoId) => {
+    socket.emit('liberar_puesto', { puestoId });
+}
+
+socket.on('turno_espera', (estado_turno) => {
     actualizarTabla();
 });
 
-socket.on('turno_asignado', (data) => {
-    
+
+socket.on('turno_asignado', (data) => {  
     if (data.puesto == 1){
         var codigo = data.codigo;
         var numero_turno = data.numero_turno;
@@ -28,7 +33,7 @@ socket.on('turno_asignado', (data) => {
         var turno_puesto = document.getElementById("turno_actual");
         turno_puesto.textContent = turno;
     }
-    
+      
 });
 
 // Manejador de eventos para el evento 'disconnect'
@@ -51,11 +56,6 @@ socket.on('reconnect', function(attemptNumber) {
     console.log('Reconexión exitosa (intento número ' + attemptNumber + ')');
 });
 
-// Función para liberar un puesto
-const liberarPuesto = (puestoId) => {
-    socket.emit('liberar_puesto', { puestoId });
-}
-
 socket.on('espera_asignacion', () => {
     var boton = document.getElementById("boton_liberar");
     boton.disabled = true;
@@ -69,23 +69,23 @@ const actualizarTabla = () => {
     const id_user = document.getElementById("id_user")
     const xhr = new XMLHttpRequest();
     xhr.open('GET', 'http://10.0.17.165/api/actualizar_tabla' + '?id_user=' + encodeURIComponent(id_user.value)); // Replace with your API endpoint
-        
+
     xhr.onload = function() {
-    if (xhr.status === 200) {
-        const nuevosTurnos = JSON.parse(xhr.responseText); // Assuming JSON response
-        actualizarTablaConNuevosDatos(nuevosTurnos.turnos);
-        if (nuevosTurnos.turnos.length == 0 && nuevosTurnos.pendiente == false){
-            localStorage.setItem('turno', "N/A");
-            var turno_puesto = document.getElementById("turno_actual");
-            turno_puesto.textContent = "N/A";            
-        };
-    } else {
+        if (xhr.status === 200) {
+          const nuevosTurnos = JSON.parse(xhr.responseText); // Assuming JSON response
+          actualizarTablaConNuevosDatos(nuevosTurnos.turnos);
+          if (nuevosTurnos.turnos.length == 0 && nuevosTurnos.pendiente == false){
+              localStorage.setItem('turno', "N/A");
+              var turno_puesto = document.getElementById("turno_actual");
+              turno_puesto.textContent = "N/A";            
+          };
+      } else {
         console.error('Error al obtener los datos:', xhr.statusText);
-    }
+      }
     };
 
     xhr.send();
-}
+  }
 
 // Function to update the table content with new data
 const actualizarTablaConNuevosDatos = (nuevosTurnos) => {
@@ -96,25 +96,20 @@ const actualizarTablaConNuevosDatos = (nuevosTurnos) => {
 
     // Loop through new data and update table rows
     for (const turno of nuevosTurnos) {
-    const nuevaFila = document.createElement('tr');
-    
-    const celdaCodigoServicio = document.createElement('td');
-    celdaCodigoServicio.textContent = turno.codigo_turno + turno.id_turno;
-    nuevaFila.appendChild(celdaCodigoServicio);
+        const nuevaFila = document.createElement('tr');
+      
+        const celdaCodigoServicio = document.createElement('td');
+        celdaCodigoServicio.textContent = turno.codigo_turno + turno.id_turno;
+        nuevaFila.appendChild(celdaCodigoServicio);
 
-    const celdaServicio = document.createElement('td');
-    celdaServicio.textContent = turno.servicio;
-    nuevaFila.appendChild(celdaServicio);
+        const celdaServicio = document.createElement('td');
+        celdaServicio.textContent = turno.servicio;
+        nuevaFila.appendChild(celdaServicio);
 
-    const celdaFecha = document.createElement('td');
-    celdaFecha.textContent = turno.fecha_solicitud;
-    nuevaFila.appendChild(celdaFecha);
+        const celdaFecha = document.createElement('td');
+        celdaFecha.textContent = turno.fecha_solicitud;
+        nuevaFila.appendChild(celdaFecha);
 
-    tablaBody.appendChild(nuevaFila);
+        tablaBody.appendChild(nuevaFila);
     }
 }
-
-
-
-
-

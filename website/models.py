@@ -63,6 +63,7 @@ class Usuario(db.Model, UserMixin):
     apellido = db.Column(db.String(50), nullable=False)
     rol = db.Column(db.String(20), nullable=False)
     puesto = db.Column(db.String(20), nullable=False)
+    provincia = db.Column(db.String(50), nullable=False)
 
 
     def set_password(self, password):

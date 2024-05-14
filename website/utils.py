@@ -1,16 +1,15 @@
-import os
 from website import socketio
 from docxtpl import DocxTemplate
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from flask import request
+from flask import app, request
 from docx.shared import Inches
 from datetime import datetime, timedelta
 from sqlalchemy import text
 from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario, Calificacion
 import subprocess
-import pdfkit
+
 
 
 def cantidad_turnos(id_servicio):
@@ -76,15 +75,15 @@ def asignar_turno(id):
         db.session.commit()
 
 def consultar_turno(app):
-    from website.models import Espera
-
     with app.app_context():
         try:
             turnos = Espera.query.count()
             if turnos == 0:
-                return "No hay turnos pendientes"
+                mensaje = "No hay turnos pendientes"
+                return mensaje
             else:
-                return "Hay turnos pendientes"
+                mensaje = "Hay turnos pendientes"
+                return mensaje
         except Exception as e:
             print(f"Error al consultar turnos: {str(e)}")
 
@@ -175,6 +174,16 @@ def liberar_turno(id):
             if turno.estado_turno == "Asignado":
                 turno.estado_turno = 'Completado'
                 db.session.commit()
+
+def generate_pdf(doc_path, path):
+    subprocess.call(['soffice',
+                     # '--headless',
+                     '--convert-to',
+                     'pdf',
+                     '--outdir',
+                     path,
+                     doc_path])
+    return doc_path
 
 def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     # Obtener los datos del formulario
@@ -308,7 +317,6 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     plt.clf()
     plt.close()
 
-
     puestos = ['Ventanilla 1', 'Ventanilla 2', 'Ventanilla 3', 'Ventanilla 4', 'Ventanilla 5']
     puestos_valores = [total_turnos_v1, total_turnos_v2, total_turnos_v3, total_turnos_v4, total_turnos_v5]
     colores_puestos = ['#F1F139', '#108AF0', '#F53131', '#108AF0', '#F1F139']
@@ -342,21 +350,14 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     docx_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/output.docx"
 
     # Ruta de salida para el PDF convertido
-    pdf_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/output.pdf"
+    pdf_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static"
 
-    comando = ["unoconv", "-f", "pdf", "-o", pdf_file, docx_file]
-        
     try:
-        proceso = subprocess.run(comando, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if proceso.returncode == 0:
-            print("Documento convertido exitosamente a PDF.")
-            return 200
-        else:
-            print("Error al convertir el documento:", proceso.stderr.decode("utf-8"))
-            return 500
+        doc_path = generate_pdf(docx_file, pdf_file)
+        return 200
     
-    except subprocess.CalledProcessError as e:
-        return f"Error durante la conversión: {e}", 500
+    except FileNotFoundError as e:
+        return 500
 
 
 def siguiente_id_disponible():
@@ -371,7 +372,6 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
     nombre = user.nombre
     apellido = user.apellido
            
-
     if fecha_inicio == 0 or fecha_fin == 0: 
         doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_usuario.docx')
 
@@ -539,21 +539,14 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
     docx_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/output_user.docx"
 
     # Ruta de salida para el PDF convertido
-    pdf_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/output_user.pdf"
+    pdf_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/"
 
-    comando = ["unoconv", "-f", "pdf", "-o", pdf_file, docx_file]
-        
     try:
-        proceso = subprocess.run(comando, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if proceso.returncode == 0:
-            print("Documento convertido exitosamente a PDF.")
-            return 200
-        else:
-            print("Error al convertir el documento:", proceso.stderr.decode("utf-8"))
-            return 500
+        doc_path = generate_pdf(docx_file, pdf_file)
+        return doc_path
     
-    except subprocess.CalledProcessError as e:
-        return f"Error durante la conversión: {e}", 500
+    except FileNotFoundError as e:
+        return e, 500
 
 
 def calificacion_atencion(puesto, calificacion):

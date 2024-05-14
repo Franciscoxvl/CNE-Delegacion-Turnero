@@ -4,27 +4,32 @@ from flask_socketio import SocketIO
 from flask_apscheduler import APScheduler
 from flask_cors import CORS
 from flask_login import LoginManager
+import logging
 
+# Configuración de la base de datos
 db = SQLAlchemy()
 login_manager = LoginManager()
-socketio = SocketIO()
 scheduler = APScheduler()
-
+socketio = SocketIO() 
 
 def create_app():
 
     app = Flask(__name__)
+    app.logger.setLevel(logging.DEBUG)
     CORS(app, origins='*')
     app.config['SECRET_KEY'] = 'FValdez181222'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:AdminDpp17%@localhost:3306/turnos?charset=utf8mb4'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['FLASKS_SERVE_STATIC_FILES'] = True
     app.config['DEBUG'] = True
     app.config['ENV'] = 'development'
 
+    # Inicialización de extensiones
     login_manager.init_app(app)
-    db.init_app(app)  # Inicializa SQLAlchemy con la aplicación
-    socketio.init_app(app, cors_allowed_origins="*")
+    db.init_app(app)
+    socketio.init_app(app, message_queue='redis://localhost:6379', cors_allowed_origins='*')
 
+    # Registro de blueprints
     from .views import views
     from .auth import auth
     from .user import user
@@ -35,4 +40,4 @@ def create_app():
     app.register_blueprint(user, url_prefix='/')
     app.register_blueprint(api_bp, url_prefix='/api')
 
-    return app, socketio
+    return app, socketio  # Return both app and socketio object

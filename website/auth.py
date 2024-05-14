@@ -33,7 +33,6 @@ def sign_up():
 
 @auth.route('/validacion_usuario', methods=['POST'])
 def validacion_usuario():
-    from website.models import Usuario
 
     if request.method == 'POST':
         # Obtener los datos del formulario

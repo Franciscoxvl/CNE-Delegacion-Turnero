@@ -43,7 +43,7 @@ $(document).ready(function() {
 
       } else {
         alert('Error al generar el reporte.');
-        console.log(xhr.responseText)
+        console.log(xhr.response)
       }
     };
     xhr.send();

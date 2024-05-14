@@ -1,10 +1,7 @@
 from flask import Blueprint, render_template, render_template, jsonify, flash, redirect, url_for, request, after_this_request
 from flask_login import  login_required, current_user
 from website.models import Turnos, Usuario, db, Espera
-import matplotlib.pyplot as plt
 from datetime import datetime
-from docxtpl import DocxTemplate
-from docx.shared import Inches
 
 user = Blueprint('user', __name__)
 

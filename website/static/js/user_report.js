@@ -6,14 +6,15 @@ $(document).ready(function() {
 
   // Add event listener to the generate report button
   $('#botonReportesG').click(function() {
-    console.log("probando")
     var xhr = new XMLHttpRequest();
     var rol = $('#rol').val();
     var id_user = $('#id_user').val();
     var mensaje = document.getElementById("mensaje_cargando")
 
     mensaje.style.display = "block";
+
     xhr.open('GET', 'http://10.0.17.165/api/generar_reporte_usuario?fecha_inicio=&fecha_fin=&rol=' + rol + '&id_user=' + id_user, true);
+    
     xhr.responseType = 'blob'; // Indica que esperamos una respuesta de tipo blob (archivo)
     xhr.onload = function() {
       if (xhr.status === 200) {

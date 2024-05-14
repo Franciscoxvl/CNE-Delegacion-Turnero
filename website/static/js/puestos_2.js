@@ -14,10 +14,6 @@ socket.on('connect', function() {
     console.log('Conexión establecida correctamente al servidor Socket.IO');
 });
 
-socket.on('turno_espera', () => {
-    actualizarTabla();
-});
-
 socket.on('turno_asignado', (data) => {
     if (data.puesto == 2){
         var codigo = data.codigo;
@@ -47,6 +43,10 @@ socket.on('connect_timeout', function(timeout) {
 // Manejador de eventos para el evento 'reconnect'
 socket.on('reconnect', function(attemptNumber) {
     console.log('Reconexión exitosa (intento número ' + attemptNumber + ')');
+});
+
+socket.on('turno_espera', (estado_turno) => {
+    actualizarTabla();
 });
 
 // Función para liberar un puesto
