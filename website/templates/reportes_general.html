@@ -53,8 +53,10 @@
                         <tr class="bg-gradient-primary">
                             <th style="text-align: center;">ID</th>
                             <th style="text-align: center;">Servicio</th>
+                            <th style="text-align: center;">Número de formulario</th>
                             <th style="text-align: center;">Puesto</th>
-                            <th style="text-align: center;">Numero turno</th>
+                            <th style="text-align: center;">Usuario</th>
+                            <th style="text-align: center;">Número turno</th>
                             <th style="text-align: center;">Fecha</th>
                             <th style="text-align: center;">Estado turno</th>
                         </tr>
@@ -63,8 +65,10 @@
                         <tr class="bg-gradient-primary">
                             <th style="text-align: center;">ID</th>
                             <th style="text-align: center;">Servicio</th>
+                            <th style="text-align: center;">Número de formulario</th>
                             <th style="text-align: center;">Puesto</th>
-                            <th style="text-align: center;">Numero turno</th>
+                            <th style="text-align: center;">Usuario</th>
+                            <th style="text-align: center;">Número turno</th>
                             <th style="text-align: center;">Fecha</th>
                             <th style="text-align: center;">Estado turno</th>
                         </tr>
@@ -72,12 +76,14 @@
                     <tbody>
                         {% for turno in turnos %}
                         <tr>
-                            <td>{{turno.id}}</td>
-                            <td>{{turno.servicio.descripcion}}</td>
-                            <td>{{turno.puesto.descripcion}}</td>
-                            <td>{{turno.numero_turno}}</td>
-                            <td>{{turno.fecha}}</td>
-                            <td>{{turno.estado_turno}}</td>
+                            <td style="text-align: center;">{{turno.id}}</td>
+                            <td style="text-align: center;">{{turno.servicio.descripcion}}</td>
+                            <td style="text-align: center;">{{turno.numero_formulario}}</td>
+                            <td style="text-align: center;">{{turno.puesto}}</td>
+                            <td style="text-align: center;">{{turno.usuario}}</td>
+                            <td style="text-align: center;">{{turno.numero_turno}}</td>
+                            <td style="text-align: center;">{{turno.fecha}}</td>
+                            <td style="text-align: center;">{{turno.estado_turno}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -7,7 +7,7 @@ $(document).ready(function() {
           url: 'static/vendor/Spanish.json'
       },
       paging: true,
-      searching: false,
+      searching: true,
       ordering: true,
       info: false,
       processing: false,

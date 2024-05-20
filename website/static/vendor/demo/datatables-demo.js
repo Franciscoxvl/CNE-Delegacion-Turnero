@@ -83,7 +83,7 @@ $(document).ready(function() {
   function filterByDateRange() {
     $.fn.dataTable.ext.search.push(
       function(settings, data, dataIndex) {
-        var date = data[4]; // Especificar el índice de la columna de fecha
+        var date = data[6]; // Especificar el índice de la columna de fecha
         var startDate = $('#fechaInicio').val();
         var endDate = $('#fechaFin').val();
         fecha_end = endDate;

@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, render_template, jsonify, flash, redirect, url_for, request, after_this_request
+from flask import Blueprint, render_template, render_template, flash, redirect, url_for
 from flask_login import  login_required, current_user
-from website.models import Turnos, Usuario, db, Espera
+from website.models import Turnos, Usuario, db, Espera, Puestos
 from datetime import datetime
 
 user = Blueprint('user', __name__)
@@ -94,8 +94,7 @@ def user_create():
         return redirect(url_for('user.profile'))
     
     else:
-        return redirect(url_for('user.profile'))
-
+        return redirect(url_for('user.profile'))       
 
 @user.route('/user_management')
 @login_required

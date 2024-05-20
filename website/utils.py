@@ -4,12 +4,16 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from flask import app, request
+from flask_login import  login_required, current_user
 from docx.shared import Inches
 from datetime import datetime, timedelta
 from sqlalchemy import text
 from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario, Calificacion
 import subprocess
 
+def consultar_numero_ventanillas(servicio):
+    Usuarios_puesto = Usuario.query.filter_by(servicio = servicio).all()
+    return len(Usuarios_puesto)
 
 
 def cantidad_turnos(id_servicio):
@@ -37,33 +41,56 @@ def cantidad_turnos(id_servicio):
 
     return cantidad_turnos
 
-def asignar_turno(id):
+def asignar_turno(puesto):
+
+
+    puesto_servicio = puesto[0:3]
     
     if Espera.query.count() == 0:
         print("La tabla esta vacia, no hay turnos pendientes")
     else:
         #Asignacion de valores al nuevo turno
-        nuevo_turno = Espera.query.first()
+        if puesto_servicio == "VCD":
+            nuevo_turno = Espera.query.filter_by(id_servicio = 1).first()
+            if nuevo_turno == None:
+                return "Tabla vacia"
+        elif puesto_servicio == "VJF":
+            nuevo_turno = Espera.query.filter_by(id_servicio = 2).first()
+            if nuevo_turno == None:
+                return "Tabla vacia"
+        elif puesto_servicio == "VCJ":
+            nuevo_turno = Espera.query.filter_by(id_servicio = 3).first()
+            if nuevo_turno == None:
+                return "Tabla vacia"
+
+        
         id_servicio = nuevo_turno.id_servicio
-        id_puesto = id
+        puesto = puesto
         numero_turno = nuevo_turno.id_turno
         fecha = nuevo_turno.fecha_solicitud
         estado_turno = 'Asignado'
 
+        #Consulta de usuario
+        user = Usuario.query.filter_by(puesto = puesto).first()
+        nombre = user.nombre
+        apellido = user.apellido
+        usuario = nombre + " " + apellido
+
+        #Número de formulario
+        if user.servicio == "Cambios de domicilio":
+            numero_formulario = 1111111
+        else:
+            numero_formulario = 0000000
+
         #Creacion del nuevo turno y guardarlo en la base de datos
-        turno = Turnos(id_servicio=id_servicio, id_puesto = id_puesto, numero_turno=numero_turno, fecha=fecha, estado_turno=estado_turno)
+        turno = Turnos(id_servicio = id_servicio, puesto = puesto, usuario = usuario, numero_turno = numero_turno, numero_formulario = numero_formulario, fecha = fecha, estado_turno = estado_turno)
         db.session.add(turno)
         db.session.commit()
 
         #Envio del mensaje al visualizador
         servicio = Servicios.query.all()
-        mensaje_turnero = {'codigo':servicio[int(id_servicio) - 1].codigo, 'numero_turno':numero_turno, 'puesto':id_puesto}
+        mensaje_turnero = {'codigo':servicio[int(id_servicio) - 1].codigo, 'numero_turno':numero_turno, 'puesto':puesto}
         socketio.emit('turno_asignado', mensaje_turnero)
-
-        #Cambiar el estado del puesto
-        puesto = Puestos.query.get(id_puesto)
-        puesto.estado = "Ocupado"
-        db.session.commit()
 
         #Eliminar de la tabla espera
         db.session.delete(nuevo_turno)
@@ -112,7 +139,6 @@ def generar_tespera():
     try:
         id_servicio = request.args.get('servicio')
         preferencial = request.args.get('preferencial')
-        print(id_servicio)
 
         servicio = Servicios.query.all()
         
@@ -121,6 +147,11 @@ def generar_tespera():
         fecha_hora_actual = ahora.strftime("%Y-%m-%d %H:%M:%S")
 
         numero_turno = cantidad_turnos(id_servicio)
+        tiempo_espera_aproximado = 6
+        turnos = Espera.query.filter_by(id_servicio = id_servicio).all()
+        tiempo_espera = len(turnos)*tiempo_espera_aproximado
+        horas, minutos = minutos_a_horas_y_minutos(tiempo_espera)
+        tiempo_espera_formato = f"{ horas } hora(s) y { minutos } minutos" 
 
         if Espera.query.count() == 0:
             query = text(f"ALTER TABLE {Espera.__tablename__} AUTO_INCREMENT = 1;")
@@ -144,12 +175,17 @@ def generar_tespera():
             db.session.add(nuevo_turno_espera)
             db.session.commit()
 
-        return codigo + str(numero_turno)
+        return codigo + str(numero_turno), tiempo_espera_formato
     
     except Exception as e:
         error = str(e)
         print(error)
         return error, 500
+
+def minutos_a_horas_y_minutos(minutos):
+    horas = minutos // 60
+    minutos_restantes = minutos % 60
+    return horas, minutos_restantes
 
 
 def turnos_puestos():
@@ -164,15 +200,16 @@ def turnos_puestos():
         
     return datos
 
-def liberar_turno(id):
+def liberar_turno(puesto, n_formulario):
 
     var = False
-    turnos = Turnos.query.filter_by(id_puesto = id).all()
+    turnos = Turnos.query.filter_by(puesto = puesto).all()
 
     if turnos:
         for turno in turnos:
             if turno.estado_turno == "Asignado":
                 turno.estado_turno = 'Completado'
+                turno.numero_formulario = n_formulario
                 db.session.commit()
 
 def generate_pdf(doc_path, path):
@@ -186,9 +223,29 @@ def generate_pdf(doc_path, path):
     return doc_path
 
 def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
+
+    numero_ven_cd = 0
+    numero_ven_jfs = 0
+    numero_ven_cjs = 0
+    ventanillas_desordenado = []
+    turnos_por_ventanilla = {}
+     
     # Obtener los datos del formulario
     fecha_actual = datetime.now()
-    fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')   
+    fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
+    Usuarios_ventanilla_total = Usuario.query.filter_by(rol="Ventanilla").all()
+    for usuario_ventanilla in Usuarios_ventanilla_total:
+        puesto = usuario_ventanilla.puesto
+        ventanillas_desordenado.append(puesto)
+        if puesto[0:3] == "VCD":
+            numero_ven_cd += 1
+            turnos_por_ventanilla[puesto] = 0
+        elif puesto[0:3] == "VJF":
+            numero_ven_jfs += 1
+            turnos_por_ventanilla[puesto] = 0
+        else:
+            numero_ven_cjs += 1
+            turnos_por_ventanilla[puesto] = 0 
 
     # Cargar la plantilla de Word
     if fecha_inicio == 0 or fecha_fin == 0: 
@@ -199,48 +256,26 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
         total_turnos = Turnos.query.count()
         total_turnos_cd = 0
         total_turnos_jfs = 0
-        total_turnos_dcv = 0
-        total_turnos_dfs = 0
-        total_turnos_v1 = 0
-        total_turnos_v2 = 0
-        total_turnos_v3 = 0
-        total_turnos_v4 = 0
-        total_turnos_v5 = 0
+        total_turnos_cjs = 0
 
         for turno in turnos:
+            turnos_por_ventanilla[turno.puesto] += 1
             if turno.id_servicio == 1:
                 total_turnos_cd += 1
             elif turno.id_servicio == 2:
                 total_turnos_jfs += 1
-            elif turno.id_servicio == 3:
-                total_turnos_dcv += 1
             else:
-                total_turnos_dfs += 1
+                total_turnos_cjs += 1
         
-        for turno in turnos:
-            if turno.id_puesto == 1:
-                total_turnos_v1 += 1
-            elif turno.id_puesto == 2:
-                total_turnos_v2 += 1
-            elif turno.id_puesto == 3: 
-                total_turnos_v3 += 1
-            elif turno.id_puesto == 4:
-                total_turnos_v4 += 1
-            else:
-                total_turnos_v5 += 1   
+        turnos_ventanilla_sort = {k: turnos_por_ventanilla[k] for k in sorted(turnos_por_ventanilla)}
 
         context = {
             'fecha': fecha,
             'total_turnos': total_turnos,
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
-            'total_turnos_dcv' : total_turnos_dcv,
-            'total_turnos_dfs' : total_turnos_dfs,
-            'total_turnos_v1' : total_turnos_v1,
-            'total_turnos_v2' : total_turnos_v2,
-            'total_turnos_v3' : total_turnos_v3,
-            'total_turnos_v4' : total_turnos_v4,
-            'total_turnos_v5' : total_turnos_v5
+            'total_turnos_cjs' : total_turnos_cjs,
+            'turnos_por_ventanilla' : turnos_ventanilla_sort
         }
     else:
         doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_personalizado.docx')
@@ -249,35 +284,18 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
         total_turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).count()
         total_turnos_cd = 0
         total_turnos_jfs = 0
-        total_turnos_dcv = 0
-        total_turnos_dfs = 0
-        total_turnos_v1 = 0
-        total_turnos_v2 = 0
-        total_turnos_v3 = 0
-        total_turnos_v4 = 0
-        total_turnos_v5 = 0
+        total_turnos_cjs = 0
         
         for turno in turnos:
+            turnos_por_ventanilla[turno.puesto] += 1
             if turno.id_servicio == 1:
                 total_turnos_cd += 1
             elif turno.id_servicio == 2:
                 total_turnos_jfs += 1
-            elif turno.id_servicio == 3:
-                total_turnos_dcv += 1
             else:
-                total_turnos_dfs += 1
+                total_turnos_cjs += 1
         
-        for turno in turnos:
-            if turno.id_puesto == 1:
-                total_turnos_v1 += 1
-            elif turno.id_puesto == 2:
-                total_turnos_v2 += 1
-            elif turno.id_puesto == 3: 
-                total_turnos_v3 += 1
-            elif turno.id_puesto == 4:
-                total_turnos_v4 += 1
-            else:
-                total_turnos_v5 += 1                 
+        turnos_ventanilla_sort = {k: turnos_por_ventanilla[k] for k in sorted(turnos_por_ventanilla)}                
 
         context = {
             'fecha': fecha,
@@ -286,19 +304,14 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
             'total_turnos': total_turnos,
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
-            'total_turnos_dcv' : total_turnos_dcv,
-            'total_turnos_dfs' : total_turnos_dfs,
-            'total_turnos_v1' : total_turnos_v1,
-            'total_turnos_v2' : total_turnos_v2,
-            'total_turnos_v3' : total_turnos_v3,
-            'total_turnos_v4' : total_turnos_v4,
-            'total_turnos_v5' : total_turnos_v5
+            'total_turnos_cjs' : total_turnos_cjs,
+            'turnos_por_ventanilla' : turnos_ventanilla_sort
         }
 
 
-    servicios = ['Cambios domicilio', 'Justificaciones', 'Duplicados CV', 'Desafiliaciones']
-    servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_dcv, total_turnos_dfs]
-    colores = ['#136CB2', '#17D3E3', '#1DEEC8', '#35EE94']
+    servicios = ['Cambios domicilio', 'Justificaciones', 'Cajas']
+    servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_cjs]
+    colores = ['#136CB2', '#17D3E3', '#1DEEC8']
     # Crear un gráfico utilizando matplotlib
     plt.bar(servicios, servicios_valores, color=colores)
     plt.xlabel('Servicios', fontweight='bold')
@@ -317,14 +330,17 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     plt.clf()
     plt.close()
 
-    puestos = ['Ventanilla 1', 'Ventanilla 2', 'Ventanilla 3', 'Ventanilla 4', 'Ventanilla 5']
-    puestos_valores = [total_turnos_v1, total_turnos_v2, total_turnos_v3, total_turnos_v4, total_turnos_v5]
     colores_puestos = ['#F1F139', '#108AF0', '#F53131', '#108AF0', '#F1F139']
     # Crear un gráfico utilizando matplotlib
+    puestos = []
+    puestos_valores = []
+    for key, value in turnos_ventanilla_sort.items():
+        puestos.append(key)
+        puestos_valores.append(value)
     plt.bar(puestos, puestos_valores, color=colores_puestos)
-    plt.xlabel('Servicios', fontweight='bold')
+    plt.xlabel('Ventanillas', fontweight='bold')
     plt.ylabel('Cantidad Turnos', fontweight='bold')
-    plt.title('Turnos por servicio', fontweight='bold')
+    plt.title('Turnos por ventanilla', fontweight='bold')
 
     # Personalizar el estilo de las barras
     plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
@@ -366,103 +382,95 @@ def siguiente_id_disponible():
 
 def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_user = 0):
     # Obtener los datos del formulario
+    print(rol)
     fecha_actual = datetime.now()
     fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
     user = Usuario.query.filter_by(id = id_user).first()
+    servicio = user.servicio
     nombre = user.nombre
     apellido = user.apellido
            
     if fecha_inicio == 0 or fecha_fin == 0: 
         doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_usuario.docx')
 
-        usuario = Puestos.query.filter_by(id_user = id_user).first()
-        puesto = usuario.descripcion
-        calificaciones = Calificacion.query.filter_by(ventanilla = puesto)
+        puesto = user.puesto
+        # calificaciones = Calificacion.query.filter_by(ventanilla = puesto)
         turnos = Turnos.query.all()
         total_turnos = 0
         total_turnos_cd = 0
         total_turnos_jfs = 0
-        total_turnos_dcv = 0
-        total_turnos_dfs = 0
-        excelente = 0
-        regular = 0
-        malo = 0
+        total_turnos_cjs = 0
+        # excelente = 0
+        # regular = 0
+        # malo = 0
 
         for turno in turnos:
-            if turno.puesto.descripcion == rol:
+            if turno.puesto == rol:
                 total_turnos += 1
                 if turno.id_servicio == 1:
                     total_turnos_cd += 1
                 elif turno.id_servicio == 2:
                     total_turnos_jfs += 1
-                elif turno.id_servicio == 3:
-                    total_turnos_dcv += 1
                 else:
-                    total_turnos_dfs += 1
+                    total_turnos_cjs += 1
+
         
-        for calificacion in calificaciones:
-            if calificacion.calificacion == "Malo":
-                malo += 1
-            elif calificacion.calificacion == "Regular":
-                regular += 1
-            else:
-                excelente += 1
+        # for calificacion in calificaciones:
+        #     if calificacion.calificacion == "Malo":
+        #         malo += 1
+        #     elif calificacion.calificacion == "Regular":
+        #         regular += 1
+        #     else:
+        #         excelente += 1
 
         context = {
             'puesto': rol,
             'fecha': fecha,
             'nombre': nombre,
             'apellido': apellido,
+            'servicio' : servicio,
             'total_turnos': total_turnos,
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
-            'total_turnos_dcv' : total_turnos_dcv,
-            'total_turnos_dfs' : total_turnos_dfs,
-            'excelente': excelente,
-            'regular' : regular,
-            'malo' : malo
+            'total_turnos_cjs' : total_turnos_cjs
         }
         
     else:
         doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_usuario_personalizado.docx')
         
-        usuario = Puestos.query.filter_by(id_user = id_user).first()
-        puesto = usuario.descripcion
-        calificaciones_total = Calificacion.query.filter(Calificacion.fecha >= fecha_inicio, Calificacion.fecha <= fecha_fin).all()
+        puesto = user.puesto
+        # calificaciones_total = Calificacion.query.filter(Calificacion.fecha >= fecha_inicio, Calificacion.fecha <= fecha_fin).all()
         turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).all()
         total_turnos = 0
         total_turnos_cd = 0
         total_turnos_jfs = 0
-        total_turnos_dcv = 0
-        total_turnos_dfs = 0
-        calificaciones = []
-        excelente = 0
-        regular = 0
-        malo = 0
+        total_turnos_cjs = 0
+        # calificaciones = []
+        # excelente = 0
+        # regular = 0
+        # malo = 0
 
         for turno in turnos:
-            if turno.puesto.descripcion == rol:
+            if turno.puesto == rol:
                 total_turnos += 1
                 if turno.id_servicio == 1:
                     total_turnos_cd += 1
                 elif turno.id_servicio == 2:
                     total_turnos_jfs += 1
-                elif turno.id_servicio == 3:
-                    total_turnos_dcv += 1
                 else:
-                    total_turnos_dfs += 1
+                    total_turnos_cjs += 1
 
-        for calificacion in calificaciones_total:
-            if calificacion.ventanilla == puesto:
-                calificaciones.append(calificacion)
+        # for calificacion in calificaciones_total:
+        #     if calificacion.ventanilla == puesto:
+        #         calificaciones.append(calificacion)
         
-        for cal in calificaciones:
-            if cal.calificacion == "Malo":
-                malo += 1
-            elif cal.calificacion == "Regular":
-                regular += 1
-            else:
-                excelente += 1
+        # for cal in calificaciones:
+        #     if cal.calificacion == "Malo":
+        #         malo += 1
+        #     elif cal.calificacion == "Regular":
+        #         regular += 1
+        #     else:
+        #         excelente += 1
 
             
         context = {
@@ -470,67 +478,64 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
             'fecha': fecha,
             'nombre': nombre,
             'apellido': apellido,
+            'servicio' : servicio,
             'fecha_inicio': fecha_inicio,
             'fecha_fin': fecha_fin,
             'total_turnos': total_turnos,
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
-            'total_turnos_dcv' : total_turnos_dcv,
-            'total_turnos_dfs' : total_turnos_dfs,
-            'excelente': excelente,
-            'regular' : regular,
-            'malo' : malo
+            'total_turnos_cjs' : total_turnos_cjs
         }
 
 
-    servicios = ['Cambios domicilio', 'Justificaciones', 'Duplicados CV', 'Desafiliaciones']
-    servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_dcv, total_turnos_dfs]
-    colores = ['#136CB2', '#0E8DAF', '#1DEEC8', '#35EE94']
-    # Crear un gráfico utilizando matplotlib
-    plt.bar(servicios, servicios_valores, color=colores)
-    plt.xlabel('Servicios', fontweight='bold')
-    plt.ylabel('Cantidad Turnos', fontweight='bold')
-    plt.title('Turnos por servicio', fontweight='bold')
+    # servicios = ['Cambios domicilio', 'Justificaciones', 'Duplicados CV', 'Desafiliaciones']
+    # servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_dcv, total_turnos_dfs]
+    # colores = ['#136CB2', '#0E8DAF', '#1DEEC8', '#35EE94']
+    # # Crear un gráfico utilizando matplotlib
+    # plt.bar(servicios, servicios_valores, color=colores)
+    # plt.xlabel('Servicios', fontweight='bold')
+    # plt.ylabel('Cantidad Turnos', fontweight='bold')
+    # plt.title('Turnos por servicio', fontweight='bold')
 
-    # Personalizar el estilo de las barras
-    plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
-    plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
-    plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
-    plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
-    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
+    # # Personalizar el estilo de las barras
+    # plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
+    # plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
+    # plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
+    # plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
+    # plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
 
-    # Guardar el gráfico como una imagen
-    plt.savefig('grafico_servicios.png')
-    plt.clf()
-    plt.close()
+    # # Guardar el gráfico como una imagen
+    # plt.savefig('grafico_servicios.png')
+    # plt.clf()
+    # plt.close()
 
 
-    satisfaccion = ['Malo', 'Regular', 'Excelente']
-    satisfaccion_valores = [malo, regular, excelente]
-    colores = ['#FF0000', '#FEBB00', '#008000']
-    # Crear un gráfico utilizando matplotlib
-    plt.bar(satisfaccion, satisfaccion_valores, color=colores)
-    plt.xlabel('Satisfaccion', fontweight='bold')
-    plt.ylabel('Cantidad', fontweight='bold')
-    plt.title('Satisfaccion del cliente', fontweight='bold')
+    # satisfaccion = ['Malo', 'Regular', 'Excelente']
+    # satisfaccion_valores = [malo, regular, excelente]
+    # colores = ['#FF0000', '#FEBB00', '#008000']
+    # # Crear un gráfico utilizando matplotlib
+    # plt.bar(satisfaccion, satisfaccion_valores, color=colores)
+    # plt.xlabel('Satisfaccion', fontweight='bold')
+    # plt.ylabel('Cantidad', fontweight='bold')
+    # plt.title('Satisfaccion del cliente', fontweight='bold')
 
-    # Personalizar el estilo de las barras
-    plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
-    plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
-    plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
-    plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
-    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
+    # # Personalizar el estilo de las barras
+    # plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
+    # plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
+    # plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
+    # plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
+    # plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
 
-    # Guardar el gráfico como una imagen
-    plt.savefig('grafico_satisfaccion.png')
-    plt.clf()
-    plt.close()
+    # # Guardar el gráfico como una imagen
+    # plt.savefig('grafico_satisfaccion.png')
+    # plt.clf()
+    # plt.close()
 
 
     # Insercion de graficos al documento
     doc.render(context)
-    doc.add_picture('grafico_servicios.png', width=Inches(6))
-    doc.add_picture('grafico_satisfaccion.png', width=Inches(6))
+    # doc.add_picture('grafico_servicios.png', width=Inches(6))
+    # doc.add_picture('grafico_satisfaccion.png', width=Inches(6))
 
     # Guardar el nuevo documento generado
     doc.save('/media/admindpp/INFO/apps/Turnero_CNE/website/static/output_user.docx')

@@ -24,7 +24,7 @@ const obtener_turno = async (servicio) => {
             throw new Error('Error en la solicitud');
         }
 
-        const data = await response.text();
+        const data = await response.json();
         checkedbox.checked = false;
         return data;
 
@@ -98,9 +98,9 @@ const show_message = (kind_message) => {
                 .catch(error => console.error('Error al cargar el contenido:', error));
                 break;
     
-            case 'certificados_votacion':
+            case 'cajas':
     
-                fetch("../static/messages/certificados_votacion.html")
+                fetch("../static/messages/cajas.html")
                 .then(response => response.text())
                 .then(html => {
                     // Actualiza el contenido del div con el contenido importado
@@ -120,30 +120,6 @@ const show_message = (kind_message) => {
                 })
                 .catch(error => console.error('Error al cargar el contenido:', error));
                 break;
-            
-            case 'desafiliaciones':
-    
-                fetch("../static/messages/desafiliaciones.html")
-                .then(response => response.text())
-                .then(html => {
-                    // Actualiza el contenido del div con el contenido importado
-
-                    main_container.style.width ="0%";
-                    main_container.style.margin = "0";
-                    div_requirements.style.width = "90%";
-                    div_requirements.innerHTML = html;
-
-                    if(window.innerHeightadmin < 768){
-                        div_requirements.style.height = "70%";
-                    }else{
-                        div_requirements.style.height = "58%";
-                   
-                    };
-                    
-                    
-                })
-                .catch(error => console.error('Error al cargar el contenido:', error));
-                break;
     
             case 'online':
     
@@ -159,7 +135,7 @@ const show_message = (kind_message) => {
                     let boton = document.getElementById("contenedor-btn-mensajes")
 
                     if(window.innerHeight < 768){
-                        div_requirements.style.height = "80%";
+                        div_requirements.style.height = "75%";
                     }else{
                         div_requirements.style.height = "58%";
                    
@@ -200,7 +176,9 @@ const volver_inicio = () =>{
     }, 1000);
 };
 
-const turno_assignado_mensaje = (turno) => {
+const turno_assignado_mensaje = (resultado) => {
+    let turno = resultado.turno;
+    let tiempo = resultado.tiempo;
     let div_requirements = document.getElementById("requirements");
     div_requirements.style.opacity = "0";
 
@@ -212,7 +190,10 @@ const turno_assignado_mensaje = (turno) => {
             div_requirements.innerHTML = html;
             
             let p_resultado = document.getElementById('resultado');
+            let p_tiempo = document.getElementById('tiempo_estimado');
+
             p_resultado.innerHTML = turno;
+            p_tiempo.innerHTML ="Tiempo estimado de espera: " + tiempo;
 
             if(window.innerHeight < 768){
                 div_requirements.style.width = "40%";

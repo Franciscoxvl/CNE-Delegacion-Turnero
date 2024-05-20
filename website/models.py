@@ -6,25 +6,25 @@ from flask_login import UserMixin
 class Servicios(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.String(10), unique=True, nullable=False)
-    descripcion = db.Column(db.String(255), nullable=False)  
+    descripcion = db.Column(db.String(255), nullable=False)
 
 class Puestos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(50), unique=True, nullable=False)
     estado = db.Column(db.String(20), nullable=False)
-    id_user = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    usuario = db.relationship('Usuario', backref='puestos')
+    id_user = db.Column(db.Integer)
 
 class Turnos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_servicio = db.Column(db.Integer, db.ForeignKey('servicios.id'), nullable=False)
-    id_puesto = db.Column(db.Integer, db.ForeignKey('puestos.id'), nullable=False)
+    puesto = db.Column(db.String(10), db.ForeignKey('usuario.id'), nullable=False)
+    usuario = db.Column(db.String(50), nullable=False)
     numero_turno = db.Column(db.String(10), nullable=False)
+    numero_formulario = db.Column(db.Integer)
     fecha = db.Column(db.Date, nullable=False)
     estado_turno = db.Column(db.String(20), nullable=False)
 
     servicio = db.relationship('Servicios', backref='turnos')
-    puesto = db.relationship('Puestos', backref='turnos')
 
     def to_dict(self):
         return {
@@ -62,9 +62,8 @@ class Usuario(db.Model, UserMixin):
     nombre = db.Column(db.String(50), nullable=False)
     apellido = db.Column(db.String(50), nullable=False)
     rol = db.Column(db.String(20), nullable=False)
-    puesto = db.Column(db.String(20), nullable=False)
-    provincia = db.Column(db.String(50), nullable=False)
-
+    puesto = db.Column(db.String(80), nullable=False)
+    servicio = db.Column(db.String(50), nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -82,3 +81,4 @@ class Calificacion(db.Model):
     ventanilla = db.Column(db.String(50), unique=True, nullable=False)
     calificacion = db.Column(db.String(50), nullable=False)
     fecha = db.Column(db.Date, nullable=False)
+

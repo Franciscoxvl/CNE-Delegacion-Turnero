@@ -4,6 +4,28 @@ let contador = 0;
 function colocar_turno(turno, puesto) {
     contador += 1 ;
     const container = document.querySelector('.solo-turnos');
+    let puesto_var = puesto.slice(0, 3)
+    let numero_puesto = puesto.slice(3)
+    let puesto_nombre = ""
+    let puesto_final = ""
+    let puesto_decir = ""
+    let puesto_decir_final = ""
+    
+    if (puesto_var == "VCD"){
+        puesto_nombre = "Cambios";
+        puesto_decir = "Cambios"
+    } else if (puesto_var == "VJF"){
+        puesto_decir = "Justificasiones"
+        puesto_nombre = puesto_decir.slice(0,6)
+
+    } else {
+        puesto_nombre = "Cajas"
+        puesto_decir = "Cajas"
+    }
+
+    puesto_final = puesto_nombre + numero_puesto
+    puesto_decir_final = puesto_decir + numero_puesto
+
 
     if (contador <=5){
         
@@ -12,7 +34,7 @@ function colocar_turno(turno, puesto) {
         turno_hijo.innerHTML = `
             <p>${turno}</p>
             <span class="arrow">&rarr;</span>
-            <p>${puesto}</p>
+            <p>${puesto_final}</p>
         `;
 
         turno_hijo.style.transform = 'translateY(-60px)';
@@ -30,7 +52,7 @@ function colocar_turno(turno, puesto) {
             // Fuerza un reflow para aplicar las transiciones
             container.offsetHeight;
 
-            let mensaje = `Turno ${turno} pasar al modulo ${puesto} `;
+            let mensaje = `Turno ${turno} pasar al módulo ${puesto_decir_final} `;
             decirMensaje(mensaje);
     
             const turnos = document.querySelectorAll('.content-table');
@@ -63,7 +85,7 @@ function colocar_turno(turno, puesto) {
         var codigo = contenido[0];
         var puesto_turno= contenido[1];
         codigo.innerHTML = turno;
-        puesto_turno.innerHTML = puesto;
+        puesto_turno.innerHTML = puesto_final;
         nuevoDiv.style.transform = 'translateY(-60px)';
         nuevoDiv.style.opacity = 0;
     
@@ -78,7 +100,7 @@ function colocar_turno(turno, puesto) {
             // Fuerza un reflow para aplicar las transiciones
             container.offsetHeight;
 
-            let mensaje = `Turno ${turno} pasar al modulo ${puesto} `;
+            let mensaje = `Turno ${turno} pasar al módulo ${puesto_decir_final} `;
             decirMensaje(mensaje);
     
             const turnos = document.querySelectorAll('.content-table');
@@ -168,19 +190,20 @@ function decirMensaje(mensaje) {
     // Obtener todas las voces disponibles
     const vocesDisponibles = synth.getVoices();
 
-    // Seleccionar una voz aleatoria para el idioma especificado
-    const vocesParaIdioma = vocesDisponibles.filter(voice => voice.lang === 'es-US');
-    const vozElegida = vocesParaIdioma.length > 0 ? vocesParaIdioma[0] : null;
+    // Filtrar las voces para excluir las voces de España (es-ES) y las de Estados Unidos (es-US)
+    const vocesParaLatinoamerica = vocesDisponibles.filter(voice => voice.lang.startsWith('es') && voice.lang !== 'es-US');
+    const vozElegida = vocesParaLatinoamerica.length > 0 ? vocesParaLatinoamerica[2] : null;
 
     if (vozElegida) {
         utterance.voice = vozElegida;
-        utterance.lang = 'es-US'; // Establecer el idioma para mayor compatibilidad
-        utterance.rate = 0.88; // Ajustar la rapidez según lo requerido
+        utterance.lang = vozElegida.lang; // Establecer el idioma de la voz elegida
+        utterance.rate = 0.75; // Ajustar la rapidez según lo requerido
         synth.speak(utterance);
     } else {
-        console.error('No se encontró una voz en el idioma especificado.');
+        console.error('No se encontró una voz en español latinoamericano.');
     }
 }
+
 
 // Esperar a que las voces estén disponibles antes de llamar a la función
 window.speechSynthesis.onvoiceschanged = () => {

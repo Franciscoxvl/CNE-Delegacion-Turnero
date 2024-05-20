@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var nameInput = document.getElementById("nombre");
     var lastnameInput = document.getElementById("apellido");
     var rolInput = document.getElementById("rol");
+    var servicioInput = document.getElementById("servicio");
     var puestoInput = document.getElementById("puesto");
 
     createButton.addEventListener('submit', (event) =>{
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         apellido = lastnameInput.value;
         rol = rolInput.value;
         puesto = puestoInput.value;
+        servicio = servicioInput.value;
 
         console.log(user, password);
 
@@ -26,29 +28,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const puestos = {
         "Admin": ['Administracion'],
         "Recepcion": ['Recepcion'],
-        "Ventanilla": ['Ventanilla1', 'Ventanilla2', 'Ventanilla3', 'Ventanilla4', 'Ventanilla5']
+        "Ventanilla": ['Recaudaciones', 'Cambios de domicilio', 'Justificaciones']
     };
 
     const opciones_puesto = () =>{
         var rol = document.getElementById("rol");
-        var puesto = document.getElementById("puesto");
-        puesto.innerHTML = '';
+        var servicio = document.getElementById("servicio");
+        servicio.innerHTML = '';
 
         var opciones = puestos[rol.value] || [];
 
         const placeholder_select = document.createElement('option');
-        placeholder_select.textContent = "Seleccione un puesto";
+        placeholder_select.textContent = "Seleccione un servicio";
         placeholder_select.value = " ";
         placeholder_select.hidden = true;
         placeholder_select.selected = true;
         placeholder_select.disabled = true;
-        puesto.appendChild(placeholder_select);    
+        servicio.appendChild(placeholder_select);    
 
         opciones.forEach(opcion => {
             const option = document.createElement('option');
             option.textContent = opcion;
             option.value = opcion;
-            puesto.appendChild(option);
+            servicio.appendChild(option);
         });
 
     };

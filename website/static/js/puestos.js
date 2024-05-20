@@ -1,13 +1,20 @@
 let turno;
-let valorGuardado = localStorage.getItem('turno');
+let valorGuardadoJSON = localStorage.getItem('turno');
+let valorGuardado = JSON.parse(valorGuardadoJSON);
+var input_puesto = document.getElementById("id_user");
+let input_formulario = document.getElementById("numero_formulario");
 
-if (valorGuardado){
+if(input_formulario){
+    input_formulario.value = "";
+}
+
+if (valorGuardado && input_puesto.value == valorGuardado[1]){
     var turno_puesto = document.getElementById("turno_actual");
-    turno_puesto.textContent = valorGuardado;
+    turno_puesto.textContent = valorGuardado[0];
 }
 
 // Configuración del objeto socket
-var socket = io('http://10.0.17.165');  // Reemplaza con la URL de tu servidor Socket.IO
+var socket = io.connect('http://10.0.17.165');  // Reemplaza con la URL de tu servidor Socket.IO
 
 // Manejador de eventos para el evento 'connect'
 socket.on('connect', function() {
@@ -16,23 +23,43 @@ socket.on('connect', function() {
 
 // Función para liberar un puesto
 const liberarPuesto = (puestoId) => {
-    socket.emit('liberar_puesto', { puestoId });
+    if(puestoId.slice(0,3) == "VCD"){
+        let n_formulario = document.getElementById("numero_formulario")
+        let n_formulario_valor = n_formulario.value
+        if (n_formulario_valor.length == 0){
+            alert("Ingrese el numero de formulario!")
+        }else{
+            socket.emit('liberar_puesto', { puestoId, n_formulario_valor });
+            n_formulario.value = ""
+        }
+        
+    }else{
+        let n_formulario_valor = 1
+        socket.emit('liberar_puesto', { puestoId, n_formulario_valor });        
+    }
+    
 }
 
-socket.on('turno_espera', (estado_turno) => {
+socket.on('turno_espera', () => {
     actualizarTabla();
 });
 
+socket.on('turno_asignado', (data) => {
+    var input_puesto = document.getElementById("id_user");
+    var puesto_usuario = input_puesto.value  
+    var codigo = data.codigo;
+    var numero_turno = data.numero_turno;
+    var puesto = data.puesto;
+    var turno = codigo + numero_turno;
+    var valor_a_guardar = [turno, puesto];
+    var valor_a_guardar_JSON = JSON.stringify(valor_a_guardar);
+    localStorage.setItem('turno', valor_a_guardar_JSON);
+    var turno_puesto = document.getElementById("turno_actual");
 
-socket.on('turno_asignado', (data) => {  
-    if (data.puesto == 1){
-        var codigo = data.codigo;
-        var numero_turno = data.numero_turno;
-        var turno = codigo + numero_turno;
-        localStorage.setItem('turno', turno);
-        var turno_puesto = document.getElementById("turno_actual");
+    if (puesto_usuario == puesto){
         turno_puesto.textContent = turno;
     }
+    
       
 });
 
@@ -75,9 +102,13 @@ const actualizarTabla = () => {
           const nuevosTurnos = JSON.parse(xhr.responseText); // Assuming JSON response
           actualizarTablaConNuevosDatos(nuevosTurnos.turnos);
           if (nuevosTurnos.turnos.length == 0 && nuevosTurnos.pendiente == false){
-              localStorage.setItem('turno', "N/A");
-              var turno_puesto = document.getElementById("turno_actual");
-              turno_puesto.textContent = "N/A";            
+
+            var puesto = nuevosTurnos.puesto;
+            var vg_arreglo = ["NA", puesto];
+            const vg_arreglo_JSON = JSON.stringify(vg_arreglo)
+            localStorage.setItem('turno', vg_arreglo_JSON);
+            var turno_puesto = document.getElementById("turno_actual");
+            turno_puesto.textContent = "NA";            
           };
       } else {
         console.error('Error al obtener los datos:', xhr.statusText);

@@ -42,7 +42,15 @@
     <div class="d-flex flex-column align-items-center justify-content-between mb-4">
         <h1 style="margin-inline: auto;" class="h3 mb-0 text-gray-800">Asignacion de turnos</h1>
         <hr>
-        <h2 style="margin-inline: auto;" class="h4 mb-0 text-gray-800">{{ current_user.puesto }}</h1>
+        {% if current_user.puesto[0:3] == "VCD": %}
+        <h2 style="margin-inline: auto;" class="h4 mb-0 text-gray-800">Ventanilla cambios de domicilio {{ current_user.puesto[3:] }}</h2>
+        {% elif current_user.puesto[0:3] == "VJF": %}
+        <h2 style="margin-inline: auto;" class="h4 mb-0 text-gray-800">Ventanilla de justificaciones {{ current_user.puesto[3:] }}</h2>
+        {% else: %}
+        <h2 style="margin-inline: auto;" class="h4 mb-0 text-gray-800">Ventanilla Recaudaciones / Certificados de votación {{ current_user.puesto[3:] }}</h2>
+        {% endif %}
+
+
     </div>
 
     <div class="row">
@@ -62,30 +70,19 @@
                     </div>
                 </div>
 
-                {% if puesto == "Ventanilla1" %}
                 <br>
-                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
-                <button id="boton_liberar" style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(1)" class="btn btn-primary">Liberar turno</button>
-                {% elif puesto == "Ventanilla2" %}
-                <br>
-                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
-                <button id="boton_liberar" style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(2)" class="btn btn-primary">Liberar turno</button>
-                {% elif puesto == "Ventanilla3" %}
-                <br>
-                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
-                <button id="boton_liberar" style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(3)" class="btn btn-primary">Liberar turno</button>
-                {% elif puesto == "Ventanilla4" %}
-                <br>
-                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
-                <button id="boton_liberar" style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(4)" class="btn btn-primary">Liberar turno</button>
-                {% else %}
-                <br>
-                <input id="id_user" type="text" value="{{ current_user.id }}" hidden>
-                <button id="boton_liberar" style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto(5)" class="btn btn-primary">Liberar turno</button>
-                {% endif %}
-
+                <input id="id_user" type="text" value="{{ current_user.puesto }}" hidden>
+                <button id="boton_liberar" style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto('{{ puesto }}')" class="btn btn-primary">Liberar turno</button>
+      
             </div>
         </div>
+
+        {% if current_user.puesto[0:3] == "VCD": %}
+        <div class="d-flex justify-content-center col-12 mb-4 mt-4">
+            <h5 class="mr-2">Ingrese el número de formulario: </h5>
+            <input id="numero_formulario" type="text">
+        </div>
+        {% endif %}
 
         <!-- Content Column -->
         <div class="col-12 mb-4">
@@ -116,19 +113,7 @@
            
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
 
-
-            {% if puesto == "Ventanilla1" %}
             <script src="../static/js/puestos.js"></script>
-            {% elif puesto == "Ventanilla2" %}
-            <script src="../static/js/puestos_2.js"></script>
-            {% elif puesto == "Ventanilla3" %}
-            <script src="../static/js/puestos_3.js"></script>
-            {% elif puesto == "Ventanilla4" %}
-            <script src="../static/js/puestos_4.js"></script>
-            {% else %}
-            <script src="../static/js/puestos_5.js"></script>
-            {% endif %}
-
 
         </div>
     </div>

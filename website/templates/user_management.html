@@ -107,13 +107,13 @@
             {% endif %}
             {% endwith %}
 
-            <a href="{{ url_for('user.user_create') }}" class="mb-3 col-2 btn btn-primary btn-user btn-block">
+            <a href="{{ url_for('user.user_create') }}" style="margin-bottom: -3.8rem;" class="mt-3 col-2 btn btn-primary btn-user btn-block">
                 <i class="mr-2 fas fa-fw fa-plus"></i>
                 <span>Nuevo usuario</span>
             </a>
 
             <div class="table-responsive">
-                <table style="text-align: center;" class="table" id="dataTable" width="100%" cellspacing="0">
+                <table style="text-align: center; margin-top: 1rem;" class="table" id="dataTable" width="100%" cellspacing="0">
                     <thead style="color: white; ">
                         <tr class="bg-gradient-primary">
                             <th style="text-align: center;">ID</th>
@@ -121,6 +121,7 @@
                             <th style="text-align: center;">Apellido</th>
                             <th style="text-align: center;">Usuario</th>
                             <th style="text-align: center;">Rol</th>
+                            <th style="text-align: center;">Puesto</th>
                             <th style="text-align: center;">Acción</th>
                         </tr>
                     </thead>
@@ -131,6 +132,7 @@
                             <th style="text-align: center;">Apellido</th>
                             <th style="text-align: center;">Usuario</th>
                             <th style="text-align: center;">Rol</th>
+                            <th style="text-align: center;">Puesto</th>
                             <th style="text-align: center;">Accion</th>
                         </tr>
                     </tfoot>
@@ -142,27 +144,28 @@
                             <td>{{usuario.apellido}}</td>
                             <td>{{usuario.username}}</td>
                             {% if usuario.rol == "Ventanilla" %}
-                                <td>{{usuario.puesto}}</td>
+                                <td>{{usuario.servicio}}</td>
                             {% else %}
                                 <td>{{usuario.rol}}</td>
-                            {% endif %}    
+                            {% endif %}
+                            <td>{{usuario.puesto}}</td>   
 
                             <td style="margin-inline: auto;" class="d-flex justify-content-center">
 
-                                <a title="Modificar usuario" href="{{ url_for('user.user_alter', id_user = usuario.id)}}" style="width: 13%; height: auto;" id="modificar-usuario-{{ usuario.id }}" class="btn btn-success rounded-circle mr-1">
+                                <a title="Modificar usuario" href="{{ url_for('user.user_alter', id_user = usuario.id)}}" style="width: 15%; height: auto;" id="modificar-usuario-{{ usuario.id }}" class="btn btn-success rounded-circle mr-1">
                                     <i class="fas fa-edit"></i>
                                 </a>
     
-                                <a title="Eliminar usuario" href="#" style="width: 13%; height: auto;" id="eliminar-usuario-{{ usuario.id }}" class="btn btn-danger rounded-circle mr-1" data-toggle="modal" data-target="#EliminateModal" data-user-id="{{ usuario.id }}">
+                                <a title="Eliminar usuario" href="#" style="width: 15%; height: auto;" id="eliminar-usuario-{{ usuario.id }}" class="btn btn-danger rounded-circle mr-1" data-toggle="modal" data-target="#EliminateModal" data-user-id="{{ usuario.id }}">
                                     <i class="fas fa-times"></i>
                                 </a>
 
-                                <a title="Resetear usuario" href="{{ url_for('user.user_reset', id_user = usuario.id)}}" style="width: 13%; height: auto;" id="ModificarUsuarioBtn" class="btn btn-info rounded-circle mr-1">
+                                <a title="Resetear usuario" href="{{ url_for('user.user_reset', id_user = usuario.id)}}" style="width: 15%; height: auto;" id="ModificarUsuarioBtn" class="btn btn-info rounded-circle mr-1">
                                     <i class="fas fa-undo"></i>
                                 </a>
 
                                 {% if usuario.rol == "Ventanilla"  %}
-                                <a title="Generar reporte" href="{{ url_for('user.user_report', id_user = usuario.id)}}" style="width: 13%; height: auto;" id="ModificarUsuarioBtn" class="btn btn-warning rounded-circle mr-1">
+                                <a title="Generar reporte" href="{{ url_for('user.user_report', id_user = usuario.id)}}" style="width: 15%; height: auto;" id="ModificarUsuarioBtn" class="btn btn-warning rounded-circle mr-1">
                                     <i style="color: white;" class="fas fa-chart-bar"></i>
                                 </a>
                                 {% endif %}

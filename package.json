@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "node-polyglot": "^2.5.0",
+    "polyglot.js": "^4.0.0"
+  }
+}
