@@ -4,19 +4,19 @@ $(document).ready(function() {
     const puestos = {
         "Admin": ['Administracion'],
         "Recepcion": ['Recepcion'],
-        "Ventanilla": ['Ventanilla1', 'Ventanilla2', 'Ventanilla3', 'Ventanilla4', 'Ventanilla5']
+        "Ventanilla": ['Recaudaciones', 'Cambios de domicilio', 'Justificaciones']
     };
   
     // Función para obtener opciones de puesto y actualizar el select
     const opciones_puesto = () => {
         var rol = document.getElementById("rol");
-        var puesto = document.getElementById("puesto");
+        var puesto = document.getElementById("servicio");
         puesto.innerHTML = '';
 
         var opciones = puestos[rol.value] || [];
 
         const placeholder_select = document.createElement('option');
-        placeholder_select.textContent = "Seleccione un puesto";
+        placeholder_select.textContent = "Seleccione un servicio";
         placeholder_select.value = " ";
         placeholder_select.hidden = true;
         placeholder_select.selected = true;

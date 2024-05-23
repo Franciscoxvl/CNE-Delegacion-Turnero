@@ -6,7 +6,7 @@ from website.user import consultar_tabla
 from website.utils import *
 
 #---------------------------------------------RUTAS---------------------------------------------------#
-    
+
 @api_bp.route('/')
 def principal():
     return "<h1> HOLA MUNDO </h1>"
@@ -30,7 +30,9 @@ def datos_diarios():
 
 @api_bp.route('/datos_puestos')
 def datos_puestos():
-    return jsonify(turnos_puestos())
+    data_puestos = turnos_puestos()
+    print(data_puestos)
+    return jsonify(data_puestos)
 
 @api_bp.route('/generar_reporte', methods=['GET'])
 def generar_reporte():
@@ -50,7 +52,7 @@ def generar_reporte():
             error = str(e)
             print(error)
             return error, 500
-        
+
 @api_bp.route('/generar_reporte_usuario', methods=['GET'])
 def generar_reporte_usuario():
 
@@ -67,7 +69,7 @@ def generar_reporte_usuario():
             else:
                 resultado = generacion_reporte_usuario(fecha_inicio, fecha_fin, rol, id_user)
                 return "Reporte Generado exitosamente 300!"
-            
+
         except Exception as e:
             error = str(e)
             print(error)
@@ -76,25 +78,29 @@ def generar_reporte_usuario():
 @api_bp.route('/crear_usuario', methods=['POST'])
 def crear_usuario():
     if request.method == 'POST':
-        nuevo_id = siguiente_id_disponible() 
+        nuevo_id = siguiente_id_disponible()
         username = request.form['username']
         password = request.form['password']
         nombre = request.form['nombre']
         apellido = request.form['apellido']
         rol = request.form['rol']
         servicio = request.form['servicio']
-        print(rol)
-        print(servicio)
+
+        puestos_ocupados = obtener_puestos_ocupados(servicio)
+        puestos_libres = obtener_puesto_vacante(puestos_ocupados)
 
         usuario_existente = Usuario.query.filter_by(username = username).first()
 
         if usuario_existente:
             flash("El nombre de Usuario ya existe")
-            return redirect(url_for('user.user_create'))           
+            return redirect(url_for('user.user_create'))
         else:
             if rol == "Ventanilla":
-                ventanillas = consultar_numero_ventanillas(servicio) + 1
-                
+                if puestos_libres == 0:
+                    ventanillas = consultar_numero_ventanillas(servicio) + 1
+                else:
+                    ventanillas = puestos_libres
+
                 if servicio == "Recaudaciones":
 
                     puesto = "VCJ" + str(ventanillas)
@@ -103,7 +109,7 @@ def crear_usuario():
                 elif servicio == "Cambios de domicilio":
 
                     puesto = "VCD" + str(ventanillas)
-                
+
                 else:
 
                     puesto = "VJF" + str(ventanillas)
@@ -127,15 +133,48 @@ def modificar_usuario():
         nombre = request.form['nombre']
         apellido = request.form['apellido']
         rol = request.form['rol']
-        puesto = request.form['puesto']
+        servicio = request.form['servicio']
+
+        
+
+        puestos_ocupados = obtener_puestos_ocupados(servicio)
+        puestos_libres = obtener_puesto_vacante(puestos_ocupados)
 
         usuario_modificar = Usuario.query.filter_by(id = id).first()
+        print(rol)
+        print(servicio)
+        print(usuario_modificar.servicio)
 
         usuario_modificar.nombre = nombre
         usuario_modificar.apellido = apellido
         usuario_modificar.username = username
         usuario_modificar.rol = rol
-        usuario_modificar.puesto = puesto
+
+        if rol == "Ventanilla" and usuario_modificar.servicio != servicio:
+            if puestos_libres == 0:
+                ventanillas = consultar_numero_ventanillas(servicio) + 1
+            else:
+                ventanillas = puestos_libres
+
+            if servicio == "Recaudaciones":
+
+                puesto_nuevo = "VCJ" + str(ventanillas)
+                usuario_modificar.puesto = puesto_nuevo
+                usuario_modificar.servicio = servicio
+
+            elif servicio == "Cambios de domicilio":
+
+                puesto_nuevo = "VCD" + str(ventanillas)
+                usuario_modificar.puesto = puesto_nuevo
+                usuario_modificar.servicio = servicio
+
+            else:
+
+                puesto_nuevo = "VJF" + str(ventanillas)
+                usuario_modificar.puesto = puesto_nuevo
+                usuario_modificar.servicio = servicio
+
+
         db.session.commit()
         flash("El Usuario fue modificado correctamente", 'success')
         return redirect(url_for('user.user_management'))
@@ -186,7 +225,7 @@ def actualizar_tabla():
     }
 
     asignados = Turnos.query.filter_by(estado_turno = "Asignado").all()
-    
+
     for asignado in asignados:
         if str(asignado.puesto) == puesto:
             respuesta = {
@@ -203,7 +242,7 @@ def calificar_atencion():
     calificacion = request.args.get('calificacion')
     resultado = calificacion_atencion(puesto, calificacion)
     return jsonify(resultado)
-     
+
 @socketio.on('connect')
 def handle_connect():
     print('Cliente conectado.')
@@ -218,7 +257,7 @@ def handle_liberar_puesto(data):
 
 
 
-    
 
 
- 
+
+

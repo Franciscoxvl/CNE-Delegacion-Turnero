@@ -1,14 +1,17 @@
 let turno;
 let valorGuardadoJSON = localStorage.getItem('turno');
-let valorGuardado = JSON.parse(valorGuardadoJSON);
+let valorGuardado = valorGuardadoJSON == null ? ["NA"] : JSON.parse(valorGuardadoJSON);
+console.log(valorGuardadoJSON)
+console.log(valorGuardado)
+
 var input_puesto = document.getElementById("id_user");
 let input_formulario = document.getElementById("numero_formulario");
 
 if(input_formulario){
     input_formulario.value = "";
 }
-
 if (valorGuardado && input_puesto.value == valorGuardado[1]){
+    
     var turno_puesto = document.getElementById("turno_actual");
     turno_puesto.textContent = valorGuardado[0];
 }
@@ -26,7 +29,9 @@ const liberarPuesto = (puestoId) => {
     if(puestoId.slice(0,3) == "VCD"){
         let n_formulario = document.getElementById("numero_formulario")
         let n_formulario_valor = n_formulario.value
-        if (n_formulario_valor.length == 0){
+        console.log(n_formulario_valor)
+        console.log(valorGuardado[0])
+        if (n_formulario_valor.length == 0 && valorGuardado[0] != "NA"){
             alert("Ingrese el numero de formulario!")
         }else{
             socket.emit('liberar_puesto', { puestoId, n_formulario_valor });
@@ -46,14 +51,17 @@ socket.on('turno_espera', () => {
 
 socket.on('turno_asignado', (data) => {
     var input_puesto = document.getElementById("id_user");
-    var puesto_usuario = input_puesto.value  
+    var puesto_usuario = input_puesto.value;  
     var codigo = data.codigo;
     var numero_turno = data.numero_turno;
     var puesto = data.puesto;
     var turno = codigo + numero_turno;
+    console.log(turno)
+    console.log(puesto)
     var valor_a_guardar = [turno, puesto];
-    var valor_a_guardar_JSON = JSON.stringify(valor_a_guardar);
-    localStorage.setItem('turno', valor_a_guardar_JSON);
+    valorGuardado = valor_a_guardar;
+    console.log(valorGuardado[0])
+    localStorage.setItem('turno', valorGuardado);
     var turno_puesto = document.getElementById("turno_actual");
 
     if (puesto_usuario == puesto){
@@ -99,7 +107,7 @@ const actualizarTabla = () => {
 
     xhr.onload = function() {
         if (xhr.status === 200) {
-          const nuevosTurnos = JSON.parse(xhr.responseText); // Assuming JSON response
+          var nuevosTurnos = JSON.parse(xhr.responseText); // Assuming JSON response
           actualizarTablaConNuevosDatos(nuevosTurnos.turnos);
           if (nuevosTurnos.turnos.length == 0 && nuevosTurnos.pendiente == false){
 

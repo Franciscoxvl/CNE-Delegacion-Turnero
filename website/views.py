@@ -21,10 +21,8 @@ def visualizer():
 
 @views.route('satisfaccion/<id_ventanilla>')
 def satisfaccion(id_ventanilla):
-    if int(id_ventanilla) > 0 and int(id_ventanilla) <= 5:
-        return render_template("satisfaccion.html", id_ventanilla = id_ventanilla)
-    else:
-        return "<h1> Modulo no encontrado </h1>"
+    return render_template("satisfaccion.html", id_ventanilla = id_ventanilla)
+
 
 @views.route('pdfjs/<path:filename>')
 def serve_pdfjs(filename):

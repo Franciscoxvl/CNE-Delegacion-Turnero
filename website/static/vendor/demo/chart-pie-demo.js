@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Función para obtener los datos y dibujar el gráfico
+    let myPieChart;
+
     function obtenerDatosYDibujarGrafico() {
         // Iniciar solicitud fetch para obtener los datos
         fetch('http://10.0.17.165/api/datos_puestos')
@@ -15,12 +17,20 @@ document.addEventListener("DOMContentLoaded", function () {
             // Configurar el gráfico utilizando los datos
             var ctx = document.getElementById("myPieChart").getContext('2d');
             console.log(data)
-            var myPieChart = new Chart(ctx, {
+            var etiquetas = Object.keys(data)
+            var valores = Object.values(data)
+
+            // Destruir el gráfico anterior si existe
+            if (myPieChart) {
+                myPieChart.destroy();
+            }
+
+            myPieChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ["Ventanilla 1", "Ventanilla 2", "Ventanilla 3"],
+                    labels: etiquetas,
                     datasets: [{
-                        data: data,
+                        data: valores,
                         backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
                         hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
                         hoverBorderColor: "rgba(234, 236, 244, 1)",

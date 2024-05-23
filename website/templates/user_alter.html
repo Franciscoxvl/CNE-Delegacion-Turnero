@@ -59,17 +59,21 @@
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <select style="color: gray; font-size: 0.9rem; height: 3rem; border-radius: 5rem;" class="form-control custom-select" id="puesto" name="puesto">
+                                                    <select style="color: gray; font-size: 0.9rem; height: 3rem; border-radius: 5rem;" class="form-control custom-select" id="servicio" name="servicio">
                                                         {% if user_puesto %}
-                                                        <option value="{{ user_puesto }}" selected hidden>{{ user_puesto }}</option>
+                                                        <option value="{{ user_servicio }}" selected hidden>{{ user_servicio }}</option>
                                                         {% else %}
                                                         <option value="" disabled selected hidden>Seleccione un puesto</option>
                                                         {% endif %}
-                                                        <option value="Administracion">Administración</option>
+                                                        {% if user_rol == "Ventanilla": %}
+                                                        <option value="Recaudaciones">Recaudaciones / Certificado de votacion</option>
+                                                        <option value="Cambios de domicilio">Cambios de Domicilio</option>
+                                                        <option value="Justificaciones">Justificaciones</option>
+                                                        {% elif user_rol == "Recepcion" %}
                                                         <option value="Recepcion">Recepción</option>
-                                                        <option value="Ventanilla1">Ventanilla 1</option>
-                                                        <option value="Ventanilla2">Ventanilla 2</option>
-                                                        <option value="Ventanilla3">Ventanilla 3</option>
+                                                        {% else %}
+                                                        <option value="Administracion">Administración</option>
+                                                        {% endif %}
                                                     </select>
                                                 </div>
                                                 

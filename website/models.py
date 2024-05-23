@@ -20,7 +20,7 @@ class Turnos(db.Model):
     puesto = db.Column(db.String(10), db.ForeignKey('usuario.id'), nullable=False)
     usuario = db.Column(db.String(50), nullable=False)
     numero_turno = db.Column(db.String(10), nullable=False)
-    numero_formulario = db.Column(db.Integer)
+    numero_formulario = db.Column(db.String(50))
     fecha = db.Column(db.Date, nullable=False)
     estado_turno = db.Column(db.String(20), nullable=False)
 
@@ -78,7 +78,7 @@ class Usuario(db.Model, UserMixin):
 
 class Calificacion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ventanilla = db.Column(db.String(50), unique=True, nullable=False)
+    ventanilla = db.Column(db.String(50), nullable=False)
     calificacion = db.Column(db.String(50), nullable=False)
     fecha = db.Column(db.Date, nullable=False)
 

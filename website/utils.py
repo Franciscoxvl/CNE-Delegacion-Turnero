@@ -4,7 +4,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from flask import app, request
-from flask_login import  login_required, current_user
 from docx.shared import Inches
 from datetime import datetime, timedelta
 from sqlalchemy import text
@@ -14,6 +13,20 @@ import subprocess
 def consultar_numero_ventanillas(servicio):
     Usuarios_puesto = Usuario.query.filter_by(servicio = servicio).all()
     return len(Usuarios_puesto)
+
+def obtener_puestos_ocupados(servicio):
+    usuarios = Usuario.query.filter_by(servicio = servicio).all()
+    return [usuario.puesto[3:] for usuario in usuarios if usuario.servicio == servicio]
+
+def obtener_puesto_vacante(puestos_ocupados):
+    puesto_num = 1
+    for i in puestos_ocupados:
+        puesto = f"{puesto_num}"
+        if puesto not in puestos_ocupados:
+            return puesto
+        puesto_num += 1
+    
+    return 0
 
 
 def cantidad_turnos(id_servicio):
@@ -48,19 +61,26 @@ def asignar_turno(puesto):
     
     if Espera.query.count() == 0:
         print("La tabla esta vacia, no hay turnos pendientes")
+        
     else:
         #Asignacion de valores al nuevo turno
         if puesto_servicio == "VCD":
             nuevo_turno = Espera.query.filter_by(id_servicio = 1).first()
             if nuevo_turno == None:
+                mensaje_turnero = {'codigo':'N', 'numero_turno':'A', 'puesto':puesto}
+                socketio.emit('turno_asignado', mensaje_turnero)
                 return "Tabla vacia"
         elif puesto_servicio == "VJF":
             nuevo_turno = Espera.query.filter_by(id_servicio = 2).first()
             if nuevo_turno == None:
+                mensaje_turnero = {'codigo':'N', 'numero_turno':'A', 'puesto':puesto}
+                socketio.emit('turno_asignado', mensaje_turnero)
                 return "Tabla vacia"
         elif puesto_servicio == "VCJ":
             nuevo_turno = Espera.query.filter_by(id_servicio = 3).first()
             if nuevo_turno == None:
+                mensaje_turnero = {'codigo':'N', 'numero_turno':'A', 'puesto':puesto}
+                socketio.emit('turno_asignado', mensaje_turnero)
                 return "Tabla vacia"
 
         
@@ -190,14 +210,17 @@ def minutos_a_horas_y_minutos(minutos):
 
 def turnos_puestos():
 
-    datos = [0, 0 ,0]
+    datos = {}
+    Usuarios_ventanilla_total = Usuario.query.filter_by(rol="Ventanilla").all()
+    for usuario_ventanilla in Usuarios_ventanilla_total:
+        datos[usuario_ventanilla.puesto] = 0
+
 
     T_puestos = Turnos.query.filter(Turnos.fecha == datetime.now().date())
 
     for i in T_puestos:
         if i.estado_turno == 'Completado':
-            datos[ i.id_puesto - 1 ] += 1           
-        
+            datos[i.puesto] += 1             
     return datos
 
 def liberar_turno(puesto, n_formulario):
@@ -394,15 +417,15 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
         doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_usuario.docx')
 
         puesto = user.puesto
-        # calificaciones = Calificacion.query.filter_by(ventanilla = puesto)
+        calificaciones = Calificacion.query.filter_by(ventanilla = puesto)
         turnos = Turnos.query.all()
         total_turnos = 0
         total_turnos_cd = 0
         total_turnos_jfs = 0
         total_turnos_cjs = 0
-        # excelente = 0
-        # regular = 0
-        # malo = 0
+        excelente = 0
+        regular = 0
+        malo = 0
 
         for turno in turnos:
             if turno.puesto == rol:
@@ -415,13 +438,13 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
                     total_turnos_cjs += 1
 
         
-        # for calificacion in calificaciones:
-        #     if calificacion.calificacion == "Malo":
-        #         malo += 1
-        #     elif calificacion.calificacion == "Regular":
-        #         regular += 1
-        #     else:
-        #         excelente += 1
+        for calificacion in calificaciones:
+            if calificacion.calificacion == "Malo":
+                malo += 1
+            elif calificacion.calificacion == "Regular":
+                regular += 1
+            else:
+                excelente += 1
 
         context = {
             'puesto': rol,
@@ -432,23 +455,26 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
             'total_turnos': total_turnos,
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
-            'total_turnos_cjs' : total_turnos_cjs
+            'total_turnos_cjs' : total_turnos_cjs,
+            'excelente' : excelente,
+            'regular' : regular,
+            'malo' : malo
         }
         
     else:
         doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_usuario_personalizado.docx')
         
         puesto = user.puesto
-        # calificaciones_total = Calificacion.query.filter(Calificacion.fecha >= fecha_inicio, Calificacion.fecha <= fecha_fin).all()
+        calificaciones_total = Calificacion.query.filter(Calificacion.fecha >= fecha_inicio, Calificacion.fecha <= fecha_fin).all()
         turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).all()
         total_turnos = 0
         total_turnos_cd = 0
         total_turnos_jfs = 0
         total_turnos_cjs = 0
-        # calificaciones = []
-        # excelente = 0
-        # regular = 0
-        # malo = 0
+        calificaciones = []
+        excelente = 0
+        regular = 0
+        malo = 0
 
         for turno in turnos:
             if turno.puesto == rol:
@@ -460,17 +486,17 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
                 else:
                     total_turnos_cjs += 1
 
-        # for calificacion in calificaciones_total:
-        #     if calificacion.ventanilla == puesto:
-        #         calificaciones.append(calificacion)
+        for calificacion in calificaciones_total:
+            if calificacion.ventanilla == puesto:
+                calificaciones.append(calificacion)
         
-        # for cal in calificaciones:
-        #     if cal.calificacion == "Malo":
-        #         malo += 1
-        #     elif cal.calificacion == "Regular":
-        #         regular += 1
-        #     else:
-        #         excelente += 1
+        for cal in calificaciones:
+            if cal.calificacion == "Malo":
+                malo += 1
+            elif cal.calificacion == "Regular":
+                regular += 1
+            else:
+                excelente += 1
 
             
         context = {
@@ -484,58 +510,37 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
             'total_turnos': total_turnos,
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
-            'total_turnos_cjs' : total_turnos_cjs
+            'total_turnos_cjs' : total_turnos_cjs,
+            'excelente' : excelente,
+            'regular' : regular,
+            'malo' : malo
         }
 
+    satisfaccion = ['Malo', 'Regular', 'Excelente']
+    satisfaccion_valores = [malo, regular, excelente]
+    colores = ['#FF0000', '#FEBB00', '#008000']
+    # Crear un gráfico utilizando matplotlib
+    plt.bar(satisfaccion, satisfaccion_valores, color=colores)
+    plt.xlabel('Satisfaccion', fontweight='bold')
+    plt.ylabel('Cantidad', fontweight='bold')
+    plt.title('Satisfaccion del cliente', fontweight='bold')
 
-    # servicios = ['Cambios domicilio', 'Justificaciones', 'Duplicados CV', 'Desafiliaciones']
-    # servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_dcv, total_turnos_dfs]
-    # colores = ['#136CB2', '#0E8DAF', '#1DEEC8', '#35EE94']
-    # # Crear un gráfico utilizando matplotlib
-    # plt.bar(servicios, servicios_valores, color=colores)
-    # plt.xlabel('Servicios', fontweight='bold')
-    # plt.ylabel('Cantidad Turnos', fontweight='bold')
-    # plt.title('Turnos por servicio', fontweight='bold')
+    # Personalizar el estilo de las barras
+    plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
+    plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
+    plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
+    plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
+    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
 
-    # # Personalizar el estilo de las barras
-    # plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
-    # plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
-    # plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
-    # plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
-    # plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
-
-    # # Guardar el gráfico como una imagen
-    # plt.savefig('grafico_servicios.png')
-    # plt.clf()
-    # plt.close()
-
-
-    # satisfaccion = ['Malo', 'Regular', 'Excelente']
-    # satisfaccion_valores = [malo, regular, excelente]
-    # colores = ['#FF0000', '#FEBB00', '#008000']
-    # # Crear un gráfico utilizando matplotlib
-    # plt.bar(satisfaccion, satisfaccion_valores, color=colores)
-    # plt.xlabel('Satisfaccion', fontweight='bold')
-    # plt.ylabel('Cantidad', fontweight='bold')
-    # plt.title('Satisfaccion del cliente', fontweight='bold')
-
-    # # Personalizar el estilo de las barras
-    # plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
-    # plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
-    # plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
-    # plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
-    # plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
-
-    # # Guardar el gráfico como una imagen
-    # plt.savefig('grafico_satisfaccion.png')
-    # plt.clf()
-    # plt.close()
+    # Guardar el gráfico como una imagen
+    plt.savefig('grafico_satisfaccion.png')
+    plt.clf()
+    plt.close()
 
 
     # Insercion de graficos al documento
     doc.render(context)
-    # doc.add_picture('grafico_servicios.png', width=Inches(6))
-    # doc.add_picture('grafico_satisfaccion.png', width=Inches(6))
+    doc.add_picture('grafico_satisfaccion.png', width=Inches(6))
 
     # Guardar el nuevo documento generado
     doc.save('/media/admindpp/INFO/apps/Turnero_CNE/website/static/output_user.docx')
@@ -559,7 +564,7 @@ def calificacion_atencion(puesto, calificacion):
     ahora = datetime.now()
     fecha_hora_actual = ahora.strftime("%Y-%m-%d %H:%M:%S")
 
-    ventanilla = "Ventanilla"+str(puesto)
+    ventanilla = puesto
 
     nueva_calificacion = Calificacion(ventanilla = ventanilla, calificacion = calificacion, fecha = fecha_hora_actual)
 

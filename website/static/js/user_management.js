@@ -1,7 +1,7 @@
 $(document).ready(function() {
   var dataTable = $('#dataTable').DataTable({
       columnDefs: [
-          { type: 'date', targets: 4 } // Especificar el índice de la columna de fecha
+          { } 
       ],
       language: {
           url: 'static/vendor/Spanish.json'
@@ -15,7 +15,7 @@ $(document).ready(function() {
       lengthChange: false
   });
 
-  var userIdToDelete; // Variable global para almacenar el ID:5000
+  var userIdToDelete; 
   $('[id^=eliminar-usuario]').on('click', function(){
     userIdToDelete = $(this).data('user-id');
     console.log(userIdToDelete)

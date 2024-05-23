@@ -31,6 +31,10 @@ def consultar_usuarios():
     usuarios = Usuario.query.all()
     return usuarios
 
+def consultar_ventanillas():
+    usuarios = Usuario.query.filter_by(rol = "Ventanilla").all()
+    return usuarios
+
 @user.route("/summary")
 @login_required
 def summary():
@@ -38,11 +42,12 @@ def summary():
     if current_user.rol == "Admin":
         cd = numero_turnos(1)
         jfs = numero_turnos(2)
-        dcv = numero_turnos(3)
-        dfs = numero_turnos(4)
+        cjs = numero_turnos(3)
+
+        usuarios_ventanilla = consultar_ventanillas()
 
         usuario = consultar_nombre(current_user.id)
-        return render_template("admin.html", usuario = usuario, cd = cd, jfs = jfs, dcv = dcv, dfs = dfs)
+        return render_template("admin.html", usuario = usuario, cd = cd, jfs = jfs, cjs = cjs, usuarios_ventanilla = usuarios_ventanilla)
     
     elif current_user.rol == "Ventanilla" :
         return redirect(url_for('user.profile'))
@@ -121,8 +126,9 @@ def user_alter(id_user):
         username = user_to_modificate.username
         rol = user_to_modificate.rol
         puesto = user_to_modificate.puesto
+        servicio = user_to_modificate.servicio
 
-        return render_template("user_alter.html",user_id = id_user,user_nombre = nombre, user_apellido = apellido, user_username = username, user_rol = rol, user_puesto = puesto )
+        return render_template("user_alter.html",user_id = id_user,user_nombre = nombre, user_apellido = apellido, user_username = username, user_rol = rol, user_puesto = puesto, user_servicio = servicio )
     
     elif current_user.rol == "Ventanilla" :
         return redirect(url_for('user.profile'))
