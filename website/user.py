@@ -210,6 +210,18 @@ def user_report(id_user):
     else:
         return redirect(url_for('user.profile'))
     
+@user.route('/media_administrador')
+@login_required
+def media_administrador():
+
+    if current_user.rol == "Admin":
+        return render_template("media_administrador.html")
+    elif current_user.rol == "Ventanilla" :
+        return redirect(url_for('user.profile'))
+    
+    else:
+        return redirect(url_for('user.profile'))
+    
 
 
     

@@ -24,7 +24,7 @@ if __name__ == '__main__':
     try:
         consulta_turno_thread = threading.Thread(target=run_consultar_turno)
         consulta_turno_thread.start()
-        logging.basicConfig(filename='/media/admindpp/INFO/errores/error_flask.log', level=logging.DEBUG)
+        logging.basicConfig(filename='/media/admindpp/INFO/errores/error_flask.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
         app.register_error_handler(401, status_401)
         app.register_error_handler(404, status_404)

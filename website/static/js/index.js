@@ -1,5 +1,6 @@
 const socket = io.connect('http://10.0.17.165');
 let contador = 0;
+let mensaje = "";
 
 function colocar_turno(turno, puesto) {
     contador += 1 ;
@@ -52,7 +53,7 @@ function colocar_turno(turno, puesto) {
             // Fuerza un reflow para aplicar las transiciones
             container.offsetHeight;
 
-            let mensaje = `Turno ${turno} pasar al módulo ${puesto_decir_final} `;
+            mensaje = `Turno ${turno} pasar al módulo ${puesto_decir_final} `;
             decirMensaje(mensaje);
     
             const turnos = document.querySelectorAll('.content-table');
@@ -139,6 +140,35 @@ socket.on('turno_asignado', (data) => {
     }
 });
 
+socket.on('repetir_mensaje_vi', () => {
+    decirMensaje(mensaje);
+});
+
+socket.on('reproducir_contenido', (data) => {
+
+    let player = document.getElementById('visualizador');
+
+    
+    player.pause();
+    player.currentTime = 0;
+    let currentIndex = 0;
+
+    const playNextVideo = () => {
+        if (currentIndex < data.filePaths.length) {
+            console.log(data.filePaths[currentIndex])
+            console.log("Entrando")
+            player.src = data.filePaths[currentIndex];
+            player.play();
+            currentIndex++;
+        } else {
+            currentIndex = 0;
+            playNextVideo();
+        }
+    };
+
+    player.onended = playNextVideo;
+    playNextVideo()
+});
 
 // Maneja cualquier error de conexión
 socket.on('connect_error', (error) => {
@@ -149,8 +179,6 @@ socket.on('connect_error', (error) => {
 socket.on('disconnect', () => {
     console.warn('Desconectado del servidor');
 });
-
-
 
 function clock() {
     const $ = (id) => {

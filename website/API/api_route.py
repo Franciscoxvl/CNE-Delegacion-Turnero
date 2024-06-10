@@ -1,9 +1,10 @@
-from flask import jsonify, request, flash, url_for, redirect
+from flask import jsonify, request, flash, url_for, redirect, current_app, send_from_directory
 from . import api_bp
 from website import socketio
-from website.models import Turnos, db, Puestos, Usuario
+from website.models import Turnos, db, Usuario
 from website.user import consultar_tabla
 from website.utils import *
+import os, shutil
 
 #---------------------------------------------RUTAS---------------------------------------------------#
 
@@ -243,6 +244,49 @@ def calificar_atencion():
     resultado = calificacion_atencion(puesto, calificacion)
     return jsonify(resultado)
 
+@api_bp.route('/upload', methods=['POST'])
+def upload_files():
+
+    folder = current_app.config['UPLOAD_FOLDER']
+    try:
+        shutil.rmtree(folder)
+        os.mkdir(folder)
+    except:
+        print("No se pudo borrar los videos")
+
+
+    start_time = datetime.now()
+    if 'videos[]' not in request.files:
+        return 'No file part', 400
+
+    files = request.files.getlist('videos[]')
+    file_paths = []
+
+    for file in files:
+        if file.filename == '':
+            continue
+        
+        file_name_final = file.filename.replace(' ', '')
+        file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], file_name_final)
+        file.save(file_path)
+        file_paths.append(f'static/uploads/{file_name_final}')
+    
+    socketio.emit('reproducir_contenido', {'filePaths': file_paths})
+    file_paths = []
+    end_time = datetime.now()
+    print(f"All files uploaded and processed in {end_time - start_time}")
+    return jsonify({'message':'Exito'}), 200
+
+@api_bp.route('/get_videos', methods=['GET'])
+def get_videos():
+    folder = current_app.config['UPLOAD_FOLDER']
+    videos = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+    print(os.listdir('website/static'))
+    print(folder)
+    print(videos)
+    return 
+    # return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+
 @socketio.on('connect')
 def handle_connect():
     print('Cliente conectado.')
@@ -254,10 +298,7 @@ def handle_liberar_puesto(data):
     liberar_turno(data['puestoId'], data['n_formulario_valor'])
     resultado = asignar_turno(data['puestoId'])
 
-
-
-
-
-
-
-
+@socketio.on('repetir_mensaje')
+def repetir_mensaje():
+    socketio.emit('repetir_mensaje_vi')
+    socketio.emit('espera_repeticion')

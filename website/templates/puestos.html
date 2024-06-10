@@ -63,7 +63,7 @@
                             <div class="text-lg font-weight-bold text-primary text-uppercase mb-1 text-center">
                                 Turno Actual</div>
 
-                            <div id="turno_actual" style="font-size: 2rem;" class="text-secondary text-uppercase mb-5 mt-5 text-center">
+                            <div id="turno_actual" style="font-size: 4rem;" class="text-secondary text-uppercase mb-5 mt-5 text-center">
                                 NA</div>
 
                         </div>
@@ -72,7 +72,15 @@
 
                 <br>
                 <input id="id_user" type="text" value="{{ current_user.puesto }}" hidden>
-                <button id="boton_liberar" style="margin: 0 auto; max-width: 60%;" onclick="liberarPuesto('{{ puesto }}')" class="btn btn-primary">Solicitar / Liberar turno</button>
+
+                <div class="d-flex justify-content-center">
+                    <button id="boton_liberar" style="margin: 0 2rem; max-width: 60%;" onclick="liberarPuesto('{{ puesto }}')" class="btn btn-primary">Solicitar / Liberar turno</button>
+
+                    <button id="repetir_mensaje" style="margin: 0; max-width: 60%;" onclick="repetir_mensaje()" class="btn btn-primary">
+                    <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+                
       
             </div>
         </div>

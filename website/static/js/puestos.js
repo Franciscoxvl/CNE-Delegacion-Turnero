@@ -29,8 +29,7 @@ const liberarPuesto = (puestoId) => {
     if(puestoId.slice(0,3) == "VCD"){
         let n_formulario = document.getElementById("numero_formulario")
         let n_formulario_valor = n_formulario.value
-        console.log(n_formulario_valor)
-        console.log(valorGuardado[0])
+
         if (n_formulario_valor.length == 0 && valorGuardado[0] != "NA"){
             alert("Ingrese el numero de formulario!")
         }else{
@@ -70,6 +69,18 @@ socket.on('turno_asignado', (data) => {
     
       
 });
+
+socket.on('espera_repeticion', () => {
+    var boton = document.getElementById("repetir_mensaje");
+    boton.disabled = true;
+    setTimeout(() => {
+        boton.disabled = false;
+    }, 3000);    
+});
+
+const repetir_mensaje = () =>{
+    socket.emit('repetir_mensaje')
+}
 
 // Manejador de eventos para el evento 'disconnect'
 socket.on('disconnect', function() {

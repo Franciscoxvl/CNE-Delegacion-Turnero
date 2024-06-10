@@ -1,0 +1,98 @@
+{% extends "base_admin.html" %}
+{% block title %}Profile{% endblock %}
+
+<!-- Begin Page Content -->
+{% block main_content %}
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 style="margin-inline: auto;" class="h3 mb-0 text-gray-800">Administrador de contenido multimedia</h1>
+    </div>
+
+    <div class="row">
+
+        <!-- Content Column -->
+        <div class="col-lg-6 mb-4">
+
+            <div class="card shadow">
+                <div class="card-header py-1">
+                    <h6 style="font-size: 1.5rem;" class="m-0 text-primary text-center">Lista de contenido</h6>
+                </div>
+                
+                <div style="background-color: rgb(207, 207, 207);" class="col-md-12">
+                    <div style="height: 28rem; overflow: auto;" class="card mb-4 mt-4">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <table style="width: 100%; border-collapse: separate;">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: center; border-bottom: 1px solid #ddd;">Descripción</th>
+                                            <th style="text-align: center; border-bottom: 1px solid #ddd;">Seleccionar</th>
+                                            <th style="text-align: center; border-bottom: 1px solid #ddd;">Prioridad</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="videoTableBody">
+                                        
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <h5 class="mb-3">Cargar contenido</h5>
+                    <div id="cargar_archivos" class="mb-4">
+                        <input class="mb-3" type="file" id="fileInput" accept="video/*" multiple>
+                        <button class="btn btn-primary" id="previewSelection">Previsualizar Selección</button>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+
+        <div class="col-lg-6 mb-4">
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-1">
+                    <h6 style="font-size: 1.5rem;" class="m-0 text-primary text-center">Preview</h6>
+                </div>
+                
+                <div class="mt-4 col-md-12">
+                    <div class="card shadow h-100 py-2 mb-4">
+                        <div class="card-body">
+                            <video id="previewPlayer" style="width: 100%;" controls></video>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary mb-4" id="SaveSend" disabled>Guardar y Enviar</button>
+                    </div>
+
+                    <div class="progress mb-4">
+                        <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
+
+                    <p id="status" class="text-primary"></p>
+
+                                        
+                </div>
+            </div>
+            
+
+        </div>
+
+
+
+
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+<script src="../static/js/media_admin.js"></script>
+<!-- End of Main Content -->
+{% endblock %}

@@ -5,6 +5,7 @@ from flask_apscheduler import APScheduler
 from flask_cors import CORS
 from flask_login import LoginManager
 import logging
+import os
 
 # Configuración de la base de datos
 db = SQLAlchemy()
@@ -17,12 +18,20 @@ def create_app():
     app = Flask(__name__)
     app.logger.setLevel(logging.DEBUG)
     CORS(app, origins='*')
+
+    UPLOAD_FOLDER = 'website/static/uploads'
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
     app.config['SECRET_KEY'] = 'FValdez181222'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:AdminDpp17%@localhost:3306/turnos?charset=utf8mb4'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['FLASKS_SERVE_STATIC_FILES'] = True
     app.config['DEBUG'] = True
     app.config['ENV'] = 'development'
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['MAX_CONTENT_LENGTH'] = 800 * 1024 * 1024
+    
 
     # Inicialización de extensiones
     login_manager.init_app(app)

@@ -21,51 +21,77 @@
 <li class="nav-item active">
     <a class="nav-link" href="{{url_for('user.summary')}}">
         <i class="fas fa-fw fa-tachometer-alt"></i>
-        <span>Resumen</span></a>
-</li>
-
-<!-- Divider -->
-<hr class="sidebar-divider">
-
-<!-- Heading -->
-<div class="sidebar-heading">
-    Administracion
-</div>
-
-<!-- Nav Item - Pages Collapse Menu -->
-<li class="nav-item">
-    <a class="nav-link" href="{{url_for('user.user_management')}}" >
-        <i class="fas fa-fw fa-cog"></i>
-        <span>Administracion de usuarios</span>
-    </a>
-</li>
-
-<!-- Nav Item - Utilities Collapse Menu -->
-<li class="nav-item">
-    <a class="nav-link" href="{{url_for('user.reportes_g')}}" >
-        <i class="fas fa-fw fa-table"></i>
-        <span>Generacion de reportes</span>
+        <span>RESUMEN</span>
     </a>
 </li>
 
 <!-- Divider -->
 <hr class="sidebar-divider">
 
-<!-- Heading -->
-<div class="sidebar-heading">
-    General
+<div class="sidebar-heading d-flex justify-content-between align-items-center mb-3" data-toggle="collapse" data-target="#generalMenu" aria-expanded="false" aria-controls="generalMenu" style="cursor: pointer;">
+    <span class="text-white"><i class="fas fa-fw fa-tasks"></i> General</span>
+    <i class="fas fa-chevron-down"></i>
 </div>
 
-<!-- Nav Item - Pages Collapse Menu -->
-
-<li class="nav-item">
-    <a class="nav-link" href="{{ url_for('user.profile_information')}}">
-        <i class="fas fa-fw fa-user"></i>
-        <span>Perfil</span></a>
-</li>
+<!-- Collapsible Menu - General -->
+<div class="collapse" id="generalMenu">
+    <!-- Nav Item - Profile Information -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('user.profile_information')}}">
+            <i class="fas fa-fw fa-user"></i>
+            <span>Perfil</span>
+        </a>
+    </li>
+</div>
 
 <!-- Divider -->
 <hr class="sidebar-divider d-none d-md-block">
+
+<!-- Heading -->
+<div class="sidebar-heading d-flex justify-content-between align-items-center mb-3" data-toggle="collapse" data-target="#adminMenu" aria-expanded="false" aria-controls="adminMenu" style="cursor: pointer;">
+    <span class="text-white"><i class="fas fa-fw fa-cog"></i> Gestión de usuarios y reportes</span>
+    <i class="fas fa-chevron-down"></i>
+</div>
+
+<div class="collapse" id="adminMenu">
+    <!-- Nav Item - User Management -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{url_for('user.user_management')}}">
+            <i class="fas fa-fw fa-user"></i>
+            <span>Administración de usuarios</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Report Generation -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{url_for('user.reportes_g')}}">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Generación de reportes</span>
+        </a>
+    </li>
+</div>
+
+<hr class="sidebar-divider">
+
+<div class="sidebar-heading d-flex justify-content-between align-items-center mb-3" data-toggle="collapse" data-target="#mediaMenu" aria-expanded="false" aria-controls="mediaMenu" style="cursor: pointer;">
+    <span class="text-white"><i class="fas fa-fw fa-film"></i> Multimedia</span>
+    <i class="fas fa-chevron-down"></i>
+</div>
+
+<!-- Collapsible Menu - Multimedia -->
+<div class="collapse" id="mediaMenu">
+    <!-- Nav Item - Media Management -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{url_for('user.media_administrador')}}">
+            <i class="fas fa-fw fa-video"></i>
+            <span>Gestión de contenido</span>
+        </a>
+    </li>
+</div>
+
+<!-- Divider -->
+<hr class="sidebar-divider">
+
 </ul>
 <!-- End of Sidebar -->
 {% endblock %}
