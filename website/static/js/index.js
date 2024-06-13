@@ -130,11 +130,16 @@ socket.on('turno_asignado', (data) => {
         var turno = codigo + numero_turno;
         var puesto = data.puesto;
 
-        colocar_turno(turno, puesto);
+        if(turno == "NA"){
+            console.log("No hay turnos pendientes")
+        } else {
+            colocar_turno(turno, puesto);
+        }
 
         setTimeout(() => {
             colocarTurnoActiva = false;
         }, 1010);
+
     } else {
         console.log("Esperando....")
     }

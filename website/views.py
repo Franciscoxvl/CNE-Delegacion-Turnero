@@ -19,14 +19,9 @@ def visualizer():
 
     return render_template("visualizer.html")
 
-@views.route('satisfaccion/<id_ventanilla>')
+@views.route('/satisfaccion/<id_ventanilla>')
 def satisfaccion(id_ventanilla):
     return render_template("satisfaccion.html", id_ventanilla = id_ventanilla)
-
-
-@views.route('pdfjs/<path:filename>')
-def serve_pdfjs(filename):
-    return send_from_directory('static/', filename)
 
 @views.route('/favicon.ico')
 def favicon():

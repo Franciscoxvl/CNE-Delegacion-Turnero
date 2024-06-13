@@ -55,8 +55,6 @@ socket.on('turno_asignado', (data) => {
     var numero_turno = data.numero_turno;
     var puesto = data.puesto;
     var turno = codigo + numero_turno;
-    console.log(turno)
-    console.log(puesto)
     var valor_a_guardar = [turno, puesto];
     valorGuardado = valor_a_guardar;
     console.log(valorGuardado[0])
