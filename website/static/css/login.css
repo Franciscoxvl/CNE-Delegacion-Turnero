@@ -47,6 +47,7 @@ body{
     align-items: center;
     position: absolute;
     top: 18%;
+    margin-top: 1.1%;
 }
 
 .user-image{
@@ -65,6 +66,7 @@ body{
     flex-direction: column;
     justify-content: center;
     gap: 0.5rem;
+    margin-top: 1.5%;
   }
 
   .in-credentials{
@@ -149,6 +151,19 @@ body{
 
   button:hover {
     cursor: pointer;
+  }
+
+  #encabezado{
+    position: absolute;
+    top: 5%;
+    color: black;
+    font-size: 3.5rem;
+    text-align: center;
+    font-weight: bold;
+    color: rgb(17, 41, 73);
+    box-shadow: inset;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+
   }
 
 
