@@ -1,4 +1,4 @@
-from flask import jsonify, request, flash, url_for, redirect, current_app, send_from_directory
+from flask import jsonify, request, flash, url_for, redirect, current_app
 from . import api_bp
 from website import socketio
 from website.models import Turnos, db, Usuario

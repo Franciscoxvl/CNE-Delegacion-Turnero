@@ -3,7 +3,7 @@ from docxtpl import DocxTemplate
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from flask import app, request
+from flask import request
 from docx.shared import Inches
 from datetime import datetime, timedelta
 from sqlalchemy import text
@@ -168,7 +168,7 @@ def generar_tespera():
         fecha_hora_actual = ahora.strftime("%Y-%m-%d %H:%M:%S")
 
         numero_turno = cantidad_turnos(id_servicio)
-        tiempo_espera_aproximado = 6
+        tiempo_espera_aproximado = 3
         turnos = Espera.query.filter_by(id_servicio = id_servicio).all()
         tiempo_espera = len(turnos)*tiempo_espera_aproximado
         horas, minutos = minutos_a_horas_y_minutos(tiempo_espera)
