@@ -8,12 +8,6 @@ class Servicios(db.Model):
     codigo = db.Column(db.String(10), unique=True, nullable=False)
     descripcion = db.Column(db.String(255), nullable=False)
 
-class Puestos(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    descripcion = db.Column(db.String(50), unique=True, nullable=False)
-    estado = db.Column(db.String(20), nullable=False)
-    id_user = db.Column(db.Integer)
-
 class Turnos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_servicio = db.Column(db.Integer, db.ForeignKey('servicios.id'), nullable=False)
