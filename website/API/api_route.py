@@ -86,6 +86,8 @@ def crear_usuario():
         apellido = request.form['apellido']
         rol = request.form['rol']
         servicio = request.form['servicio']
+        provincia = current_user.provincia
+        puesto = servicio
 
         puestos_ocupados = obtener_puestos_ocupados(servicio)
         puestos_libres = obtener_puesto_vacante(puestos_ocupados)
@@ -116,7 +118,7 @@ def crear_usuario():
                     puesto = "VJF" + str(ventanillas)
 
 
-            nuevo_usuario = Usuario(id = nuevo_id, username = username, nombre = nombre, apellido = apellido, rol = rol, puesto = puesto, servicio = servicio)
+            nuevo_usuario = Usuario(id = nuevo_id, username = username, nombre = nombre, apellido = apellido, rol = rol, puesto = puesto, servicio = servicio, provincia = provincia)
 
             nuevo_usuario.set_password(password)
 

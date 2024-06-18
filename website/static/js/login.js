@@ -1,7 +1,8 @@
 var loginButton = document.getElementById("login-form");
 var passwordInput = document.getElementById("password");
 var userInput = document.getElementById("user");
-// var provincias = ["Azuay", "Bolivar", "Cañar", "Carchi", "Chimborazo", "Cotopaxi", "El Oro", "Esmeraldas", "Galápagos", "Guayas", "Imbabura", "Loja", "Los Rios", "Manabí", "Morona Santiago", "Napo", "Orellana", "Pastaza", "Pichincha", "Santa Elena", "Santo Domingo de los Tsáchilas", "Sucumbios", "Tungurahua", "Zamora Chinchipe", "NACIONAL"]
+var province = document.getElementById("province");
+// var provincias = ["Azuay", "Bolivar", "Cañar", "Carchi", "Chimborazo", "Cotopaxi", "El Oro", "Esmeraldas", "Galápagos", "Guayas", "Imbabura", "Loja", "Los Rios", "Manabí", "Morona Santiago", "Napo", "Orellana", "Pastaza", "Pichincha", "Santa Elena", "Santo Domingo de los Tsáchilas", "Sucumbios", "Tungurahua", "Zamora Chinchipe"]
 
 // var select = document.getElementById("province");
 
@@ -16,11 +17,13 @@ var userInput = document.getElementById("user");
 // });
 
 loginButton.addEventListener('submit', (event) =>{
-    user = userInput.value;
-    password = passwordInput.value;
+    let user = userInput.value;
+    let password = passwordInput.value;
+    let provincia = province.value; 
     console.log(user, password);
+    console.log(provincia)
 
-    if(user.length == 0 || password.length == 0){
+    if(user.length == 0 || password.length == 0 || provincia.length == 0){
         event.preventDefault();       
     }
 });

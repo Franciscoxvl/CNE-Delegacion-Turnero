@@ -7,8 +7,9 @@ from flask import app, request
 from docx.shared import Inches
 from datetime import datetime, timedelta
 from sqlalchemy import text
-from website.models import Turnos, Espera, db, Puestos, Servicios, Usuario, Calificacion
+from website.models import Turnos, Espera, db, Servicios, Usuario, Calificacion
 import subprocess
+from flask_login import current_user
 
 def consultar_numero_ventanillas(servicio):
     Usuarios_puesto = Usuario.query.filter_by(servicio = servicio).all()
@@ -252,6 +253,7 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
     numero_ven_cjs = 0
     ventanillas_desordenado = []
     turnos_por_ventanilla = {}
+    provincia = current_user.provincia
      
     # Obtener los datos del formulario
     fecha_actual = datetime.now()
@@ -294,6 +296,7 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
 
         context = {
             'fecha': fecha,
+            'provincia': provincia,
             'total_turnos': total_turnos,
             'total_turnos_cd' : total_turnos_cd,
             'total_turnos_jfs' : total_turnos_jfs,
@@ -322,6 +325,7 @@ def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
 
         context = {
             'fecha': fecha,
+            'provincia': provincia,
             'fecha_inicio': fecha_inicio,
             'fecha_fin': fecha_fin,
             'total_turnos': total_turnos,
@@ -412,6 +416,7 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
     servicio = user.servicio
     nombre = user.nombre
     apellido = user.apellido
+    provincia = current_user.provincia
            
     if fecha_inicio == 0 or fecha_fin == 0: 
         doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_usuario.docx')
@@ -449,6 +454,7 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
         context = {
             'puesto': rol,
             'fecha': fecha,
+            'provincia' : provincia,
             'nombre': nombre,
             'apellido': apellido,
             'servicio' : servicio,
@@ -503,6 +509,7 @@ def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_use
             'puesto': rol,
             'fecha': fecha,
             'nombre': nombre,
+            'provincia': provincia,
             'apellido': apellido,
             'servicio' : servicio,
             'fecha_inicio': fecha_inicio,

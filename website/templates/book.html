@@ -33,7 +33,7 @@
           <div class="text-content">
               <p>CONSEJO NACIONAL ELECTORAL</p>
               <p>DELEGACION ELECTORAL PROVINCIAL DE</p>
-              <p>PICHINCHA</p>
+              <p>{{ current_user.provincia.upper() }}</p>
           </div> 
 
           <p style="color: white; padding-inline: 1rem; border-radius: 2rem; background-color: rgb(33, 87, 122); font-weight: bold; font-size: 300%;">Bienvenida/o {{ current_user.nombre + " " + current_user.apellido }}</p>

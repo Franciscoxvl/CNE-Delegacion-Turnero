@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, request, url_for
 from flask_login import login_user, logout_user, login_required, current_user
 from website.models import Usuario
 from website import login_manager
@@ -13,7 +13,7 @@ def load_user(id):
 @auth.route('/login')
 def login():
     if current_user.is_authenticated:
-        if current_user.rol == "admin":
+        if current_user.rol == "Admin":
             return redirect(url_for('user.summary'))
         else:
             return redirect(url_for('user.profile'))
@@ -63,7 +63,7 @@ def validacion_usuario():
                     login_user(user)
                     return redirect(url_for('views.book'))
                 elif user.rol == "Admin":
-                    login_user(user, remember=recuerdame)
+                    login_user(user)
                     return redirect(url_for('user.summary'))
                 else:
                     login_user(user)
