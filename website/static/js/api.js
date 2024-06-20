@@ -3,11 +3,26 @@ const generar_turno = async (tipo, servicio) => {
     try {
         const resultado = await obtener_turno(servicio);
         console.log(resultado);
+        imprimir_turno(resultado);
         turno_assignado_mensaje(resultado);
     } catch (error) {
         console.error('Error en generar_turno:', error);
     }
 };
+
+const imprimir_turno = (resultado) =>{
+    fetch('http://127.0.0.1:5000/print', {
+        method: 'POST', 
+        headers:{
+            'Content-Type' : 'application/json' 
+        },
+        body: JSON.stringify({ texto: resultado})
+    })
+    .then(response => response.json())
+    .then(datos => {
+        console.log(datos)
+    })
+}
 
 const obtener_turno = async (servicio) => {
     const checkedbox = document.getElementById("preferencial");
