@@ -6,8 +6,13 @@ from website.API.api_route import consultar_turno
 from website.auth import status_401, status_404
 import logging
 
+# import os
+
 app, socketio_app = create_app()
 stop_event = threading.Event()
+
+# log_dir = "/app/logs"
+# os.makedirs(log_dir, exist_ok=True)
 
 def run_consultar_turno():
     while not stop_event.is_set():
