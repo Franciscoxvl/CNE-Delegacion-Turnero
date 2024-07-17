@@ -3,7 +3,7 @@ from docxtpl import DocxTemplate
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from flask import request
+from flask import jsonify, request
 from docx.shared import Inches
 from datetime import datetime, timedelta
 from sqlalchemy import text
@@ -237,170 +237,127 @@ def liberar_turno(puesto, n_formulario):
                 db.session.commit()
 
 def generate_pdf(doc_path, path):
-    subprocess.call(['soffice',
-                     # '--headless',
-                     '--convert-to',
-                     'pdf',
-                     '--outdir',
-                     path,
-                     doc_path])
+    result = subprocess.run(
+        ['soffice', '--headless', '--convert-to', 'pdf', '--outdir', path, doc_path],
+        capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        raise Exception(f"Error en la conversión: {result.stderr}")
     return doc_path
 
-def generacion_reporte(fecha_inicio = 0, fecha_fin = 0):
+def generacion_reporte(fecha_inicio=0, fecha_fin=0):
+    try:
+        # Variables y configuraciones iniciales
+        numero_ven_cd = 0
+        numero_ven_jfs = 0
+        numero_ven_cjs = 0
+        ventanillas_desordenado = []
+        aux = []
+        turnos_por_ventanilla = {}
+        provincia = current_user.provincia
+        fecha_actual = datetime.now()
+        fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
+        Usuarios_ventanilla_total = Usuario.query.filter_by(rol="Ventanilla").all()
+        
+        for usuario_ventanilla in Usuarios_ventanilla_total:
+            puesto = usuario_ventanilla.puesto
+            ventanillas_desordenado.append(puesto)
+            if puesto.startswith("VCD"):
+                numero_ven_cd += 1
+            elif puesto.startswith("VJF"):
+                numero_ven_jfs += 1
+            else:
+                numero_ven_cjs += 1
+        
 
-    numero_ven_cd = 0
-    numero_ven_jfs = 0
-    numero_ven_cjs = 0
-    ventanillas_desordenado = []
-    turnos_por_ventanilla = {}
-    provincia = current_user.provincia
-     
-    # Obtener los datos del formulario
-    fecha_actual = datetime.now()
-    fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
-    Usuarios_ventanilla_total = Usuario.query.filter_by(rol="Ventanilla").all()
-    for usuario_ventanilla in Usuarios_ventanilla_total:
-        puesto = usuario_ventanilla.puesto
-        ventanillas_desordenado.append(puesto)
-        if puesto[0:3] == "VCD":
-            numero_ven_cd += 1
-            turnos_por_ventanilla[puesto] = 0
-        elif puesto[0:3] == "VJF":
-            numero_ven_jfs += 1
-            turnos_por_ventanilla[puesto] = 0
+        # Cargar la plantilla de Word y generar el contexto
+        if fecha_inicio == 0 or fecha_fin == 0: 
+            doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte.docx')
+            turnos = Turnos.query.all()
+
+            for turno in turnos:
+                if turno.puesto not in aux:
+                    turnos_por_ventanilla[turno.puesto] = 0
+
         else:
-            numero_ven_cjs += 1
-            turnos_por_ventanilla[puesto] = 0 
+            doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_personalizado.docx')
+            turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).all()
 
-    # Cargar la plantilla de Word
-    if fecha_inicio == 0 or fecha_fin == 0: 
-        doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte.docx')
+            for turno in turnos:
+                if turno.puesto not in aux:
+                    turnos_por_ventanilla[turno.puesto] = 0
 
-        # Renderizar la plantilla con los datos del formulario
-        turnos = Turnos.query.all()
-        total_turnos = Turnos.query.count()
-        total_turnos_cd = 0
-        total_turnos_jfs = 0
-        total_turnos_cjs = 0
-
+        total_turnos = len(turnos)
+        total_turnos_cd = sum(1 for turno in turnos if turno.id_servicio == 1)
+        total_turnos_jfs = sum(1 for turno in turnos if turno.id_servicio == 2)
+        total_turnos_cjs = sum(1 for turno in turnos if turno.id_servicio == 3)
+        
         for turno in turnos:
             turnos_por_ventanilla[turno.puesto] += 1
-            if turno.id_servicio == 1:
-                total_turnos_cd += 1
-            elif turno.id_servicio == 2:
-                total_turnos_jfs += 1
-            else:
-                total_turnos_cjs += 1
-        
+
         turnos_ventanilla_sort = {k: turnos_por_ventanilla[k] for k in sorted(turnos_por_ventanilla)}
 
         context = {
             'fecha': fecha,
             'provincia': provincia,
             'total_turnos': total_turnos,
-            'total_turnos_cd' : total_turnos_cd,
-            'total_turnos_jfs' : total_turnos_jfs,
-            'total_turnos_cjs' : total_turnos_cjs,
-            'turnos_por_ventanilla' : turnos_ventanilla_sort
+            'total_turnos_cd': total_turnos_cd,
+            'total_turnos_jfs': total_turnos_jfs,
+            'total_turnos_cjs': total_turnos_cjs,
+            'turnos_por_ventanilla': turnos_ventanilla_sort
         }
-    else:
-        doc = DocxTemplate('/media/admindpp/INFO/apps/Modelo_reportes/Modelo_reporte_personalizado.docx')
-        # Renderizar la plantilla con los datos del formulario
-        turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).all()
-        total_turnos = Turnos.query.filter(Turnos.fecha >= fecha_inicio, Turnos.fecha <= fecha_fin).count()
-        total_turnos_cd = 0
-        total_turnos_jfs = 0
-        total_turnos_cjs = 0
+        if fecha_inicio != 0 and fecha_fin != 0:
+            context.update({'fecha_inicio': fecha_inicio, 'fecha_fin': fecha_fin})
+
+        # Generar gráficos
+        servicios = ['Cambios domicilio', 'Justificaciones', 'Cajas']
+        servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_cjs]
+        colores = ['#136CB2', '#17D3E3', '#1DEEC8']
         
-        for turno in turnos:
-            turnos_por_ventanilla[turno.puesto] += 1
-            if turno.id_servicio == 1:
-                total_turnos_cd += 1
-            elif turno.id_servicio == 2:
-                total_turnos_jfs += 1
-            else:
-                total_turnos_cjs += 1
+        plt.bar(servicios, servicios_valores, color=colores)
+        plt.xlabel('Servicios', fontweight='bold')
+        plt.ylabel('Cantidad Turnos', fontweight='bold')
+        plt.title('Turnos por servicio', fontweight='bold')
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.gca().spines['top'].set_visible(False)
+        plt.gca().spines['right'].set_visible(False)
+        plt.gca().tick_params(axis='x', bottom=False)
+        plt.gca().tick_params(axis='y', left=False)
+        plt.savefig('/media/admindpp/INFO/apps/Turnero_CNE/website/static/grafico_servicios.png')
+        plt.clf()
+        plt.close()
+
+        colores_puestos = ['#F1F139', '#108AF0', '#F53131', '#108AF0', '#F1F139']
+        puestos = list(turnos_ventanilla_sort.keys())
+        puestos_valores = list(turnos_ventanilla_sort.values())
         
-        turnos_ventanilla_sort = {k: turnos_por_ventanilla[k] for k in sorted(turnos_por_ventanilla)}                
+        plt.bar(puestos, puestos_valores, color=colores_puestos)
+        plt.xlabel('Ventanillas', fontweight='bold')
+        plt.ylabel('Cantidad Turnos', fontweight='bold')
+        plt.title('Turnos por ventanilla', fontweight='bold')
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.gca().spines['top'].set_visible(False)
+        plt.gca().spines['right'].set_visible(False)
+        plt.gca().tick_params(axis='x', bottom=False)
+        plt.gca().tick_params(axis='y', left=False)
+        plt.savefig('/media/admindpp/INFO/apps/Turnero_CNE/website/static/grafico_puestos.png')
+        plt.clf()
+        plt.close()
 
-        context = {
-            'fecha': fecha,
-            'provincia': provincia,
-            'fecha_inicio': fecha_inicio,
-            'fecha_fin': fecha_fin,
-            'total_turnos': total_turnos,
-            'total_turnos_cd' : total_turnos_cd,
-            'total_turnos_jfs' : total_turnos_jfs,
-            'total_turnos_cjs' : total_turnos_cjs,
-            'turnos_por_ventanilla' : turnos_ventanilla_sort
-        }
+        # Renderizar y guardar el documento
+        doc.render(context)
+        doc.add_picture('/media/admindpp/INFO/apps/Turnero_CNE/website/static/grafico_servicios.png', width=Inches(6))
+        doc.add_picture('/media/admindpp/INFO/apps/Turnero_CNE/website/static/grafico_puestos.png', width=Inches(6))
+        output_docx_path = '/media/admindpp/INFO/apps/Turnero_CNE/website/static/output.docx'
+        doc.save(output_docx_path)
 
+        # Convertir a PDF
+        pdf_path = generate_pdf(output_docx_path, '/media/admindpp/INFO/apps/Turnero_CNE/website/static')
+        return 'Reporte generado exitosamente', 200 
 
-    servicios = ['Cambios domicilio', 'Justificaciones', 'Cajas']
-    servicios_valores = [total_turnos_cd, total_turnos_jfs, total_turnos_cjs]
-    colores = ['#136CB2', '#17D3E3', '#1DEEC8']
-    # Crear un gráfico utilizando matplotlib
-    plt.bar(servicios, servicios_valores, color=colores)
-    plt.xlabel('Servicios', fontweight='bold')
-    plt.ylabel('Cantidad Turnos', fontweight='bold')
-    plt.title('Turnos por servicio', fontweight='bold')
-
-    # Personalizar el estilo de las barras
-    plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
-    plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
-    plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
-    plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
-    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
-
-    # Guardar el gráfico como una imagen
-    plt.savefig('grafico_servicios.png')
-    plt.clf()
-    plt.close()
-
-    colores_puestos = ['#F1F139', '#108AF0', '#F53131', '#108AF0', '#F1F139']
-    # Crear un gráfico utilizando matplotlib
-    puestos = []
-    puestos_valores = []
-    for key, value in turnos_ventanilla_sort.items():
-        puestos.append(key)
-        puestos_valores.append(value)
-    plt.bar(puestos, puestos_valores, color=colores_puestos)
-    plt.xlabel('Ventanillas', fontweight='bold')
-    plt.ylabel('Cantidad Turnos', fontweight='bold')
-    plt.title('Turnos por ventanilla', fontweight='bold')
-
-    # Personalizar el estilo de las barras
-    plt.gca().spines['top'].set_visible(False)  # Ocultar borde superior
-    plt.gca().spines['right'].set_visible(False)  # Ocultar borde derecho
-    plt.gca().tick_params(axis='x', which='both', bottom=False)  # Ocultar marcas en el eje x
-    plt.gca().tick_params(axis='y', which='both', left=False)  # Ocultar marcas en el eje y
-    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Agregar líneas de cuadrícula horizontales
-
-    # # Guardar el gráfico como una imagen
-    plt.savefig('grafico_puestos.png')
-    plt.clf()
-    plt.close()
-
-    # Insercion de graficos al documento
-    doc.render(context)
-    doc.add_picture('grafico_servicios.png', width=Inches(6))
-    doc.add_picture('grafico_puestos.png', width=Inches(6))
-
-    # Guardar el nuevo documento generado
-    doc.save('/media/admindpp/INFO/apps/Turnero_CNE/website/static/output.docx')
-
-    # Ruta al documento DOCX de entrada
-    docx_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static/output.docx"
-
-    # Ruta de salida para el PDF convertido
-    pdf_file = "/media/admindpp/INFO/apps/Turnero_CNE/website/static"
-
-    try:
-        doc_path = generate_pdf(docx_file, pdf_file)
-        return 200
-    
-    except FileNotFoundError as e:
-        return 500
+    except Exception as e:
+        print(f"Ocurrió un error: {e}")
+        return jsonify({'error': str(e)}), 500
 
 
 def siguiente_id_disponible():
@@ -409,7 +366,6 @@ def siguiente_id_disponible():
 
 def generacion_reporte_usuario(fecha_inicio = 0, fecha_fin = 0, rol = "", id_user = 0):
     # Obtener los datos del formulario
-    print(rol)
     fecha_actual = datetime.now()
     fecha = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
     user = Usuario.query.filter_by(id = id_user).first()

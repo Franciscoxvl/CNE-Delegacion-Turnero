@@ -43,16 +43,14 @@ def generar_reporte():
             fecha_fin = request.args.get('fecha_fin')
 
             if len(fecha_inicio) == 0 or len(fecha_fin) == 0:
-                resultado = generacion_reporte()
-                return "Reporte Generado exitosamente!"
+                generacion_reporte()
+                return 'Reporte generado exitosamente', 200 
             else:
                 resultado = generacion_reporte(fecha_inicio, fecha_fin)
-                return "Reporte Generado exitosamente!"
+                return 'Reporte generado exitosamente', 200 
 
         except Exception as e:
-            error = str(e)
-            print(error)
-            return error, 500
+            return jsonify({'error': str(e)}), 500
 
 @api_bp.route('/generar_reporte_usuario', methods=['GET'])
 def generar_reporte_usuario():
