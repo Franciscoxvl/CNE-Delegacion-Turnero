@@ -6,9 +6,8 @@ from website.API.api_route import consultar_turno
 from website.auth import status_401, status_404
 import logging
 
-# import os
 
-app, socketio_app = create_app()
+app, socketio_app, db = create_app()
 stop_event = threading.Event()
 
 # log_dir = "/app/logs"
@@ -29,10 +28,11 @@ if __name__ == '__main__':
     try:
         consulta_turno_thread = threading.Thread(target=run_consultar_turno)
         consulta_turno_thread.start()
-        logging.basicConfig(filename='/media/admindpp/INFO/errores/error_flask.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
-
         app.register_error_handler(401, status_401)
         app.register_error_handler(404, status_404)
+        
+        with app.app_context():
+            db.create_all()
 
         socketio_app.run(app, host='127.0.0.1', port=8000, debug=True, use_reloader=False)
     finally:

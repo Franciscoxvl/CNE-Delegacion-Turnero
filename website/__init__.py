@@ -4,11 +4,11 @@ from flask_socketio import SocketIO
 from flask_apscheduler import APScheduler
 from flask_cors import CORS
 from flask_login import LoginManager
+from .models import db
 import logging
 import os
 
 # Configuración de la base de datos
-db = SQLAlchemy()
 login_manager = LoginManager()
 scheduler = APScheduler()
 socketio = SocketIO() 
@@ -24,7 +24,7 @@ def create_app():
         os.makedirs(UPLOAD_FOLDER)
 
     app.config['SECRET_KEY'] = 'FValdez181222'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:AdminDpp17%@localhost:3306/turnos?charset=utf8mb4'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///turnero.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['FLASKS_SERVE_STATIC_FILES'] = True
     app.config['DEBUG'] = True
@@ -36,7 +36,7 @@ def create_app():
     # Inicialización de extensiones
     login_manager.init_app(app)
     db.init_app(app)
-    socketio.init_app(app, message_queue='redis://localhost:6379', cors_allowed_origins='*')
+    socketio.init_app(app, cors_allowed_origins='*')
 
     # Registro de blueprints
     from .views import views
@@ -49,4 +49,4 @@ def create_app():
     app.register_blueprint(user, url_prefix='/')
     app.register_blueprint(api_bp, url_prefix='/api')
 
-    return app, socketio  # Return both app and socketio object
+    return app, socketio, db  # Return both app and socketio object
