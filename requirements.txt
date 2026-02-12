@@ -34,7 +34,7 @@ pyparsing==3.1.2
 python-dateutil==2.9.0.post0
 python-docx==1.1.2
 python-engineio==4.9.0
-python-socketio==5.11.2
+python-socketio==5.14.0
 pytz==2024.1
 redis==5.0.4
 simple-websocket==1.0.0
