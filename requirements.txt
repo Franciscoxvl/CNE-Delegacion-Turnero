@@ -29,7 +29,7 @@ mysqlclient==2.2.4
 numpy==1.26.4
 packaging==24.0
 pdfkit==1.0.0
-pillow==10.3.0
+pillow==12.1.1
 pyparsing==3.1.2
 python-dateutil==2.9.0.post0
 python-docx==1.1.2
